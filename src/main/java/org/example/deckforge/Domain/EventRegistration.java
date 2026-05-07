@@ -63,9 +63,9 @@ public class EventRegistration {
         return registrationDate;
     }
 
-    public void setRegistrationDate(LocalDateTime registrationDate) {
+    public void setRegistrationDate(LocalDateTime registrationDate) throws Exception {
         if (registrationDate != null) {
             this.registrationDate = registrationDate;
-        }
+        } throw new Exception("Der skal sættes en dato");
     }
 }

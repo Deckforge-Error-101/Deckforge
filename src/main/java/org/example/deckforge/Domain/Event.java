@@ -30,29 +30,29 @@ public class Event {
         return titel;
     }
 
-    public void setTitel(String titel) {
+    public void setTitel(String titel) throws Exception {
         if (titel != null) {
             this.titel = titel;
-        }
+        } throw new Exception("Event skal have en titel");
     }
-        //test mc testface
+
     public String getEventType() {
         return eventType;
     }
 
-    public void setEventType(String eventType) {
+    public void setEventType(String eventType) throws Exception {
         if (eventType != null) {
             this.eventType = eventType;
-        }
+        } throw new Exception("Event skal have en type");
     }
 
     public int getCapacity() {
         return capacity;
     }
     
-    public void setCapacity(int capacity) {
+    public void setCapacity(int capacity) throws Exception {
         if (capacity > 0) {
             this.capacity = capacity;
-        }
+        } throw new Exception("Event skal have en max capacitet");
     }
 }
