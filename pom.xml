@@ -5,14 +5,14 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.6</version>
+        <version>4.0.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>org.example</groupId>
-    <artifactId>Deckforge</artifactId>
+    <groupId>com.example</groupId>
+    <artifactId>racekatteklubben</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Deckforge</name>
-    <description>Deckforge</description>
+    <name>racekatteklubben</name>
+    <description>racekatteklubben</description>
     <url/>
     <licenses>
         <license/>
@@ -48,6 +48,11 @@
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
