@@ -35,7 +35,7 @@ public class Event {
             this.titel = titel;
         }
     }
-
+        //test mc testface
     public String getEventType() {
         return eventType;
     }
