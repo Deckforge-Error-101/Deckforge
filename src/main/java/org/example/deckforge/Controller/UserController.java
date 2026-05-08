@@ -17,6 +17,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    /*
     @GetMapping("/")
     public String index(HttpSession session, Model model) {
         User user = (User) session.getAttribute("member");
@@ -26,6 +27,29 @@ public class UserController {
             return "homePageLoginTrue";
         }
         return "index";
+    }
+     */
+
+    @GetMapping("/")
+    public String index(Model model, HttpSession session) {
+        return "index";
+    }
+
+    @GetMapping("/login")
+    public String showLoginPage(Model model) {
+        model.addAttribute("loginForm", new User());
+        return "login";
+    }
+
+    @PostMapping("/login")
+    public String login(@ModelAttribute("loginForm") User loginForm, Model model, HttpSession session) {
+        try {
+            User dbUser = userService.login(loginForm);
+            session.setAttribute("user", dbUser);
+            return "redirect:/";
+        } catch {
+
+        }
     }
 
 }

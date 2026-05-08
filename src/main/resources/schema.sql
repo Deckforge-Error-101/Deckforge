@@ -1,3 +1,11 @@
+DROP TABLE IF EXISTS EventRegistrations;
+DROP TABLE IF EXISTS Collections;
+DROP TABLE IF EXISTS Decks;
+DROP TABLE IF EXISTS Events;
+DROP TABLE IF EXISTS Cards;
+DROP TABLE IF EXISTS Users;
+
+
 CREATE TABLE Events(
     eventId INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(50) NOT NULL,
@@ -44,7 +52,7 @@ CREATE TABLE Collections(
     cardId INT,
     FOREIGN KEY (cardId)
                         REFERENCES Cards(cardId)
-                        ON DELETE CASCADE,
+                        ON DELETE CASCADE
 );
 
 CREATE TABLE EventRegistrations (

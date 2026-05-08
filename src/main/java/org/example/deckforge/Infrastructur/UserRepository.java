@@ -2,7 +2,9 @@ package org.example.deckforge.Infrastructur;
 
 import org.example.deckforge.Domain.User;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class UserRepository implements IUserRepository {
     private final JdbcTemplate jdbcTemplate;
 
