@@ -14,7 +14,9 @@ public class UserRepository implements IUserRepository {
 
     @Override
     public void createUser(User user) {
+        String sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
 
+        jdbcTemplate.update(sql, user.getUserName(), user.getEmail(), user.getPassword());
     }
 
     @Override
@@ -25,5 +27,23 @@ public class UserRepository implements IUserRepository {
     @Override
     public void deleteUser(User user) {
 
+    }
+
+    @Override
+    public User findUserByEmail(String email) {
+        String sql = "SELECT userId, userName, email, password, roleType " +
+                "FROM users " +
+                "WHERE email = ?";
+
+        return jdbcTemplate.queryForObject(sql, new Object[]{email}, (rs, rowNum) ->
+                new User(
+                        rs.getInt("userId"),
+                        rs.getString("userName"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("roleType"),
+                        true
+                )
+        );
     }
 }

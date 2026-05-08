@@ -6,4 +6,5 @@ public interface IUserRepository {
     void createUser(User user);
     void updateUser(User user);
     void deleteUser(User user);
+    User findUserByEmail(String email);
 }
