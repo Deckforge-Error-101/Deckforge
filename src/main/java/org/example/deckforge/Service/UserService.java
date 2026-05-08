@@ -22,12 +22,11 @@ public class UserService {
         }
     }
 
-    public User login(User loginUser) {
-        User dbUser;
-        try {
-            dbUser = iUserRepository.findUserByEmail(loginUser.getEmail());
-        } catch (Exception e) {
+    public User login(User loginUser) throws Exception {
+        User dbUser = iUserRepository.findUserByEmail(loginUser.getEmail());
 
+        if (dbUser == null) {
+            throw new Exception("Forkert Email eller password");
         }
 
         if (!passwordService.matches(loginUser.getPassword(), dbUser.getPassword())) {
@@ -36,5 +35,28 @@ public class UserService {
 
         dbUser.setCurrentLogin(true);
         return dbUser;
+    }
+
+    public void updateUser(User user) throws Exception {
+        try {
+            String password = user.getPassword();
+            if (password != null && !password.startsWith("$2")) {
+                user.setPassword(passwordService.hash(password));
+            }
+            iUserRepository.updateUser(user);
+        } catch (Exception e){
+            throw new Exception ("Password er ikke sikret");
+        }
+    }
+
+    public void deleteUser(int userId) throws Exception {
+        if (userId < 0) {
+            throw new Exception ("User id kan ikke være negativ");
+        }
+        try {
+            iUserRepository.deleteUser(userId);
+        } catch (Exception e){
+            throw new Exception("Fejl ved sletning af user");
+        }
     }
 }

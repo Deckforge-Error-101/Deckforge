@@ -5,6 +5,6 @@ import org.example.deckforge.Domain.User;
 public interface IUserRepository {
     void createUser(User user);
     void updateUser(User user);
-    void deleteUser(User user);
+    void deleteUser(int userId);
     User findUserByEmail(String email);
 }

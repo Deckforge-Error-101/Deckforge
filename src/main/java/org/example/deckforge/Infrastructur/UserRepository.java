@@ -21,12 +21,21 @@ public class UserRepository implements IUserRepository {
 
     @Override
     public void updateUser(User user) {
+        String sql = "UPDATE users SET userName= ?, password= ?, email= ? WHERE userid= ?";
 
+        jdbcTemplate.update(sql,
+                user.getUserName(),
+                user.getPassword(),
+                user.getEmail(),
+                user.getUserId()
+                );
     }
 
     @Override
-    public void deleteUser(User user) {
+    public void deleteUser(int userId) {
+        String sql = "DELETE FROM users WHERE userid = ?";
 
+        jdbcTemplate.update(sql, userId);
     }
 
     @Override
