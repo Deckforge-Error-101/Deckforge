@@ -2,7 +2,7 @@ package org.example.deckforge.Domain;
 
 public class Event {
     private int eventId;
-    private String titel;
+    private String title;
     private String eventType;
     private int capacity;
 
@@ -11,7 +11,7 @@ public class Event {
 
     public Event(int eventId, String titel, String eventType, int capacity) {
         this.eventId = eventId;
-        this.titel = titel;
+        this.title = titel;
         this.eventType = eventType;
         this.capacity = capacity;
     }
@@ -26,13 +26,13 @@ public class Event {
         }
     }
 
-    public String getTitel() {
-        return titel;
+    public String getTitle() {
+        return title;
     }
 
-    public void setTitel(String titel) throws Exception {
-        if (titel != null) {
-            this.titel = titel;
+    public void setTitle(String title) throws Exception {
+        if (title != null) {
+            this.title = title;
         } throw new Exception("Event skal have en titel");
     }
 

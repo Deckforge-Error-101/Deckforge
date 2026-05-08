@@ -33,7 +33,7 @@ public class EventRegistration {
         return eventId;
     }
 
-    public void int setEventId(int eventId) {
+    public void setEventId(int eventId) {
         if (eventId > 0) {
             this.eventId = eventId;
         }
