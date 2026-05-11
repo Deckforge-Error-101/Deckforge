@@ -13,42 +13,18 @@ public class CollectionService {
         this.iCollectionRepository = iCollectionRepository;
     }
 
-    public void createCollection(Collection collection) {
-        if (collection == null) {
-            throw new RuntimeException("Collectionen kan ikke være null");
-        }
-        if (collection.getUserId() <= 0) {
-            throw new RuntimeException("Bruger ID skal være større end 0");
-        }
-        if (collection.getCardId() <= 0) {
-            throw new RuntimeException("Kort ID skal være større end 0");
-        }
-        if (collection.getTradeId() == null || collection.getTradeId().isEmpty()) {
-            throw new RuntimeException("Trade ID er påkrævet");
-        }
-
-        iCollectionRepository.createCollection(collection);
+    public void initializeEmptyCollection(int userId) {
+        iCollectionRepository.createCollection(userId);
     }
 
-    public void deleteCollection(Collection collection) {
-        if (collection == null || collection.getUserId() <= 0) {
-            throw new RuntimeException("Ugyldig bruger ID til sletning");
+    public void addCardToCollection(int userId, int cardId, String tradeId) {
+        if (userId <= 0 || cardId <= 0) {
+            throw new RuntimeException("Ugyldigt ID");
         }
-
-        iCollectionRepository.deleteCollection(collection);
+        iCollectionRepository.addCardToCollection(userId, cardId, tradeId);
     }
 
-    public void updateCollection(Collection collection) {
-        if (collection == null || collection.getCollectionId() <= 0) {
-            throw new RuntimeException("Ugyldig Collection ID til opdatering");
-        }
-        if (collection.getCardId() <= 0) {
-            throw new RuntimeException("Kort ID skal være større end 0");
-        }
-        if (collection.getTradeId() == null || collection.getTradeId().isEmpty()) {
-            throw new RuntimeException("Trade ID er påkrævet");
-        }
-
-        iCollectionRepository.updateCollection(collection);
+    public void removeCardFromCollection(int userId, int cardId) {
+        iCollectionRepository.deleteCardFromCollection(userId, cardId);
     }
 }

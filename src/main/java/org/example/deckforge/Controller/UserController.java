@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class UserController {
 
     private final UserService userService;
+    private final CollectionService collectionService;
 
-
-    public UserController(UserService userService) {
+    public UserController(UserService userService, CollectionService collectionService) {
         this.userService = userService;
+        this.collectionService = collectionService;
     }
 
     @GetMapping("/")
@@ -44,25 +45,19 @@ public class UserController {
             session.setAttribute("user", dbUser);
             return "redirect:/";
         } catch (Exception ex) {
-            ex.printStackTrace();
-            model.addAttribute("Login error", "Forkert email eller password");
+            model.addAttribute("loginError", "Forkert email eller password"); // Fixed variable name
             return "login";
         }
     }
 
     @PostMapping("/logout")
     public String logout(HttpSession session, Model model){
-        try {
-            session.invalidate();
-            return "redirect:/";
-        } catch (Exception ex){
-            model.addAttribute("error", ex.getMessage());
-            return "login";
-        }
+        session.invalidate();
+        return "redirect:/";
     }
 
     @GetMapping("/createUser")
-    public String createUser(Model model) {
+    public String showCreateUser(Model model) {
         model.addAttribute("user", new User());
         return "createUser";
     }
@@ -70,18 +65,12 @@ public class UserController {
     @PostMapping("/createUser")
     public String createUser(@ModelAttribute User user, Model model) {
         try {
-            userService.createUser(user);
-            return "redirect:/";
+            int newUserId = userService.createUser(user);
+            collectionService.initializeEmptyCollection(newUserId);
+            return "redirect:/login";
         } catch (Exception ex){
             model.addAttribute("error", ex.getMessage());
+            return "createUser";
         }
-        return "createUser";
     }
-
-    @PostMapping("homePage")
-    public String homePage(Model model){
-        return "homePage";
-    }
-
-
 }

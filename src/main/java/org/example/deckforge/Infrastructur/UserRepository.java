@@ -2,7 +2,12 @@ package org.example.deckforge.Infrastructur;
 
 import org.example.deckforge.Domain.User;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 
 @Repository
 public class UserRepository implements IUserRepository {
@@ -13,10 +18,19 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
-    public void createUser(User user) {
+    public int createUser(User user) {
         String sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
 
-        jdbcTemplate.update(sql, user.getUsername(), user.getEmail(), user.getPassword());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, user.getUsername());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getPassword());
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().intValue();
     }
 
     @Override

@@ -13,28 +13,20 @@ public class CollectionRepository implements ICollectionRepository {
     }
 
     @Override
-    public void createCollection(Collection collection) {
-        String sql = "insert into collections (userid, tradeid, cardid) values (?, ?, ?)";
-
-        jdbcTemplate.update(sql,
-                collection.getUserId(),
-                collection.getCardId(),
-                collection.getTradeId()
-        );
-
+    public void createCollection(int userId) {
+        String sql = "INSERT INTO collections (userid, tradeid, cardid) VALUES (?, NULL, NULL)";
+        jdbcTemplate.update(sql, userId);
     }
 
     @Override
-    public void deleteCollection(Collection collection) {
-        String sql ="DELETE FROM  collections WHERE userid=?";
-
-        jdbcTemplate.update(sql, collection.getUserId());
+    public void addCardToCollection(int userId, int cardId, String tradeId) {
+        String sql = "INSERT INTO collections (userid, cardid, tradeid) VALUES (?, ?, ?)";
+        jdbcTemplate.update(sql, userId, cardId, tradeId);
     }
 
     @Override
-    public void updateCollection(Collection collection) {
-        String sql = "UPDATE  collections SET tradeid=?, cardid=? WHERE collectionid=?";
-
-        jdbcTemplate.update(sql, collection.getTradeId(), collection.getCardId(), collection.getCollectionId());
+    public void deleteCardFromCollection(int userId, int cardId) {
+        String sql = "DELETE FROM collections WHERE userid = ? AND cardid = ?";
+        jdbcTemplate.update(sql, userId, cardId);
     }
 }
