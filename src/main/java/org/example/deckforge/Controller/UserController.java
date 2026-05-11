@@ -2,6 +2,7 @@ package org.example.deckforge.Controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.example.deckforge.Domain.User;
+import org.example.deckforge.Service.CollectionService;
 import org.example.deckforge.Service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

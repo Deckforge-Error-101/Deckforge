@@ -7,20 +7,31 @@ public class User {
     private String password;
     private String roleType;
     private boolean currentLogin;
+    private byte[] image;
 
    public User(){
    }
 
-   public User(int userId, String username, String email, String password, String roleType, boolean currentLogin) {
+   public User(int userId, String username, String email, String password, String roleType, boolean currentLogin, byte[] image) {
        this.userId = userId;
        this.username = username;
        this.email = email;
        this.password = password;
        this.roleType = roleType;
        this.currentLogin = currentLogin;
+       this.image = image;
    }
 
-   public int getUserId() {
+    public User(int userId, String username, String email, String password, String roleType, boolean currentLogin) {
+        this.userId = userId;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.roleType = roleType;
+        this.currentLogin = currentLogin;
+    }
+
+    public int getUserId() {
        return userId;
    }
 
@@ -75,5 +86,13 @@ public class User {
     }
     public void setCurrentLogin(boolean currentLogin){
         this.currentLogin = currentLogin;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
+    public byte[] getImage() {
+        return image;
     }
 }
