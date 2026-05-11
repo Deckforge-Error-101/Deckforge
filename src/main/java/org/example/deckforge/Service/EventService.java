@@ -28,7 +28,7 @@ public class EventService {
         return eventRepository.findById(eventId);
     }
 
-    public void registerToEvent(int eventId, int userId, int deckId) {
+    public void registerToEvent(int eventId, int userId) {
         Event event = eventRepository.findById(eventId);
 
         if (event == null) {
@@ -39,7 +39,6 @@ public class EventService {
         try {
         registration.setEventId(eventId);
         registration.setUserId(userId);
-        registration.setDeckId(deckId);
 
 
             registration.setRegistrationDate(LocalDateTime.now());

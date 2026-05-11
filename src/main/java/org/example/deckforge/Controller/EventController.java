@@ -47,8 +47,7 @@ public class EventController {
 
             eventService.registerToEvent(
                     eventId,
-                    user.getUserId(),
-                    deckId
+                    user.getUserId()
             );
 
             return "redirect:/events";
@@ -89,5 +88,22 @@ public class EventController {
 
             return "events";
         }
+    }
+    @GetMapping("/registrations")
+    public String myRegistrations(HttpSession session,
+                                  Model model) {
+
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute(
+                "registrations",
+                eventService.findRegistrationsByUserId(user.getUserId())
+        );
+
+        return "registration";
     }
 }

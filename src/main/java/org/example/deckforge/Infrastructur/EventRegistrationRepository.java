@@ -16,26 +16,25 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
 
     @Override
     public void createRegistration(EventRegistration registration) {
-        String sql = "INSERT INTO event_registrations (eventId, userId, deckId, registrationDate) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO EventRegistrations (eventId, userId, registrationDate) VALUES (?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
                 registration.getEventId(),
                 registration.getUserId(),
-                registration.getDeckId(),
                 registration.getRegistrationDate()
         );
     }
 
     @Override
     public void deleteRegistration(int registrationId) {
-        String sql = "DELETE FROM event_registrations WHERE registrationId = ?";
+        String sql = "DELETE FROM EventRegistrations WHERE registrationId = ?";
         jdbcTemplate.update(sql, registrationId);
     }
 
 
     @Override
     public EventRegistration findById(int registrationId) {
-        String sql = "SELECT * FROM event_registrations WHERE registrationId = ?";
+        String sql = "SELECT * FROM EventRegistrations WHERE registrationId = ?";
 
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
             EventRegistration registration = new EventRegistration();
@@ -43,7 +42,6 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
                 registration.setRegistationId(rs.getInt("registrationId"));
                 registration.setEventId(rs.getInt("eventId"));
                 registration.setUserId(rs.getInt("userId"));
-                registration.setDeckId(rs.getInt("deckId"));
                 registration.setRegistrationDate(rs.getTimestamp("registrationDate").toLocalDateTime());
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -54,7 +52,7 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
 
     @Override
     public List<EventRegistration> findAllRegistrations() {
-        String sql = "SELECT * FROM event_registrations";
+        String sql = "SELECT * FROM EventRegistrations";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             EventRegistration registration = new EventRegistration();
@@ -62,7 +60,6 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
                 registration.setRegistationId(rs.getInt("registrationId"));
                 registration.setEventId(rs.getInt("eventId"));
                 registration.setUserId(rs.getInt("userId"));
-                registration.setDeckId(rs.getInt("deckId"));
                 registration.setRegistrationDate(rs.getTimestamp("registrationDate").toLocalDateTime());
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -72,7 +69,7 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
     }
     @Override
     public List<EventRegistration> findAllByUserId(int userId) {
-        String sql = "SELECT * FROM event_registrations WHERE userId = ?";
+        String sql = "SELECT * FROM EventRegistrations WHERE userId = ?";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             EventRegistration registration = new EventRegistration();
@@ -80,7 +77,6 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
             registration.setRegistationId(rs.getInt("registrationId"));
             registration.setEventId(rs.getInt("eventId"));
             registration.setUserId(rs.getInt("userId"));
-            registration.setDeckId(rs.getInt("deckId"));
             registration.setRegistrationDate(rs.getTimestamp("registrationDate").toLocalDateTime());
             } catch (Exception e) {
                 throw new RuntimeException(e);

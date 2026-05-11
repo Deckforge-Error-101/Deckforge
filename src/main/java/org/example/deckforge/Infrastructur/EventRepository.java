@@ -17,7 +17,7 @@ public class EventRepository implements IEventRepository {
 
     @Override
     public void createEvent(Event event) {
-        String sql = "INSERT INTO events (title, eventType, capacity) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Events (title, eventType, capacity) VALUES (?, ?, ?)";
 
         jdbcTemplate.update(sql,
                 event.getTitle(),
@@ -28,7 +28,7 @@ public class EventRepository implements IEventRepository {
 
     @Override
     public void deleteEvent(int eventId) {
-        String sql = "DELETE FROM events WHERE eventId = ?";
+        String sql = "DELETE FROM Events WHERE eventId = ?";
         jdbcTemplate.update(sql, eventId);
     }
 
@@ -39,7 +39,7 @@ public class EventRepository implements IEventRepository {
 
     @Override
     public List<Event> findAllEvents() {
-        String sql = "SELECT * FROM events";
+        String sql = "SELECT * FROM Events";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Event event = new Event();
@@ -57,7 +57,7 @@ public class EventRepository implements IEventRepository {
 
     @Override
     public Event findById(int eventId) {
-        String sql = "SELECT * FROM events WHERE eventId = ?";
+        String sql = "SELECT * FROM Events WHERE eventId = ?";
 
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
             Event event = new Event();

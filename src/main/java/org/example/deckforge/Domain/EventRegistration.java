@@ -3,7 +3,7 @@ package org.example.deckforge.Domain;
 import java.time.LocalDateTime;
 
 public class EventRegistration {
-    private int registationId;
+    private int registrationId;
     private int eventId;
     private int userId;
     private int deckId;
@@ -12,7 +12,7 @@ public class EventRegistration {
     public EventRegistration() {
     }
     public EventRegistration(int registationId, int eventId, int userId, int deckId, LocalDateTime registrationDate) {
-        this.registationId = registationId;
+        this.registrationId = registationId;
         this.eventId = eventId;
         this.userId = userId;
         this.deckId = deckId;
@@ -20,12 +20,12 @@ public class EventRegistration {
     }
 
     public int getRegistationId() {
-        return registationId;
+        return registrationId;
     }
 
     public void setRegistationId(int registationId) throws Exception {
         if (registationId > 0) {
-            this.registationId = registationId;
+            this.registrationId = registationId;
         } else {
             throw new Exception ("Fejl ved event");
         }
