@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mine Tilmedlinger</title>
+</head>
+<body>
+<div class="container">
+
+    <h1>My Event Registrations</h1>
+
+    <p th:if="${errorMessage}" th:text="${errorMessage}" class="error"></p>
+
+    <div th:if="${#lists.isEmpty(registrations)}">
+        <p>You are not registered for any events.</p>
+    </div>
+
+    <div th:each="registration : ${registrations}" class="card">
+
+        <h2>
+            Registration #
+            <span th:text="${registration.registrationId}"></span>
+        </h2>
+
+        <p>
+            <strong>Event ID:</strong>
+            <span th:text="${registration.eventId}"></span>
+        </p>
+
+        <p>
+            <strong>Deck ID:</strong>
+            <span th:text="${registration.deckId}"></span>
+        </p>
+
+        <p>
+            <strong>Registration Date:</strong>
+            <span th:text="${registration.registrationDate}"></span>
+        </p>
+
+        <form th:action="@{/unregisterEvent}" method="post">
+
+            <input type="hidden"
+                   name="registrationId"
+                   th:value="${registration.registrationId}">
+
+            <button type="submit">
+                Unregister
+            </button>
+
+        </form>
+
+    </div>
+
+    <br>
+
+    <a th:href="@{/}">Back to home page</a>
+</div>
+
+</body>
+</html>
