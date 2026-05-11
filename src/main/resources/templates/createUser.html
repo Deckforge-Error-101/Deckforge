@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Opret bruger – Deckforge</title>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Opret bruger</h2>
+
+    <form th:action="@{/createUser}" th:object="${user}" method="post">
+
+        <label>Navn</label>
+        <input type="text" th:field="*{username}" required>
+
+        <label>Email</label>
+        <input type="email" th:field="*{email}" required>
+
+        <label>Password</label>
+        <input type="password" th:field="*{password}" required>
+
+        <button type="submit">Opret konto</button>
+
+        <div th:if="${error}" class="error" th:text="${error}"></div>
+    </form>
+
+    <div class="links">
+        <p>
+            Har du allerede en konto?
+            <a href="/login">Log ind</a>
+        </p>
+        <p>
+            <a href="/">Tilbage til forsiden</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

@@ -14,17 +14,17 @@ public class UserService {
         this.passwordService = passwordService;
     }
 
-    public void createUser(User user) {
+    public void createUser(User user) throws Exception {
         try {
             user.setPassword(passwordService.hash(user.getPassword()));
             iUserRepository.createUser(user);
-        } catch (Exception e) {
+        } catch (Exception ex){
+            throw new Exception("Fejl ved oprettelse af bruger");
         }
     }
 
     public User login(User loginUser) throws Exception {
-        User dbUser = iUserRepository.findUserByEmail(loginUser.getEmail());
-
+        User dbUser = iUserRepository.loginUserByEmail(loginUser.getEmail());
         if (dbUser == null) {
             throw new Exception("Forkert Email eller password");
         }

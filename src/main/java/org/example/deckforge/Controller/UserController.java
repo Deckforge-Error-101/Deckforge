@@ -19,21 +19,14 @@ public class UserController {
         this.userService = userService;
     }
 
-    /*
     @GetMapping("/")
     public String index(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("member");
+        User user = (User) session.getAttribute("user");
 
         if (user != null && user.isCurrentLogin()) {
             model.addAttribute("user", user);
-            return "homePageLoginTrue";
+            return "homePage";
         }
-        return "index";
-    }
-     */
-
-    @GetMapping("/")
-    public String index(Model model, HttpSession session) {
         return "index";
     }
 
@@ -49,9 +42,45 @@ public class UserController {
             User dbUser = userService.login(loginForm);
             session.setAttribute("user", dbUser);
             return "redirect:/";
-        } catch {
-
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            model.addAttribute("Login error", "Forkert email eller password");
+            return "login";
         }
     }
+
+    @PostMapping("/logout")
+    public String logout(HttpSession session, Model model){
+        try {
+            session.invalidate();
+            return "redirect:/";
+        } catch (Exception ex){
+            model.addAttribute("error", ex.getMessage());
+            return "login";
+        }
+    }
+
+    @GetMapping("/createUser")
+    public String createUser(Model model) {
+        model.addAttribute("user", new User());
+        return "createUser";
+    }
+
+    @PostMapping("/createUser")
+    public String createUser(@ModelAttribute User user, Model model) {
+        try {
+            userService.createUser(user);
+            return "redirect:/";
+        } catch (Exception ex){
+            model.addAttribute("error", ex.getMessage());
+        }
+        return "createUser";
+    }
+
+    @PostMapping("homePage")
+    public String homePage(Model model){
+        return "homePage";
+    }
+
 
 }

@@ -9,19 +9,30 @@
 <div class="container">
     <h2>Log ind</h2>
 
-    <form th:action="@{/login}" method="post" th:object="${loginForm}" th:field="*{email}" required>
+    <form th:action="@{/login}" method="post" th:object="${loginForm}" >
 
-        <label>Email</label>
-        <input type="email" th:field="*{email}">
+        <label>Email </label>
+        <input type=email th:field="*{email}" required>
 
         <label>Password</label>
         <input type="password" th:field="*{password}" required>
 
-        <button type="submit">Log in</button>
+        <button type="submit">Login</button>
 
-        <div th:if="${error}" class="error" th:text="${error}"></div>
+        <div th:if="${loginError}" class="error" th:text="${loginError}"></div>
     </form>
+
+    <div class="links">
+        <p>
+            Har du ikke en konto?
+            <a href="/createUser">Opret bruger</a>
+        </p>
+        <p>
+            <a href="/">Tilbage til forsiden</a>
+        </p>
+    </div>
 </div>
+
 
 </body>
 </html>

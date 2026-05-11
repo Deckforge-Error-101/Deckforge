@@ -34,7 +34,7 @@ public class Deck {
     public void setDeckName(String deckName) throws Exception {
         if (deckName != null) {
             this.deckName = deckName;
-        } throw new Exception("Decket skal have et navn");
+        } else{ throw new Exception("Decket skal have et navn");}
     }
 
     public String getFormatType() {
@@ -44,7 +44,7 @@ public class Deck {
     public void setFormatType(String formatType) throws Exception {
         if (formatType != null) {
             this.formatType = formatType;
-        } throw new Exception("Decket skal have et format");
+        } else {throw new Exception("Decket skal have et format");}
     }
 
     public int getSlots() {
@@ -54,7 +54,7 @@ public class Deck {
     public void setSlots(int slots) throws Exception {
         if (slots > 0) {
             this.slots = slots;
-        } throw new Exception("Decket skal have et antal slots");
+        } else {throw new Exception("Decket skal have et antal slots");}
     }
 
     public int getUserId() {

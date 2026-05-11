@@ -1,15 +1,15 @@
 INSERT INTO Users (username, email, password, roleType)
-VALUES ('AdminTobias', 'admin@deckforge.dk', 'hash_1234', 'ADMIN'),
-       ('SpillerMads', 'mads@mail.dk', 'hash_5678', 'USER'),
-       ('ManagerMette', 'mette@butik.dk', 'hash_9999', 'MANAGER');
+VALUES ('AdminTobias', 'admin@deckforge.dk', '$2a$12$av3SBnMxt.qoEhD1f.z/gu6bNzwoRP5KymtYZpmtg8bChrk5E/rom', 'ADMIN'),
+       ('SpillerMads', 'mads@mail.dk', '$2a$12$sRyLLlWXjFRtb6CEzGiTI./DMc5EnlECPEpkeYQuIdr4ERrcSyBNa', 'USER'),
+       ('ManagerMette', 'mette@butik.dk', '$2a$12$79vLYAR6xejXIJn/O96b6.KGqdWJEumdBwUkXHV4wRbC5SdbE.b4C', 'MANAGER');
 
 INSERT INTO Cards (cardName, typeId, rarity)
-VALUES ('Black Lotus', 'ARTIFACT', 'LEGENDARY'),
+VALUES ('Black Lotus', 'ARTIFACT', 'MYTHIC'),
        ('Pikachu', 'CREATURE', 'UNCOMMON'),
        ('Island', 'LAND', 'COMMON'),
        ('Fireball', 'SORCERY', 'UNCOMMON'),
        ('Counterspell', 'INSTANT', 'RARE'),
-       ('Jace, the Mind Sculptor', 'PLANEWALKER', 'LEGENDARY');
+       ('Jace, the Mind Sculptor', 'PLANESWALKER', 'MYTHIC');
 
 INSERT INTO Events (title, eventType, capacity, statusType)
 VALUES ('Fredags Magic', 'CASUAL_EVENT', 16, 'OPEN'),

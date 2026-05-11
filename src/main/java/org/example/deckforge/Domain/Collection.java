@@ -21,9 +21,11 @@ public class Collection {
         return collectionId;
     }
 
-    public void setCollectionId(int collectionId) {
+    public void setCollectionId(int collectionId) throws Exception {
         if (collectionId > 0) {
             this.collectionId = collectionId;
+        } else {
+            throw new Exception("Fejl ved collection");
         }
     }
 
@@ -31,9 +33,11 @@ public class Collection {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(int userId) throws Exception {
         if (userId > 0) {
             this.userId = userId;
+        } else {
+            throw new Exception("Fejl ved collection");
         }
     }
 
@@ -44,16 +48,20 @@ public class Collection {
     public void setTradeId(String tradeId) throws Exception {
         if (tradeId != null) {
             this.tradeId = tradeId;
-        } throw new Exception("Der skal være en trade id");
+        } else{
+            throw new Exception("Der skal være en trade id");
+        }
     }
 
     public int getCardId() {
         return cardId;
     }
 
-    public void setCardId(int cardId) {
+    public void setCardId(int cardId) throws Exception {
         if (cardId > 0) {
             this.cardId = cardId;
+        } else {
+            throw new Exception("Fejl ved Collection");
         }
     }
 

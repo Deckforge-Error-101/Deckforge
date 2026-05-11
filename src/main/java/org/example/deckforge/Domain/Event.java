@@ -33,7 +33,9 @@ public class Event {
     public void setTitle(String title) throws Exception {
         if (title != null) {
             this.title = title;
-        } throw new Exception("Event skal have en titel");
+
+        } else {
+            throw new Exception("Event skal have en titel");}
     }
 
     public String getEventType() {
@@ -43,7 +45,7 @@ public class Event {
     public void setEventType(String eventType) throws Exception {
         if (eventType != null) {
             this.eventType = eventType;
-        } throw new Exception("Event skal have en type");
+        } else{ throw new Exception("Event skal have en type");}
     }
 
     public int getCapacity() {
@@ -53,6 +55,6 @@ public class Event {
     public void setCapacity(int capacity) throws Exception {
         if (capacity > 0) {
             this.capacity = capacity;
-        } throw new Exception("Event skal have en max capacitet");
+        } else{ throw new Exception("Event skal have en max capacitet");}
     }
 }

@@ -42,18 +42,18 @@ public class Card {
     public void setCardName(String cardName) throws Exception {
         if (cardName != null) {
             this.cardName = cardName;
-        } throw new Exception("Kortet skal have et navn");
+        } else {throw new Exception("Kortet skal have et navn");}
     }
 
     public void setCardType(String cardType) throws Exception {
         if (cardType != null) {
             this.cardType = cardType;
-        } throw new Exception("Kortet skal have en type");
+        } else {throw new Exception("Kortet skal have en type");}
     }
 
     public void setCardRarity(String cardRarity) throws Exception {
         if (cardRarity != null) {
             this.cardRarity = cardRarity;
-        } throw new Exception("Kortet skal have en rarity");
+        } else{ throw new Exception("Kortet skal have en rarity");}
     }
 }

@@ -4,5 +4,5 @@ public enum RarityType {
     COMMON,
     UNCOMMON,
     RARE,
-    LEGENDARY
+    MYTHIC
 }

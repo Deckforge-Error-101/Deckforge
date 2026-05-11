@@ -16,15 +16,15 @@ public class UserRepository implements IUserRepository {
     public void createUser(User user) {
         String sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
 
-        jdbcTemplate.update(sql, user.getUserName(), user.getEmail(), user.getPassword());
+        jdbcTemplate.update(sql, user.getUsername(), user.getEmail(), user.getPassword());
     }
 
     @Override
     public void updateUser(User user) {
-        String sql = "UPDATE users SET userName= ?, password= ?, email= ? WHERE userid= ?";
+        String sql = "UPDATE users SET username= ?, password= ?, email= ? WHERE userId= ?";
 
         jdbcTemplate.update(sql,
-                user.getUserName(),
+                user.getUsername(),
                 user.getPassword(),
                 user.getEmail(),
                 user.getUserId()
@@ -33,21 +33,23 @@ public class UserRepository implements IUserRepository {
 
     @Override
     public void deleteUser(int userId) {
-        String sql = "DELETE FROM users WHERE userid = ?";
+        String sql = "DELETE FROM users WHERE userId = ?";
 
         jdbcTemplate.update(sql, userId);
     }
 
     @Override
-    public User findUserByEmail(String email) {
-        String sql = "SELECT userId, userName, email, password, roleType " +
-                "FROM users " +
-                "WHERE email = ?";
+    public User loginUserByEmail(String email) {
+        String sql = """
+                SELECT userId, username, email, password, roleType
+                FROM users
+                WHERE email = ?
+                """;
 
         return jdbcTemplate.queryForObject(sql, new Object[]{email}, (rs, rowNum) ->
                 new User(
                         rs.getInt("userId"),
-                        rs.getString("userName"),
+                        rs.getString("username"),
                         rs.getString("email"),
                         rs.getString("password"),
                         rs.getString("roleType"),

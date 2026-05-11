@@ -17,12 +17,19 @@ public class EventRepository implements IEventRepository {
 
     @Override
     public void createEvent(Event event) {
+        String sql = "INSERT INTO events (title, eventType, capacity) VALUES (?, ?, ?)";
 
+        jdbcTemplate.update(sql,
+                event.getTitle(),
+                event.getEventType(),
+                event.getCapacity()
+        );
     }
 
     @Override
     public void deleteEvent(int eventId) {
-
+        String sql = "DELETE FROM events WHERE eventId = ?";
+        jdbcTemplate.update(sql, eventId);
     }
 
     @Override
@@ -32,11 +39,37 @@ public class EventRepository implements IEventRepository {
 
     @Override
     public List<Event> findAllEvents() {
-        return List.of();
+        String sql = "SELECT * FROM events";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Event event = new Event();
+            event.setEventId(rs.getInt("eventId"));
+            try {
+                event.setTitle(rs.getString("title"));
+                event.setEventType(rs.getString("eventType"));
+                event.setCapacity(rs.getInt("capacity"));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            return event;
+        });
     }
 
     @Override
     public Event findById(int eventId) {
-        return null;
+        String sql = "SELECT * FROM events WHERE eventId = ?";
+
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
+            Event event = new Event();
+            event.setEventId(rs.getInt("eventId"));
+            try{
+            event.setTitle(rs.getString("title"));
+            event.setEventType(rs.getString("eventType"));
+            event.setCapacity(rs.getInt("capacity"));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            return event;
+        }, eventId);
     }
 }

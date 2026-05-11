@@ -2,7 +2,7 @@ package org.example.deckforge.Domain;
 
 public class User {
     private int userId;
-    private String userName;
+    private String username;
     private String email;
     private String password;
     private String roleType;
@@ -11,9 +11,9 @@ public class User {
    public User(){
    }
 
-   public User(int userId, String userName, String email, String password, String roleType, boolean currentLogin) {
+   public User(int userId, String username, String email, String password, String roleType, boolean currentLogin) {
        this.userId = userId;
-       this.userName = userName;
+       this.username = username;
        this.email = email;
        this.password = password;
        this.roleType = roleType;
@@ -29,37 +29,45 @@ public class User {
          this.userId = userId;
       }
     }
-    public String getUserName() {
-       return userName;
+
+    public String getUsername() {
+       return username;
     }
-    public void setUserName(String userName) throws Exception {
-      if (userName != null) {
-         this.userName = userName;
-      } throw new Exception("Bruger skal have et navn");
+
+    public void setUsername(String username) throws Exception {
+      if (username != null) {
+         this.username = username;
+      } else {
+          throw new Exception("Bruger skal have et navn");
+      }
     }
+
     public String getEmail() {
        return email;
     }
+
     public void setEmail(String email) throws Exception {
       if (email != null) {
          this.email = email;
-      } throw new Exception("Der skal være en mail");
+      }else {throw new Exception("Der skal være en mail");}
     }
     public  String getPassword() {
        return password;
     }
-    public void setPassword(String password) throws Exception {
-      if (password != null) {
-         this.password = password;
-      } throw new Exception("Der skal være et password");
+
+    public void setPassword(String password){
+       this.password = password;
     }
+
     public String getRoleType() {
        return roleType;
     }
     public void setRoleType(String roleType) throws Exception {
       if (roleType != null) {
          this.roleType = roleType;
-      } throw new Exception("Brugeren skal have en rolle");
+      } else {
+          throw new Exception("Brugeren skal have en rolle");
+      }
     }
 
     public boolean isCurrentLogin(){

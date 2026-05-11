@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Deckforge - Profil</title>
+</head>
+<body>
+
+<header>
+    <div class="profile-header">
+        <div class="profile-pic">
+            <img src="placeholder-profile.png" alt="Profil billede" width="100">
+        </div>
+
+        <div class="profile-info">
+            <h1>Navn: <span id="username">xx</span></h1>
+            <p>Sidst online: <span id="last-online">10/05-2026</span></p>
+        </div>
+    </div>
+
+    <nav>
+        <ul>
+            <li><a href="#">Profil</a></li>
+            <li><a href="#">Decks / Cards</a></li>
+            <li><a href="#">Events</a></li>
+        </ul>
+    </nav>
+</header>
+
+<hr>
+
+<main style="display: flex;">
+
+    <aside style="flex: 1;">
+        <section class="rights">
+            <h3>Rettigheder</h3>
+            <p id="user-role">USER</p> </section>
+
+        <section class="stats">
+            <table border="1">
+                <thead>
+                <tr>
+                    <th colspan="2">Stats</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Rank</td>
+                    <td>#1</td>
+                </tr>
+                <tr>
+                    <td>Winrate</td>
+                    <td>65%</td>
+                </tr>
+                <tr>
+                    <td>Total Match</td>
+                    <td>120</td>
+                </tr>
+                <tr>
+                    <td>Wins</td>
+                    <td>78</td>
+                </tr>
+                <tr>
+                    <td>Style</td>
+                    <td>Aggro</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </aside>
+
+    <section class="active-decks" style="flex: 2;">
+        <table border="1">
+            <thead>
+            <tr>
+                <th colspan="2">Aktive Decks</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>1</td>
+                <td>Navn på Deck</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Navn på Deck</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Navn på Deck</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Navn på Deck</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Navn på Deck</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="match-history" style="flex: 1;">
+        <table border="1">
+            <thead>
+            <tr>
+                <th>Match History</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><td>Win vs. Mads</td></tr>
+            <tr><td>Loss vs. Admin</td></tr>
+            <tr><td>Win vs. Mette</td></tr>
+            <tr><td>Win vs. Patrick</td></tr>
+            <tr><td>Win vs. Mohammad</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+</main>
+
+<footer>
+    <div class="footer-images">
+        <p>[Billede]</p>
+    </div>
+</footer>
+
+</body>
+</html>

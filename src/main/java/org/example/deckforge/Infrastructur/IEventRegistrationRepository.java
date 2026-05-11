@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface IEventRegistrationRepository {
     void createRegistration(EventRegistration Registration);
+    void deleteRegistration(int registrationId);
     EventRegistration findById(int registrationId);
     List<EventRegistration> findAllRegistrations();
+    List<EventRegistration> findAllByUserId(int userId);
 }
