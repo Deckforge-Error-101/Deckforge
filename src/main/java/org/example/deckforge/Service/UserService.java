@@ -4,6 +4,8 @@ import org.example.deckforge.Domain.User;
 import org.example.deckforge.Infrastructur.IUserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class UserService {
     private final IUserRepository iUserRepository;
@@ -34,6 +36,7 @@ public class UserService {
         }
 
         dbUser.setCurrentLogin(true);
+        dbUser.setLastOnline(LocalDateTime.now());
         return dbUser;
     }
 

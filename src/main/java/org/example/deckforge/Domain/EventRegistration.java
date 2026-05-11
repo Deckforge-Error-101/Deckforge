@@ -11,19 +11,19 @@ public class EventRegistration {
 
     public EventRegistration() {
     }
-    public EventRegistration(int registationId, int eventId, int userId, int deckId, LocalDateTime registrationDate) {
-        this.registrationId = registationId;
+    public EventRegistration(int registrationId, int eventId, int userId, int deckId, LocalDateTime registrationDate) {
+        this.registrationId = registrationId;
         this.eventId = eventId;
         this.userId = userId;
         this.deckId = deckId;
         this.registrationDate = registrationDate;
     }
 
-    public int getRegistationId() {
+    public int getRegistrationId() {
         return registrationId;
     }
 
-    public void setRegistationId(int registationId) throws Exception {
+    public void setRegistrationId(int registationId) throws Exception {
         if (registationId > 0) {
             this.registrationId = registationId;
         } else {

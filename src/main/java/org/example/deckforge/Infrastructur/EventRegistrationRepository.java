@@ -16,7 +16,7 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
 
     @Override
     public void createRegistration(EventRegistration registration) {
-        String sql = "INSERT INTO EventRegistrations (eventId, userId, registrationDate) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO EventRegistrations (eventId, userId, registrationDate) VALUES (?, ?, ?)";
 
         jdbcTemplate.update(sql,
                 registration.getEventId(),
@@ -39,7 +39,7 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
             EventRegistration registration = new EventRegistration();
             try {
-                registration.setRegistationId(rs.getInt("registrationId"));
+                registration.setRegistrationId(rs.getInt("registrationId"));
                 registration.setEventId(rs.getInt("eventId"));
                 registration.setUserId(rs.getInt("userId"));
                 registration.setRegistrationDate(rs.getTimestamp("registrationDate").toLocalDateTime());
@@ -57,7 +57,7 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             EventRegistration registration = new EventRegistration();
             try {
-                registration.setRegistationId(rs.getInt("registrationId"));
+                registration.setRegistrationId(rs.getInt("registrationId"));
                 registration.setEventId(rs.getInt("eventId"));
                 registration.setUserId(rs.getInt("userId"));
                 registration.setRegistrationDate(rs.getTimestamp("registrationDate").toLocalDateTime());
@@ -74,7 +74,7 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             EventRegistration registration = new EventRegistration();
             try{
-            registration.setRegistationId(rs.getInt("registrationId"));
+            registration.setRegistrationId(rs.getInt("registrationId"));
             registration.setEventId(rs.getInt("eventId"));
             registration.setUserId(rs.getInt("userId"));
             registration.setRegistrationDate(rs.getTimestamp("registrationDate").toLocalDateTime());

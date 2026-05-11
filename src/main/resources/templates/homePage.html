@@ -21,8 +21,8 @@
         </div>
 
         <div class="profile-info">
-            <h1>Navn: <span id="username">xx</span></h1>
-            <p>Sidst online: <span id="last-online">10/05-2026</span></p>
+            <h1>Navn: <span th:text="${session.user.getUsername}">xx</span></h1>
+            <p>Sidst online: <span th:text="${#temporals.format(session.user.lastOnline, 'dd/MM-yyyy HH:mm')}">10/05-2026</span></p>
         </div>
     </div>
 
@@ -31,6 +31,7 @@
             <li><a href="#">Profil</a></li>
             <li><a href="#">Decks / Cards</a></li>
             <li><a href="/events">Events</a></li>
+            <li><a href="/registrations">Tilmeldinger</a></li>
         </ul>
     </nav>
 </header>

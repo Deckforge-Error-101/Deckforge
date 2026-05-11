@@ -1,5 +1,7 @@
 package org.example.deckforge.Domain;
 
+import java.time.LocalDateTime;
+
 public class User {
     private int userId;
     private String username;
@@ -8,11 +10,12 @@ public class User {
     private String roleType;
     private boolean currentLogin;
     private byte[] image;
+    private LocalDateTime lastOnline;
 
    public User(){
    }
 
-   public User(int userId, String username, String email, String password, String roleType, boolean currentLogin, byte[] image) {
+   public User(int userId, String username, String email, String password, String roleType, boolean currentLogin, byte[] image, LocalDateTime lastOnline) {
        this.userId = userId;
        this.username = username;
        this.email = email;
@@ -20,6 +23,7 @@ public class User {
        this.roleType = roleType;
        this.currentLogin = currentLogin;
        this.image = image;
+       this.lastOnline = lastOnline;
    }
 
     public User(int userId, String username, String email, String password, String roleType, boolean currentLogin) {
@@ -94,5 +98,11 @@ public class User {
 
     public byte[] getImage() {
         return image;
+    }
+    public LocalDateTime getLastOnline() {
+       return lastOnline;
+    }
+    public void setLastOnline(LocalDateTime lastOnline) {
+       this.lastOnline = lastOnline;
     }
 }

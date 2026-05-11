@@ -33,7 +33,6 @@ public class EventController {
 
     @PostMapping("/registerEvent")
     public String registerEvent(@RequestParam int eventId,
-                                @RequestParam int deckId,
                                 HttpSession session,
                                 Model model) {
 
@@ -50,7 +49,7 @@ public class EventController {
                     user.getUserId()
             );
 
-            return "redirect:/events";
+            return "redirect:/registrations";
 
         } catch (RuntimeException e) {
 
@@ -79,7 +78,7 @@ public class EventController {
                     user.getUserId()
             );
 
-            return "redirect:/events";
+            return "redirect:/registrations";
 
         } catch (RuntimeException e) {
 
