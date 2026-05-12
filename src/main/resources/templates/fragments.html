@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<header th:fragment="header">
+    <div class="profile-header">
+        <div class="profile-pic">
+            <img th:if="${session.user != null && session.user.image != null}"
+                 th:src="'data:image/jpeg;base64,' + ${T(java.util.Base64).getEncoder().encodeToString(session.user.image)}"
+                 width="100"/>
+
+            <img th:unless="${session.user != null && session.user.image != null}"
+                 th:src="@{/images/profile1.png}"
+                 width="100"
+                 alt="Standard profilbillede"/>
+        </div>
+
+        <div class="profile-info">
+            <h1>Navn: <span th:text="${session.user.username}">xx</span></h1>
+            <p>Sidst online: <span th:text="${#temporals.format(session.user.lastOnline, 'dd/MM-yyyy HH:mm')}">10/05-2026</span></p>
+        </div>
+    </div>
+
+    <nav>
+        <ul>
+            <li><a href="/">Profil</a></li>
+            <li><a href="/collection">Collection</a></li>
+            <li><a href="/events">Events</a></li>
+            <li><a href="/registrations">Tilmeldinger</a></li>
+        </ul>
+    </nav>
+</header>
+
+</body>
+</html>

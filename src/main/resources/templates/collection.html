@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Your collection</title>
+    <link rel="stylesheet" th:href="@{/universal.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments :: header}"></div>
+
+<div class="container">
+    <h2>Min Samling</h2>
+
+    <div class="add-form">
+        <form th:action="@{/collection/add}" method="post">
+            <label for="cardSelect">Tilføj kort til samling:</label>
+            <select name="cardId" id="cardSelect" required>
+                <option value="" disabled selected>-- Vælg et kort --</option>
+                <option th:each="card : ${allCards}"
+                        th:value="${card.cardId}"
+                        th:text="${card.cardName} + ' (' + ${card.cardRarity} + ')'">
+                </option>
+            </select>
+            <button type="submit">Tilføj</button>
+        </form>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Kort Navn</th>
+            <th>Type</th>
+            <th>Sjældenhed (Rarity)</th>
+            <th>Antal</th>
+            <th>Handling</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr th:if="${#lists.isEmpty(userCollection)}">
+            <td colspan="5" class="empty">Din samling er tom. Tilføj et kort ovenfor!</td>
+        </tr>
+
+        <tr th:each="card : ${userCollection}">
+            <td th:text="${card.cardName}">Kort Navn</td>
+            <td th:text="${card.cardType}">Type</td>
+            <td th:text="${card.cardRarity}">Rarity</td>
+            <td th:text="${card.quantity}">1</td>
+            <td>
+                <form class="action-form" th:action="@{/collection/remove}" method="post">
+                    <input type="hidden" name="cardId" th:value="${card.cardId}">
+                    <button type="submit" class="btn-remove">Fjern</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

@@ -42,17 +42,19 @@ CREATE TABLE Cards(
     rarity ENUM('RARE', 'UNCOMMON', 'COMMON', 'MYTHIC')
 );
 
-CREATE TABLE Collections(
-    collectionId INT AUTO_INCREMENT PRIMARY KEY,
-    userId INT,
-    FOREIGN KEY(userId)
-                    REFERENCES Users(userId)
-                     ON DELETE CASCADE,
-    tradeId VARCHAR(50),
-    cardId INT,
-    FOREIGN KEY (cardId)
-                        REFERENCES Cards(cardId)
-                        ON DELETE CASCADE
+CREATE TABLE collections (
+                             collectionId INT AUTO_INCREMENT PRIMARY KEY,
+                             userId INT,
+                             FOREIGN KEY(userId)
+                                 REFERENCES users(userId)
+                                 ON DELETE CASCADE,
+                             tradeId VARCHAR(50),
+                             cardId INT,
+                             FOREIGN KEY (cardId)
+                                 REFERENCES cards(cardId)
+                                 ON DELETE CASCADE,
+                             quantity INT DEFAULT 1,
+                             CONSTRAINT uniqueUserCard UNIQUE (userId, cardId)
 );
 
 CREATE TABLE EventRegistrations (

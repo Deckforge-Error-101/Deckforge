@@ -1,8 +1,11 @@
 package org.example.deckforge.Service;
 
+import org.example.deckforge.Domain.Card;
 import org.example.deckforge.Domain.Collection;
 import org.example.deckforge.Infrastructur.ICollectionRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CollectionService {
@@ -26,5 +29,9 @@ public class CollectionService {
 
     public void removeCardFromCollection(int userId, int cardId) {
         iCollectionRepository.deleteCardFromCollection(userId, cardId);
+    }
+
+    public List<Card> getUserCollection(int userId) {
+        return iCollectionRepository.findUserCollection(userId);
     }
 }

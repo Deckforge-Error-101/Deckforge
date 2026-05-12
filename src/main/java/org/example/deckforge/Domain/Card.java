@@ -5,6 +5,7 @@ public class Card {
     private String cardName;
     private String cardType;
     private String cardRarity;
+    private String quantity;
 
     public Card(){
 
@@ -15,6 +16,14 @@ public class Card {
         this.cardName = cardName;
         this.cardType = cardType;
         this.cardRarity = cardRarity;
+    }
+
+    public Card(int cardId, String cardName, String cardType, String cardRarity, String quantity) {
+        this.cardId = cardId;
+        this.cardName = cardName;
+        this.cardType = cardType;
+        this.cardRarity = cardRarity;
+        this.quantity = quantity;
     }
 
     public int getCardId() {
@@ -31,6 +40,10 @@ public class Card {
 
     public String getCardRarity() {
         return cardRarity;
+    }
+
+    public String getQuantity() {
+        return quantity;
     }
 
     public void setCardId(int cardId) {
