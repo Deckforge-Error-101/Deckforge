@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Mine Tilmedlinger</title>
+    <meta charset="UTF-8">
+    <title>Mine Tilmeldinger</title>
     <link rel="stylesheet" th:href="@{/universal.css}">
 </head>
 <body>
@@ -11,20 +11,20 @@
 
 <div class="container">
 
-    <h1>My Event Registrations</h1>
+    <h1>Mine event tilmeldinger</h1>
 
-    <p th:if="${errorMessage}" th:text="${errorMessage}" class="error"></p>
+    <p th:if="${errorMessage}"
+       th:text="${errorMessage}"
+       class="error"></p>
 
     <div th:if="${#lists.isEmpty(registrations)}">
-        <p>You are not registered for any events.</p>
+        <p>Du er ikke tilmeldt nogen events.</p>
     </div>
 
-    <div th:each="registration : ${registrations}" class="card">
+    <div th:each="registration : ${registrations}"
+         class="card">
 
-        <h2>
-            Registration #
-            <span th:text="${registration.registrationId}"></span>
-        </h2>
+        <h2>Event Registration</span></h2>
 
         <p>
             <strong>Event ID:</strong>
@@ -33,7 +33,14 @@
 
         <p>
             <strong>Deck ID:</strong>
-            <span th:text="${registration.deckId}"></span>
+
+            <span th:if="${registration.deckId != 0}"
+                  th:text="${registration.deckId}">
+            </span>
+
+            <span th:if="${registration.deckId == 0}">
+                No deck selected
+            </span>
         </p>
 
         <p>
@@ -41,7 +48,31 @@
             <span th:text="${registration.registrationDate}"></span>
         </p>
 
-        <form th:action="@{/unregisterEvent}" method="post">
+        <div th:if="${registration.deckId == 0}">
+
+            <form th:action="@{/addDeckToRegistration}"
+                  method="post">
+
+                <input type="hidden"
+                       name="registrationId"
+                       th:value="${registration.registrationId}">
+
+                <label>Choose Deck ID</label>
+
+                <input type="number"
+                       name="deckId"
+                       required>
+
+                <button type="submit">
+                    Add Deck
+                </button>
+
+            </form>
+
+        </div>
+
+        <form th:action="@{/unregisterEvent}"
+              method="post">
 
             <input type="hidden"
                    name="registrationId"
@@ -57,7 +88,10 @@
 
     <br>
 
-    <a th:href="@{/}">Back to home page</a>
+    <a th:href="@{/}">
+        Tilbage til forsiden
+    </a>
+
 </div>
 
 </body>

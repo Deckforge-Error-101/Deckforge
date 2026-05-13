@@ -1,5 +1,5 @@
 INSERT INTO Users (username, email, password, roleType)
-VALUES ('AdminTobias', 'admin@deckforge.dk', '$2a$12$av3SBnMxt.qoEhD1f.z/gu6bNzwoRP5KymtYZpmtg8bChrk5E/rom', 'ADMIN'),
+VALUES ('AdminTobias', 'admin@deckforge.dk', '$2a$12$5pyBW/v1LCOuq5bO24Vj7uXnvWUWhwKHYNVDSBkQS3XuQAoel0pba', 'ADMIN'),
        ('SpillerMads', 'mads@mail.dk', '$2a$12$sRyLLlWXjFRtb6CEzGiTI./DMc5EnlECPEpkeYQuIdr4ERrcSyBNa', 'USER'),
        ('ManagerMette', 'mette@butik.dk', '$2a$12$79vLYAR6xejXIJn/O96b6.KGqdWJEumdBwUkXHV4wRbC5SdbE.b4C', 'MANAGER');
 

@@ -13,6 +13,7 @@
 
     <h1>Events</h1>
 
+
     <p th:if="${errorMessage}" th:text="${errorMessage}" class="error"></p>
 
     <div th:each="event : ${events}" class="card">
@@ -47,7 +48,7 @@
 
     <br>
 
-    <a th:href="@{/}">Back to home page</a>
+    <a th:href="@{/}">Tilbage til forsiden</a>
 
 </div>
 </body>

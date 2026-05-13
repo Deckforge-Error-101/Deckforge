@@ -16,7 +16,9 @@
     <aside style="flex: 1;">
         <section class="rights">
             <h3>Rettigheder</h3>
-            <p id="user-role">USER</p></section>
+            <span th:text="${session.user.roleType}">xx</span>
+        </section>
+
 
         <section class="stats">
             <table border="1">

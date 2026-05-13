@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Event</title>
+    <link rel="stylesheet" th:href="@{/universal.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments :: header}"></div>
+
+<div class="container">
+
+    <h1>Create Event</h1>
+
+    <p th:if="${errorMessage}"
+       th:text="${errorMessage}"
+       class="error"></p>
+
+    <form th:action="@{/createEvent}"
+          th:object="${event}"
+          method="post">
+
+        <label>Title</label>
+
+        <input type="text"
+               th:field="*{title}"
+               required>
+
+        <label>Event Type</label>
+
+        <select th:field="*{eventType}" required>
+
+            <option value="">
+                Choose Event Type
+            </option>
+
+            <option value="CASUAL_EVENT">
+                Casual Event
+            </option>
+
+            <option value="COMMANDER_EVENT">
+                Commander Event
+            </option>
+
+        </select>
+
+        <label>Capacity</label>
+
+        <input type="number"
+               th:field="*{capacity}"
+               min="1"
+               required>
+
+        <button type="submit">
+            Create Event
+        </button>
+
+    </form>
+
+</div>
+
+
+</body>
+</html>
