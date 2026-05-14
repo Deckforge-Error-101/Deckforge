@@ -5,7 +5,6 @@ import org.example.deckforge.Domain.Event;
 import org.example.deckforge.Domain.EventRegistration;
 import org.example.deckforge.Domain.User;
 import org.example.deckforge.Service.EventRegistrationService;
-import org.example.deckforge.Domain.RoleType;
 import org.example.deckforge.Service.EventService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

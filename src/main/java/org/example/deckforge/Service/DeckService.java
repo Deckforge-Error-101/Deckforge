@@ -16,15 +16,6 @@ public class DeckService {
     }
 
     public void createDeck(Deck deck) {
-        if (deck == null) {
-            throw new RuntimeException("Decket kan ikke være null");
-        }
-        if (deck.getDeckName() == null || deck.getDeckName().isEmpty()) {
-            throw new RuntimeException("Decket skal have et navn");
-        }
-        if (deck.getUserId() <= 0) {
-            throw new RuntimeException("Ugyldigt bruger ID");
-        }
 
         iDeckRepository.createDeck(deck);
     }
@@ -38,26 +29,11 @@ public class DeckService {
     }
 
     public void updateDeck(Deck deck) {
-        if (deck == null) {
-            throw new RuntimeException("Decket kan ikke være null");
-        }
-        if (deck.getDeckId() <= 0) {
-            throw new RuntimeException("Ugyldigt deck ID");
-        }
-        if (deck.getDeckName() == null || deck.getDeckName().isEmpty()) {
-            throw new RuntimeException("Decket skal have et navn");
-        }
 
         iDeckRepository.updateDeck(deck);
     }
 
     public void deleteDeck(Deck deck) {
-        if (deck == null) {
-            throw new RuntimeException("Decket kan ikke være null");
-        }
-        if (deck.getDeckId() <= 0) {
-            throw new RuntimeException("Ugyldigt deck ID");
-        }
 
         iDeckRepository.deleteDeck(deck);
     }
