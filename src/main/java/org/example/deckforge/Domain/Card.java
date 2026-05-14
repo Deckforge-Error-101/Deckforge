@@ -46,6 +46,10 @@ public class Card {
         return quantity;
     }
 
+    public void setQuantity(String quantity) {
+        this.quantity = quantity;
+    }
+
     public void setCardId(int cardId) {
         if (cardId > 0) {
             this.cardId = cardId;

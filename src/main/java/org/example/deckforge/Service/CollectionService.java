@@ -2,6 +2,7 @@ package org.example.deckforge.Service;
 
 import org.example.deckforge.Domain.Card;
 import org.example.deckforge.Domain.Collection;
+import org.example.deckforge.Infrastructur.CollectionRepository;
 import org.example.deckforge.Infrastructur.ICollectionRepository;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,10 @@ public class CollectionService {
     }
 
     public List<Card> getUserCollection(int userId) {
+        return iCollectionRepository.findUserCollection(userId);
+    }
+
+    public List<Card> findUserCollection(int userId) {
         return iCollectionRepository.findUserCollection(userId);
     }
 }

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Deckforge - Rediger Deck</title>
+    <link rel="stylesheet" th:href="@{/universal.css}">
+</head>
+<body>
+
+<header>
+    <div class="profile-header">
+        <h1>Rediger Deck</h1>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="/">← Tilbage til profil</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <aside style="flex: 1;">
+        <h2 th:text="${deck.deckName}" style="color: var(--accent-orange);">Deck Navn</h2>
+        <p>Format: <span id="user-role" th:text="${deck.formatType}">Standard</span></p>
+        <hr>
+        <form th:action="@{/updateDeckName}" method="post">
+            <input type="hidden" name="deckId" th:value="${deck.deckId}">
+            <label>Omdøb Deck</label>
+            <input type="text" name="deckName" th:placeholder="${deck.deckName}">
+            <button type="submit">Opdater Navn</button>
+        </form>
+
+        <form th:action="@{/updateVisibility}" method="post" style="display: flex; align-items: center; gap: 10px; margin-top: 15px;">
+            <input type="hidden" name="deckId" th:value="${deck.deckId}">
+            <input type="checkbox" name="isPublic" th:checked="${deck.isPublic}" onchange="this.form.submit()" style="width: 20px; height: 20px;">
+            <label style="color: var(--text-primary); font-size: 0.9rem;">Gør dækket offentligt</label>
+        </form>
+    </aside>
+
+    <section style="flex: 2;">
+        <h3>Kort i dækket</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Antal</th>
+                <th>Kort Navn</th>
+                <th>Handling</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="card : ${deckCards}">
+                <td th:text="${card.quantity} + 'x'">1x</td>
+                <td th:text="${card.cardName}">Kort Navn</td>
+                <td>
+                    <form th:action="@{/removeCardFromDeck}" method="post" style="margin:0;">
+                        <input type="hidden" name="deckId" th:value="${deck.deckId}">
+                        <input type="hidden" name="cardId" th:value="${card.cardId}">
+                        <button type="submit" style="padding: 5px 10px; background-color: #444; color: #ff4444; border: 1px solid #ff4444;">Fjern</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(deckCards)}">
+                <td colspan="3" style="text-align: center;">Dækket er tomt</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section style="flex: 2;">
+        <h3>Din Samling</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Kort Navn</th>
+                <th>Handling</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="cCard : ${userCollection}">
+                <td th:text="${cCard.cardName}">Kort Navn</td>
+                <td>
+                    <form th:action="@{/addCardToDeck}" method="post" style="margin:0;">
+                        <input type="hidden" name="deckId" th:value="${deck.deckId}">
+                        <input type="hidden" name="cardId" th:value="${cCard.cardId}">
+                        <button type="submit" style="padding: 5px 10px; background-color: var(--accent-blue); color: white;">+ Tilføj</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2026 Deckforge MTG</p>
+</footer>
+
+</body>
+</html>

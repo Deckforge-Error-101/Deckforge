@@ -11,10 +11,7 @@ class EventServiceTest {
 
     @Test
     void createEvent() throws Exception {
-        //laver fake/mock version af repo
-        IEventRepository eventRepository = mock(IEventRepository.class);
-        //opretter eventservice via mocks, Dependency intjection ligsom spring gør det
-        EventService eventService = new EventService(eventRepository);
+
     }
 
     @Test

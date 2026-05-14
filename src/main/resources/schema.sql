@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS EventRegistrations;
 DROP TABLE IF EXISTS Collections;
+DROP TABLE IF EXISTS deck_cards;
 DROP TABLE IF EXISTS Decks;
 DROP TABLE IF EXISTS Events;
 DROP TABLE IF EXISTS Cards;
@@ -30,6 +31,7 @@ CREATE TABLE Decks
     deckName   VARCHAR(50) NOT NULL,
     formatType ENUM('STANDARD', 'COMMANDER') NOT NULL,
     slots      INT         NOT NULL,
+    is_public BOOLEAN DEFAULT FALSE,
 
     userId     INT,
     FOREIGN KEY (userId)
@@ -86,4 +88,14 @@ CREATE TABLE EventRegistrations
         ON DELETE CASCADE,
 
     registrationDate DATE NOT NULL
+);
+
+CREATE TABLE Deck_Cards
+(
+    deckId   INT NOT NULL,
+    cardId   INT NOT NULL,
+    quantity INT DEFAULT 1,
+    PRIMARY KEY (deckId, cardId),
+    FOREIGN KEY (deckId) REFERENCES Decks (deckId) ON DELETE CASCADE,
+    FOREIGN KEY (cardId) REFERENCES Cards (cardId)
 );

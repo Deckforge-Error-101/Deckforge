@@ -57,29 +57,27 @@
         <table border="1">
             <thead>
             <tr>
-                <th colspan="2">Aktive Decks</th>
+                <th>#</th>
+                <th>Navn på Deck</th>
+                <th>Format</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>1</td>
-                <td>Navn på Deck</td>
+
+            <!-- Vi bruger iterstat til at tælle op -->
+            <tr th:each="deck, iterStat : ${decks}">
+                <td th:text="${iterStat.count}">1</td>
+                <td th:text="${deck.deckName}">Navn på Deck</td>
+                <td th:text="${deck.formatType}">Format</td>
+                <td>
+                    <div class="buttons">
+                        <a th:href="@{/editDeck(deckId=${deck.deckId})}">Rediger</a>
+                    </div>
+                </td>
             </tr>
-            <tr>
-                <td>2</td>
-                <td>Navn på Deck</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>Navn på Deck</td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td>Navn på Deck</td>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td>Navn på Deck</td>
+
+            <tr th:if="${#lists.isEmpty(decks)}">
+                <td colspan="3" style="text-align: center;">Ingen aktive decks fundet</td>
             </tr>
             </tbody>
         </table>
@@ -115,9 +113,7 @@
 </main>
 
 <footer>
-    <div class="footer-images">
-        <p>[Billede]</p>
-    </div>
+    <p>&copy; 2026 Deckforge MTG</p>
 </footer>
 
 </body>

@@ -213,3 +213,23 @@ button:hover {
 .links a:hover {
     text-decoration: underline;
 }
+
+.logout-btn {
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.logout-btn button {
+    padding: 5px 15px;
+    font-size: 0.85rem;
+    background-color: #444;
+    color: white;
+    border: 1px solid #666;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.logout-btn button:hover {
+    background-color: #cc4400;
+}

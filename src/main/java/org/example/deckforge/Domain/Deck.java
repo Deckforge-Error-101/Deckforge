@@ -1,20 +1,29 @@
 package org.example.deckforge.Domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Deck {
     private int deckId;
     private String deckName;
     private String formatType;
     private int slots;
+    private boolean isPublic;
     private int userId;
+    private List<Card> cards;
 
     public Deck(){
     }
-    public Deck(int deckId, String deckName, String formatType, int slots, int userId) {
+
+    public Deck(int deckId, String deckName, String formatType, int slots, boolean isPublic, int userId) {
         this.deckId = deckId;
         this.deckName = deckName;
         this.formatType = formatType;
         this.slots = slots;
+        this.isPublic = isPublic;
         this.userId = userId;
+        //Listen her initialisere vi som tom så den fungere i repo'erne (vi undgår nullpointExceptions fejl)
+        this.cards = new ArrayList<>();
     }
 
     public int getDeckId() {
@@ -22,19 +31,17 @@ public class Deck {
     }
 
     public void setDeckId(int deckId) {
-        if (deckId > 0) {
+        if (deckId < 0) {
             this.deckId = deckId;
         }
     }
 
     public String getDeckName() {
-        return  deckName;
+        return deckName;
     }
 
-    public void setDeckName(String deckName) throws Exception {
-        if (deckName != null) {
-            this.deckName = deckName;
-        } else{ throw new Exception("Decket skal have et navn");}
+    public void setDeckName(String deckName){
+        this.deckName = deckName;
     }
 
     public String getFormatType() {
@@ -66,4 +73,17 @@ public class Deck {
             this.userId = userId;
         }
     }
+
+    public boolean isPublic() { return isPublic; }
+
+    public void setPublic(boolean isPublic) { this.isPublic = isPublic; }
+
+    public List<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(List<Card> cards) {
+        this.cards = cards;
+    }
+
 }

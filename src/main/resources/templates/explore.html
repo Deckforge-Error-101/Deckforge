@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Deckforge - Explore</title>
+    <link rel="stylesheet" th:href="@{/universal.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments :: header}"></div>
+
+<main style="padding: 20px; max-width: 1000px; margin: 0 auto;">
+
+    <!-- Vi tjekker op på om der overhovedet er nogle synlige decks. -->
+    <div th:if="${#lists.isEmpty(decks)}" style="text-align: center; margin-top: 50px;">
+        <h3 style="color: #888;">Der er pt ingen synlige dæk</h3>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(decks)}">
+        <div th:each="d : ${decks}" style="margin-bottom: 40px; padding: 20px; border: 1px solid var(--accent-orange); background: #222; border-radius: 8px;">
+
+            <h2 th:text="${d.deckName}" style="color: var(--accent-orange); margin-bottom: 5px;">Deck Navn</h2>
+            <p style="font-size: 0.8rem; color: #888;">
+                Format: <span th:text="${d.formatType}">Standard</span> |
+                Antal unikke kort: <span th:text="${#lists.size(d.cards)}">0</span>
+            </p>
+
+            <hr style="border: 0.5px solid #444; margin: 15px 0;">
+
+            <!-- Vi finder alle decks som er synlige -->
+            <div class="deck-contents">
+                <ul style="list-style: none; padding: 0;">
+                    <li th:each="card : ${d.cards}" style="margin-bottom: 8px; display: flex; align-items: center; gap: 10px;">
+                        <span style="background: #444; padding: 2px 8px; border-radius: 4px; color: var(--accent-orange); font-weight: bold;"
+                              th:text="${card.quantity} + 'x'">1x</span>
+
+                        <!-- Vi viser Navnet på kortet -->
+                        <span th:text="${card.cardName}" style="color: #eee;">Kort Navn</span>
+
+                        <!-- Vi viser rarity -->
+                        <span th:text="${card.cardRarity}" style="font-size: 0.7rem; color: #666; font-style: italic;">Rarity</span>
+                    </li>
+                </ul>
+
+                <!-- Vi tjekker om listen er tom i det konkrete dæk -->
+                <p th:if="${#lists.isEmpty(d.cards)}" style="color: #666; font-style: italic;">
+                    Dette dæk er tomt...
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

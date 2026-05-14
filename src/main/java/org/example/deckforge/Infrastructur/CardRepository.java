@@ -9,7 +9,8 @@ import java.util.List;
 
 @Repository
 public class CardRepository implements ICardRepository {
-private final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+
     public CardRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -33,7 +34,6 @@ private final JdbcTemplate jdbcTemplate;
                         rs.getString("rarity")
                 )
         );
-
     }
 
     @Override

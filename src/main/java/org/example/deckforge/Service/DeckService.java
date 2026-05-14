@@ -1,5 +1,6 @@
 package org.example.deckforge.Service;
 
+import org.example.deckforge.Domain.Card;
 import org.example.deckforge.Domain.Deck;
 import org.example.deckforge.Infrastructur.IDeckRepository;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,6 @@ public class DeckService {
     }
 
     public void createDeck(Deck deck) {
-
         iDeckRepository.createDeck(deck);
     }
 
@@ -29,12 +29,10 @@ public class DeckService {
     }
 
     public void updateDeck(Deck deck) {
-
         iDeckRepository.updateDeck(deck);
     }
 
     public void deleteDeck(Deck deck) {
-
         iDeckRepository.deleteDeck(deck);
     }
 
@@ -55,5 +53,36 @@ public class DeckService {
                 throw new RuntimeException("Et deck skal have mindst 60 kort");
             }
         }
+    }
+
+    public Deck findDeckById(int deckId) {
+        return iDeckRepository.findDeckById(deckId);
+    }
+
+    public List<Card> getCardsInDeck(int deckId) {
+        return iDeckRepository.getCardsInDeck(deckId);
+    }
+
+    public void addCardToDeck(int deckId, int cardId){
+        iDeckRepository.addCardToDeck(deckId, cardId);
+    }
+
+    public void removeCardFromDeck(int deckId, int cardId){
+        iDeckRepository.removeCardFromDeck(deckId, cardId);
+    }
+
+    public void updateDeckVisibility(int deckId, boolean isPublic){
+        iDeckRepository.updateDeckVisibility(deckId, isPublic);
+    }
+
+    public List<Deck> findAllPublicDecks(){
+        List<Deck> decks = iDeckRepository.findAllPublicDecks();
+
+        for (Deck deck: decks){
+            List<Card> cardsInThisDeck = iDeckRepository.getCardsInDeck(deck.getDeckId());
+
+            deck.setCards(cardsInThisDeck);
+        }
+        return decks;
     }
 }

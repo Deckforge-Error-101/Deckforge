@@ -1,6 +1,7 @@
 package org.example.deckforge.Controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.example.deckforge.Domain.Card;
 import org.example.deckforge.Domain.Deck;
 import org.example.deckforge.Domain.User;
 import org.example.deckforge.Service.CardService;
@@ -11,9 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-//h
+
 @Controller
 public class DeckController {
 
@@ -27,7 +29,7 @@ public class DeckController {
         this.collectionService = collectionService;
     }
 
-    @GetMapping
+    @GetMapping("/decks")
     public String showMyDecks(HttpSession session, Model model){
         User user = (User) session.getAttribute("user");
 
@@ -80,5 +82,47 @@ public class DeckController {
             deckService.deleteDeck(deck);
         }
         return "redirect:/decks";
+    }
+
+    @GetMapping("/editDeck")
+    public String showEditPage(@RequestParam int deckId, HttpSession session, Model model){
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || !user.isCurrentLogin()) {
+            return "redirect:/login";
+        }
+
+        Deck deck = deckService.findDeckById(deckId);
+
+        model.addAttribute("deck", deckService.findDeckById(deckId));
+        model.addAttribute("deckCards", deckService.getCardsInDeck(deckId));
+        model.addAttribute("userCollection", collectionService.findUserCollection(user.getUserId()));
+
+        return "editDeck";
+    }
+
+    @PostMapping("/addCardToDeck")
+    public String addCard(@RequestParam int deckId, @RequestParam int cardId) {
+        deckService.addCardToDeck(deckId, cardId);
+        return "redirect:/editDeck?deckId=" + deckId;
+    }
+
+    @PostMapping("/removeCardFromDeck")
+    public String removeCard(@RequestParam int deckId, @RequestParam int cardId) {
+        deckService.removeCardFromDeck(deckId, cardId);
+        return "redirect:/editDeck?deckId=" + deckId;
+    }
+
+    @PostMapping("/updateVisibility")
+    public String updateVisiblity(@RequestParam int deckId, @RequestParam(required = false) boolean isPublic) {
+        deckService.updateDeckVisibility(deckId, isPublic);
+
+        return "redirect:/editDeck?deckId=" + deckId;
+    }
+
+    @GetMapping("/explore")
+    public String exploreDecks(Model model) {
+        model.addAttribute("decks", deckService.findAllPublicDecks());
+        return "explore";
     }
 }

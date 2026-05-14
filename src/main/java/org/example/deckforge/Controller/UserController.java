@@ -1,8 +1,10 @@
 package org.example.deckforge.Controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.example.deckforge.Domain.Deck;
 import org.example.deckforge.Domain.User;
 import org.example.deckforge.Service.CollectionService;
+import org.example.deckforge.Service.DeckService;
 import org.example.deckforge.Service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,27 +12,34 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.List;
+
 @Controller
 public class UserController {
 
     private final UserService userService;
     private final CollectionService collectionService;
+    private final DeckService deckService;
 
-    public UserController(UserService userService, CollectionService collectionService) {
+    public UserController(UserService userService, CollectionService collectionService, DeckService deckService) {
         this.userService = userService;
         this.collectionService = collectionService;
+        this.deckService = deckService;
     }
 
     @GetMapping("/")
     public String index(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
+            if (user != null && user.isCurrentLogin()) {
 
-        if (user != null && user.isCurrentLogin()) {
-            model.addAttribute("user", user);
-            return "homePage";
+                List<Deck> userDecks = deckService.findAllDecksByUserId(user.getUserId());
+
+                model.addAttribute("user", user);
+                model.addAttribute("decks", userDecks);
+                return "homePage";
+            }
+            return "index";
         }
-        return "index";
-    }
 
     @GetMapping("/login")
     public String showLoginPage(Model model) {
@@ -45,7 +54,7 @@ public class UserController {
             session.setAttribute("user", dbUser);
             return "redirect:/";
         } catch (Exception ex) {
-            model.addAttribute("loginError", "Forkert email eller password"); // Fixed variable name
+            model.addAttribute("loginError", "Forkert email eller password");
             return "login";
         }
     }
@@ -55,6 +64,7 @@ public class UserController {
         session.invalidate();
         return "redirect:/";
     }
+
 
     @GetMapping("/createUser")
     public String showCreateUser(Model model) {

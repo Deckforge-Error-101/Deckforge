@@ -18,6 +18,11 @@
         <div class="profile-info">
             <h1>Navn: <span th:text="${session.user.username}">xx</span></h1>
             <p>Sidst online: <span th:text="${#temporals.format(session.user.lastOnline, 'dd/MM-yyyy HH:mm')}">10/05-2026</span></p>
+
+            <form th:action="@{logout}" method="post" class="logout-btn">
+                <button type="submit">Log ud</button>
+            </form>
+
         </div>
     </div>
 
@@ -25,6 +30,7 @@
         <ul>
             <li><a href="/">Profil</a></li>
             <li><a href="/collection">Samling</a></li>
+            <li><a href="/explore" class="button">Udforsk alle dæk</a></li>
             <li><a href="/events">Events</a></li>
             <li><a href="/registrations">Tilmeldinger</a></li>
 
@@ -34,6 +40,10 @@
         </ul>
     </nav>
 </header>
+
+<footer>
+    <p>&copy; 2026 Deckforge MTG</p>
+</footer>
 
 </body>
 </html>
