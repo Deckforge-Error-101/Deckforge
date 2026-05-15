@@ -45,7 +45,7 @@ public class DeckRepository implements IDeckRepository {
 
     @Override
     public void updateDeck(Deck deck) {
-        String sql = "UPDATE decks SET deckname = ?, formatType = ?, slots = ? WHERE deckId = ?";
+        String sql = "UPDATE decks SET deckName = ?, formatType = ?, slots = ? WHERE deckId = ?";
 
         jdbcTemplate.update(sql,
                 deck.getDeckName(),
@@ -56,10 +56,10 @@ public class DeckRepository implements IDeckRepository {
     }
 
     @Override
-    public void deleteDeck(Deck deck) {
+    public void deleteDeck(int deckId) {
         String sql = "DELETE FROM decks WHERE deckId = ?";
 
-        jdbcTemplate.update(sql, deck.getDeckId());
+        jdbcTemplate.update(sql, deckId);
     }
 
     @Override
@@ -142,5 +142,21 @@ public class DeckRepository implements IDeckRepository {
                         rs.getInt("userId")
                 )
         );
+    }
+
+    public int getQuantityInDeck(int deckId, int cardId) {
+        String sql = "SELECT quantity FROM deck_cards WHERE deckid = ? AND cardid = ?";
+
+        List<Integer> results = jdbcTemplate.query(sql, new Object[]{deckId, cardId}, (rs, rowNum) ->
+                rs.getInt("quantity")
+        );
+
+        //En smart måde at undgå NullPointException.
+        //Hvis listen er tom retuner 0 hvis ikke retuner værdien af listen.
+        if (results.isEmpty()) {
+            return 0;
+        } else {
+            return results.get(0);
+        }
     }
 }

@@ -10,4 +10,6 @@ public interface ICollectionRepository {
     void deleteCardFromCollection(int userId, int cardId);
     void addCardToCollection(int userId, int cardId, String tradeId);
     List<Card> findUserCollection(int userId);
+    int getQuantityOwned(int userId, int cardId);
+
 }

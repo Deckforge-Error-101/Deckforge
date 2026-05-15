@@ -47,11 +47,11 @@ public class CollectionRepository implements ICollectionRepository {
     @Override
     public List<Card> findUserCollection(int userId) {
         String sql = """
-            SELECT c.cardid, c.cardname, c.typeid, c.rarity, col.quantity
-            FROM collections col
-            JOIN cards c ON col.cardid = c.cardid
-            WHERE col.userid = ?
-            """;
+                SELECT c.cardid, c.cardname, c.typeid, c.rarity, col.quantity
+                FROM collections col
+                JOIN cards c ON col.cardid = c.cardid
+                WHERE col.userid = ?
+                """;
 
         return jdbcTemplate.query(sql, new Object[]{userId}, (rs, rowNum) ->
                 new Card(
@@ -62,5 +62,22 @@ public class CollectionRepository implements ICollectionRepository {
                         rs.getString("quantity")
                 )
         );
+    }
+
+    @Override
+    public int getQuantityOwned(int userId, int cardId) {
+        String sql = "SELECT quantity FROM collections WHERE userid = ? AND cardid = ?";
+
+        List<Integer> results = jdbcTemplate.query(sql, new Object[]{userId, cardId}, (rs, rowNum) ->
+                rs.getInt("quantity")
+        );
+
+        //En smart måde at undgå NullPointException.
+        //Hvis listen er tom retuner 0 hvis ikke retuner værdien af listen.
+        if (results.isEmpty()) {
+            return 0;
+        } else {
+            return results.get(0);
+        }
     }
 }

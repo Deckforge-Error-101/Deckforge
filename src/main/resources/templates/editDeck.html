@@ -8,14 +8,7 @@
 <body>
 
 <header>
-    <div class="profile-header">
-        <h1>Rediger Deck</h1>
-    </div>
-    <nav>
-        <ul>
-            <li><a href="/">← Tilbage til profil</a></li>
-        </ul>
-    </nav>
+    <div th:replace="~{fragments :: header}"></div>
 </header>
 
 <main>
@@ -23,17 +16,28 @@
         <h2 th:text="${deck.deckName}" style="color: var(--accent-orange);">Deck Navn</h2>
         <p>Format: <span id="user-role" th:text="${deck.formatType}">Standard</span></p>
         <hr>
-        <form th:action="@{/updateDeckName}" method="post">
+        <form th:action="@{updateDeck}" method="post" style="display: flex; flex-direction: column; gap: 10px;">
             <input type="hidden" name="deckId" th:value="${deck.deckId}">
-            <label>Omdøb Deck</label>
-            <input type="text" name="deckName" th:placeholder="${deck.deckName}">
-            <button type="submit">Opdater Navn</button>
+
+            <label>Nyt navn</label>
+            <input type="text" name="deckName" th:value="${deck.deckName}" required>
+
+            <label>Ændre Type/Format</label>
+            <select name="formatType">
+                <option value="Standard" th:selected="${deck.formatType == 'Standard'}">Standard</option>
+                <option value="Commander" th:selected="${deck.formatType == 'Commander'}">Commander</option>
+            </select>
+
+            <button type="submit" style="background-color: var(--accent-orange); color: white; border: none; padding: 10px; cursor: pointer;">
+                Gem ændringer
+            </button>
         </form>
 
-        <form th:action="@{/updateVisibility}" method="post" style="display: flex; align-items: center; gap: 10px; margin-top: 15px;">
+        <form th:action="@{/delete}" method="post" onsubmit="return confirm('Er du helt sikker på, at du vil slette dette deck?');">
             <input type="hidden" name="deckId" th:value="${deck.deckId}">
-            <input type="checkbox" name="isPublic" th:checked="${deck.isPublic}" onchange="this.form.submit()" style="width: 20px; height: 20px;">
-            <label style="color: var(--text-primary); font-size: 0.9rem;">Gør dækket offentligt</label>
+            <button type="submit" style="width: 100%; background-color: transparent; color: #ff4444; border: 1px solid #ff4444; padding: 10px; cursor: pointer; border-radius: 4px; transition: 0.3s;"
+            >Slet Deck
+            </button>
         </form>
     </aside>
 
@@ -71,13 +75,14 @@
         <table>
             <thead>
             <tr>
+                <th>Antal ejer</th>
                 <th>Kort Navn</th>
-                <th>Handling</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="cCard : ${userCollection}">
                 <td th:text="${cCard.cardName}">Kort Navn</td>
+
                 <td>
                     <form th:action="@{/addCardToDeck}" method="post" style="margin:0;">
                         <input type="hidden" name="deckId" th:value="${deck.deckId}">

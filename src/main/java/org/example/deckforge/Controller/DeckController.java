@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -29,12 +30,13 @@ public class DeckController {
         this.collectionService = collectionService;
     }
 
+    /* Vi bruger ikke denne metode pt.
     @GetMapping("/decks")
     public String showMyDecks(HttpSession session, Model model){
         User user = (User) session.getAttribute("user");
 
         if (user == null || !user.isCurrentLogin()) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
         List<Deck> myDecks = deckService.findAllDecksByUserId(user.getUserId());
@@ -42,31 +44,32 @@ public class DeckController {
 
         return "myDecks";
     }
+     */
 
-    @GetMapping("/create")
+    @GetMapping("/createDeck")
     public String createDeckForm(HttpSession session, Model model){
         User user = (User) session.getAttribute("user");
 
         if (user == null || !user.isCurrentLogin()) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
         model.addAttribute("deck", new Deck());
         return "createDeck";
     }
 
-    @PostMapping("/create")
+    @PostMapping("/createDeck")
     public String createDeck(@ModelAttribute Deck deck, HttpSession session, Model model){
         User user = (User) session.getAttribute("user");
 
         if (user == null || !user.isCurrentLogin()) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
         try {
             deck.setUserId(user.getUserId());
             deckService.createDeck(deck);
-            return "redirect:/decks";
+            return "redirect:/";
 
         } catch (Exception ex){
             model.addAttribute("error", ex.getMessage());
@@ -74,20 +77,27 @@ public class DeckController {
         }
     }
 
+    @GetMapping("/delete")
+    public String deleteDeck() {
+        return "redirect:/";
+    }
+
     @PostMapping("/delete")
-    public String deleteDeck(@ModelAttribute Deck deck, HttpSession session){
+    public String deleteDeck(@RequestParam int deckId, HttpSession session){
         User user = (User) session.getAttribute("user");
 
-        if (user != null && user.isCurrentLogin()) {
-            deckService.deleteDeck(deck);
+        if (user == null || !user.isCurrentLogin()) {
+            return "redirect:/";
         }
-        return "redirect:/decks";
+
+        deckService.deleteDeck(deckId);
+
+        return "redirect:/";
     }
 
     @GetMapping("/editDeck")
     public String showEditPage(@RequestParam int deckId, HttpSession session, Model model){
         User user = (User) session.getAttribute("user");
-
         if (user == null || !user.isCurrentLogin()) {
             return "redirect:/login";
         }
@@ -101,20 +111,55 @@ public class DeckController {
         return "editDeck";
     }
 
+    @GetMapping("/addCardToDeck")
+    public String addCard() {
+        return "redirect:/";
+    }
+
     @PostMapping("/addCardToDeck")
-    public String addCard(@RequestParam int deckId, @RequestParam int cardId) {
-        deckService.addCardToDeck(deckId, cardId);
+    public String addCard(Model model, HttpSession session, @RequestParam int deckId, @RequestParam int cardId) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || !user.isCurrentLogin()) {
+            return "redirect:/";
+        }
+        try {
+            deckService.addCardToDeck(user.getUserId(), deckId, cardId);
+        } catch (IllegalStateException ex){
+            model.addAttribute("error", ex.getMessage());
+        }
         return "redirect:/editDeck?deckId=" + deckId;
     }
 
+    @GetMapping("/removeCardFromDeck")
+    public String removeCardFromDeck() {
+        return "redirect:/";
+    }
+
     @PostMapping("/removeCardFromDeck")
-    public String removeCard(@RequestParam int deckId, @RequestParam int cardId) {
+    public String removeCard(HttpSession session, @RequestParam int deckId, @RequestParam int cardId) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || !user.isCurrentLogin()) {
+            return "redirect:/";
+        }
+
         deckService.removeCardFromDeck(deckId, cardId);
         return "redirect:/editDeck?deckId=" + deckId;
     }
 
+    @GetMapping("/updateVisibility")
+    public String updateVisibility() {
+        return "redirect:/";
+    }
+
     @PostMapping("/updateVisibility")
-    public String updateVisiblity(@RequestParam int deckId, @RequestParam(required = false) boolean isPublic) {
+    public String updateVisiblity(HttpSession session, @RequestParam int deckId, @RequestParam(required = false) boolean isPublic) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || !user.isCurrentLogin()) {
+            return "redirect:/login";
+        }
         deckService.updateDeckVisibility(deckId, isPublic);
 
         return "redirect:/editDeck?deckId=" + deckId;
@@ -124,5 +169,26 @@ public class DeckController {
     public String exploreDecks(Model model) {
         model.addAttribute("decks", deckService.findAllPublicDecks());
         return "explore";
+    }
+
+    @GetMapping("/updateDeck")
+    public String updateDeck() {
+        return "redirect:/";
+    }
+
+    @PostMapping("/updateDeck")
+    public String updateDeck(HttpSession session, @RequestParam String formatType, @RequestParam String deckName, @RequestParam int deckId) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null || !user.isCurrentLogin()) {
+            return "redirect:/";
+        }
+
+        Deck deck = deckService.findDeckById(deckId);
+        deck.setDeckName(deckName);
+        deck.setFormatType(formatType);
+        deckService.updateDeck(deck);
+
+        return "redirect:/editDeck?deckId=" + deckId;
     }
 }

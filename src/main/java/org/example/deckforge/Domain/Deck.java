@@ -48,11 +48,13 @@ public class Deck {
         return formatType;
     }
 
-    public void setFormatType(String formatType) throws Exception {
+    public void setFormatType(String formatType) {
         if (formatType != null) {
             this.formatType = formatType;
-        } else {throw new Exception("Decket skal have et format");}
-    }
+        } else {
+            throw new RuntimeException("formatType må ikke være null");
+            }
+        }
 
     public int getSlots() {
         return slots;
@@ -74,9 +76,14 @@ public class Deck {
         }
     }
 
-    public boolean isPublic() { return isPublic; }
+    public boolean getIsPublic(){
+        return isPublic;
+    }
 
-    public void setPublic(boolean isPublic) { this.isPublic = isPublic; }
+    public void setPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
 
     public List<Card> getCards() {
         return cards;
