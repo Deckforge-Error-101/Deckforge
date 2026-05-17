@@ -106,6 +106,13 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
 
     @Override
     public void addDeckToRegistration(int registrationId, int deckId) {
+        String sql = """
+            UPDATE EventRegistrations
+            SET deckId = ?
+            WHERE registrationId = ?
+            """;
+
+        jdbcTemplate.update(sql, deckId, registrationId);
 
     }
 }

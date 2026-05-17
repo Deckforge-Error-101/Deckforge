@@ -141,4 +141,31 @@ public class EventController {
         model.addAttribute("registrations", eventRegistrationService.findRegistrationsByUserId(user.getUserId()));
         return "registration";
     }
+    @PostMapping("/addDeckToRegistration")
+    public String addDeckToRegistration(@RequestParam int registrationId, @RequestParam int deckId, HttpSession session, Model model) {
+
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            EventRegistration registration = new EventRegistration();
+
+            registration.setRegistrationId(registrationId);
+            registration.setDeckId(deckId);
+            registration.setUserId(user.getUserId());
+
+            eventRegistrationService.addDeckToRegistration(registration);
+
+            return "redirect:/registrations";
+
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("registrations", eventRegistrationService.findRegistrationsByUserId(user.getUserId()));
+
+            return "registration";
+        }
+    }
 }

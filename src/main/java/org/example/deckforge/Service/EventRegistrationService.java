@@ -61,7 +61,6 @@ public class EventRegistrationService {
         if (dbRegistration.getUserId() != registration.getUserId()) {
             throw new RuntimeException("Du kan kun ændre dine egne tilmeldinger");
         }
-
         eventRegistrationRepository.addDeckToRegistration(registration.getRegistrationId(), registration.getDeckId());
     }
 
