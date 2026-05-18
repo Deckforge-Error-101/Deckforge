@@ -93,7 +93,7 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
                 }
                 registration.setRegistrationDate(rs.getTimestamp("registrationDate").toLocalDateTime());
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Kritisk fejl");
             }
             return registration;
         }, userId);

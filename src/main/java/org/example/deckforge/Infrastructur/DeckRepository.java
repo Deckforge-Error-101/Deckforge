@@ -3,8 +3,12 @@ package org.example.deckforge.Infrastructur;
 import org.example.deckforge.Domain.Card;
 import org.example.deckforge.Domain.Deck;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 
 @Repository
@@ -16,15 +20,24 @@ public class DeckRepository implements IDeckRepository {
     }
 
     @Override
-    public void createDeck(Deck deck) {
+    public Deck createDeck(Deck deck) {
         String sql = "INSERT INTO decks (deckname, formatType, slots, userId) VALUES (?, ?, ?, ?)";
 
-        jdbcTemplate.update(sql,
-                deck.getDeckName(),
-                deck.getFormatType(),
-                deck.getSlots(),
-                deck.getUserId()
-        );
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, deck.getDeckName());
+            ps.setString(2, deck.getFormatType());
+            ps.setInt(3, deck.getSlots());
+            ps.setInt(4, deck.getUserId());
+            return ps;
+        }, keyHolder);
+
+
+        if (keyHolder.getKey() != null) {
+            deck.setDeckId(keyHolder.getKey().intValue());
+        }
+        return deck;
     }
 
     @Override
@@ -45,13 +58,14 @@ public class DeckRepository implements IDeckRepository {
 
     @Override
     public void updateDeck(Deck deck) {
-        String sql = "UPDATE decks SET deckName = ?, formatType = ?, slots = ? WHERE deckId = ?";
+        String sql = "UPDATE decks SET deckName = ?, formatType = ?, slots = ?, is_public = ? WHERE deckId = ?";
 
         jdbcTemplate.update(sql,
                 deck.getDeckName(),
                 deck.getFormatType(),
                 deck.getSlots(),
-                deck.getDeckId()
+                deck.getDeckId(),
+                deck.getIsPublic()
         );
     }
 

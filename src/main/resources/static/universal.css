@@ -294,3 +294,30 @@ aside {
 section {
     flex: 2;
 }
+
+.alert-success {
+    color: #4dfd4d;
+    background: rgba(0, 255, 0, 0.1);
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #4dfd4d;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.card-thumbnail {
+    width: 50px;
+    height: auto;
+    border-radius: 4px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+.card-thumbnail:hover {
+    transform: scale(4);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}

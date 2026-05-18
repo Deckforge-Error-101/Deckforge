@@ -57,7 +57,7 @@ CREATE TABLE collections
         REFERENCES users (userId)
         ON DELETE CASCADE,
 
-    tradeId      VARCHAR(50),
+    tradeId      VARCHAR(50) UNIQUE NULL,
 
     cardId       INT,
     FOREIGN KEY (cardId)

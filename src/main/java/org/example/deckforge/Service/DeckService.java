@@ -19,8 +19,8 @@ public class DeckService {
         this.iCollectionRepository = iCollectionRepository;
     }
 
-    public void createDeck(Deck deck) {
-        iDeckRepository.createDeck(deck);
+    public Deck createDeck(Deck deck) {
+        return iDeckRepository.createDeck(deck);
     }
 
     public List<Deck> findAllDecksByUserId(int userId) {

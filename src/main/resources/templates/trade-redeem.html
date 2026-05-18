@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Deckforge - Indløs Kort</title>
+    <link rel="stylesheet" th:href="@{/universal.css}">
+</head>
+<body>
+
+<header>
+    <div th:replace="~{fragments :: header}"></div>
+</header>
+
+<main class="container">
+    <h1>Indløs Byttekode</h1>
+    <p>Indtast koden du har modtaget fra din kammerat for at overføre kortet til din samling.</p>
+
+    <!-- Fejlbesked -->
+    <p th:if="${errorMessage}" th:text="${errorMessage}" class="error"></p>
+
+    <!-- Succesbesked -->
+    <p th:if="${successMessage}" th:text="${successMessage}" class="alert-success"></p>
+
+    <form th:action="@{/redeem}" method="post">
+        <label>Byttekode (Trade ID)</label>
+        <input type="text" name="tradeId" placeholder="F.eks. a1b2c3d4" required autocomplete="off">
+
+        <button type="submit">Hent kort</button>
+    </form>
+</main>
+
+<footer>
+    <p>&copy; 2026 Deckforge MTG</p>
+</footer>
+
+</body>
+</html>

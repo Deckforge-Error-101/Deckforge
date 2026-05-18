@@ -1,6 +1,7 @@
 package org.example.deckforge.Infrastructur;
 
 import org.example.deckforge.Domain.Card;
+import org.example.deckforge.Domain.CardToTrade;
 import org.example.deckforge.Domain.Collection;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -80,4 +81,59 @@ public class CollectionRepository implements ICollectionRepository {
             return results.get(0);
         }
     }
+
+    @Override
+    public CardToTrade findCardToTrade(String tradeId) {
+        String sql = """
+                SELECT col.userId, col.cardId, c.cardName
+                FROM collections col
+                JOIN cards c ON col.cardId = c.cardId
+                WHERE col.tradeId = ?
+                """;
+
+        List<CardToTrade> results = jdbcTemplate.query(sql, new Object[]{tradeId}, (rs, rowNum) ->
+                new CardToTrade(
+                        rs.getInt("userId"),
+                        rs.getInt("cardId"),
+                        rs.getString("cardName")
+                )
+        );
+        if (results.isEmpty()) {
+            return null;
+        } else {
+            return results.get(0);
+        }
+    }
+
+    @Override
+    public void removeCardFromCollection(int userId, int cardId){
+        String sql = """
+                UPDATE collections SET quantity = quantity - 1 WHERE userId = ? AND cardId = ?
+                """;
+        jdbcTemplate.update(sql, userId, cardId);
+
+        String deleteSql = """
+                DELETE FROM collections WHERE userId = ? AND cardId = ?
+                """;
+        jdbcTemplate.update(deleteSql, userId, cardId);
+    }
+
+    @Override
+    public void addCardToCollection(int userId, int cardId){
+        String sql = """
+                INSERT INTO collections (userId, cardId, quantity) VALUES (?, ?, 1)
+                ON DUPLICATE KEY UPDATE quantity = quantity + 1
+                """;
+        jdbcTemplate.update(sql, userId, cardId);
+    }
+
+    @Override
+    public void updateTradeId(int userId, int cardId, String tradeId){
+        String sql = """
+                UPDATE collections SET tradeId = ? WHERE userId = ? AND cardId = ?
+                """;
+        jdbcTemplate.update(sql, tradeId, userId, cardId);
+    }
 }
+
+

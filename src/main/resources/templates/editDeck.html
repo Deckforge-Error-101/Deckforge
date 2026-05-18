@@ -28,6 +28,12 @@
                 <option value="Commander" th:selected="${deck.formatType == 'Commander'}">Commander</option>
             </select>
 
+            <div style="display: flex; align-items: center; gap: 10px; margin: 10px 0;">
+                <input type="checkbox" name="isPublic" id="isPublic" value="true"
+                       th:checked="${deck.isPublic}">
+                <label for="isPublic" style="cursor: pointer; user-select: none;">Gør dækket offentligt synligt</label>
+            </div>
+
             <button type="submit" style="background-color: var(--accent-orange); color: white; border: none; padding: 10px; cursor: pointer;">
                 Gem ændringer
             </button>

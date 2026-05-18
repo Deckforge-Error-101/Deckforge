@@ -68,7 +68,9 @@ public class DeckController {
 
         try {
             deck.setUserId(user.getUserId());
-            deckService.createDeck(deck);
+            Deck savedDeck = deckService.createDeck(deck);
+            System.out.println("DeckId = " + savedDeck.getDeckId());
+
             return "redirect:/";
 
         } catch (Exception ex){
@@ -177,17 +179,22 @@ public class DeckController {
     }
 
     @PostMapping("/updateDeck")
-    public String updateDeck(HttpSession session, @RequestParam String formatType, @RequestParam String deckName, @RequestParam int deckId) {
+    public String updateDeck(HttpSession session, @RequestParam String formatType, @RequestParam String deckName, @RequestParam int deckId, @RequestParam(required = false) Boolean isPublic) {
         User user = (User) session.getAttribute("user");
 
         if (user == null || !user.isCurrentLogin()) {
             return "redirect:/";
         }
 
+        boolean publicStatus = (isPublic != null && isPublic);
+
         Deck deck = deckService.findDeckById(deckId);
         deck.setDeckName(deckName);
         deck.setFormatType(formatType);
+        deck.setPublic(publicStatus);
+
         deckService.updateDeck(deck);
+
 
         return "redirect:/editDeck?deckId=" + deckId;
     }

@@ -22,12 +22,11 @@ VALUES ('Mads Lyn-Deck', 'STANDARD', 60, 1),
        ('Mohammeds AutoSmasher', 'STANDARD', 100, 2),
        ('Patricks Flyvedeck', 'COMMANDER', 100, 3);
 
-INSERT INTO Collections (userId, cardId, tradeId)
-VALUES (2, 2, 'TRADE-111'),
-       (2, 3, 'TRADE-222'),
-       (2, 6, 'TRADE-333'),
-       (1, 1, 'TRADE-444'),
-       (1, 4, 'TRADE-444');
+INSERT INTO Collections (userId, cardId)
+VALUES (2, 2),
+       (2, 3),
+       (2, 6),
+       (1, 1);
 
 INSERT INTO EventRegistrations (eventId, userId, deckId, registrationDate)
 VALUES (1, 2, 1, '2026-05-08');

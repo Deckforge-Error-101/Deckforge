@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Din Samling</title>
@@ -11,6 +11,9 @@
 
 <div class="container">
     <h2>Min Samling</h2>
+
+    <!-- Viser den genererede byttekode, hvis den findes -->
+    <div th:if="${successMessage}" th:text="${successMessage}" class="alert-success"></div>
 
     <div class="add-form">
         <form th:action="@{/collection/add}" method="post">
@@ -34,6 +37,7 @@
             <th>Sjældenhed (Rarity)</th>
             <th>Antal</th>
             <th>Handling</th>
+            <th>Billede</th>
         </tr>
         </thead>
         <tbody>
@@ -48,10 +52,23 @@
             <td th:text="${card.cardRarity}">Rarity</td>
             <td th:text="${card.quantity}">1</td>
             <td>
+                <!-- Eksisterende fjern-knap -->
                 <form class="action-form" th:action="@{/collection/remove}" method="post">
                     <input type="hidden" name="cardId" th:value="${card.cardId}">
                     <button type="submit" class="btn-remove">Fjern</button>
                 </form>
+
+                <!-- NYT: Knap til at generere byttekode -->
+                <form class="action-form" th:action="@{/generate}" method="post">
+                    <input type="hidden" name="cardId" th:value="${card.cardId}">
+                    <button type="submit" class="btn-add">Generer Byttekode</button>
+                </form>
+            </td>
+            <td>
+                <img th:src="@{'/images/card-' + ${card.cardId} + '.png'}"
+                     onerror="this.src='/images/card-default.png';"
+                     alt="Kort billede"
+                     class="card-thumbnail">
             </td>
         </tr>
         </tbody>
