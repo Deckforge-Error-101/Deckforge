@@ -6,8 +6,8 @@ import java.util.List;
 
 public interface IEventRepository {
     void createEvent(Event event);
-    void deleteEvent(int eventId);
-    void updateEvent(int eventId);
+    void deleteEvent(Event event);
+    void updateEvent(Event event);
     List<Event> findAllEvents();
-    Event findById(int eventId);
+    Event findByEvent(Event event);
 }

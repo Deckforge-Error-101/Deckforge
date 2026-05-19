@@ -1,6 +1,8 @@
 package org.example.deckforge.Infrastructur;
 
 import org.example.deckforge.Domain.EventRegistration;
+import org.example.deckforge.Domain.Event;
+import org.example.deckforge.Domain.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -26,33 +28,43 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
     }
 
     @Override
-    public void deleteRegistration(int registrationId) {
+    public void deleteRegistration(EventRegistration registration) {
         String sql = "DELETE FROM EventRegistrations WHERE registrationId = ?";
-        jdbcTemplate.update(sql, registrationId);
+
+        jdbcTemplate.update(
+                sql,
+                registration.getRegistrationId()
+        );
     }
 
 
     @Override
-    public EventRegistration findById(int registrationId) {
+    public EventRegistration findByRegistration(EventRegistration registration) {
         String sql = "SELECT * FROM EventRegistrations WHERE registrationId = ?";
 
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
-            EventRegistration registration = new EventRegistration();
+            EventRegistration dbRegistration = new EventRegistration();
+
             try {
-                registration.setRegistrationId(rs.getInt("registrationId"));
-                registration.setEventId(rs.getInt("eventId"));
-                registration.setUserId(rs.getInt("userId"));
+                dbRegistration.setRegistrationId(rs.getInt("registrationId"));
+                dbRegistration.setEventId(rs.getInt("eventId"));
+                dbRegistration.setUserId(rs.getInt("userId"));
+
                 int deckId = rs.getInt("deckId");
                 if (!rs.wasNull()) {
-                    registration.setDeckId(deckId);
+                    dbRegistration.setDeckId(deckId);
                 }
-                registration.setRegistrationDate(rs.getTimestamp("registrationDate").toLocalDateTime());
+
+                dbRegistration.setRegistrationDate(
+                        rs.getTimestamp("registrationDate").toLocalDateTime()
+                );
 
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Kritisk fejl");
             }
-            return registration;
-        }, registrationId);
+
+            return dbRegistration;
+        }, registration.getRegistrationId());
     }
 
     @Override
@@ -78,57 +90,64 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
     }
 
     @Override
-    public List<EventRegistration> findAllByUserId(int userId) {
+    public List<EventRegistration> findAllByUser(User user) {
         String sql = "SELECT * FROM EventRegistrations WHERE userId = ?";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             EventRegistration registration = new EventRegistration();
+
             try {
                 registration.setRegistrationId(rs.getInt("registrationId"));
                 registration.setEventId(rs.getInt("eventId"));
                 registration.setUserId(rs.getInt("userId"));
+
                 int deckId = rs.getInt("deckId");
                 if (!rs.wasNull()) {
                     registration.setDeckId(deckId);
                 }
-                registration.setRegistrationDate(rs.getTimestamp("registrationDate").toLocalDateTime());
+
+                registration.setRegistrationDate(
+                        rs.getTimestamp("registrationDate").toLocalDateTime()
+                );
+
             } catch (Exception e) {
                 throw new RuntimeException("Kritisk fejl");
             }
+
             return registration;
-        }, userId);
+        }, user.getUserId());
     }
 
-
-
-        @Override
-        public boolean existsByEventIdAndUserId(int eventId, int userId) {
-
-            String sql = """
+    @Override
+    public boolean existsByEventAndUser(Event event, User user) {
+        String sql = """
             SELECT COUNT(*)
             FROM EventRegistrations
             WHERE eventId = ? AND userId = ?
             """;
 
-            Integer count = jdbcTemplate.queryForObject(
-                    sql,
-                    Integer.class,
-                    eventId,
-                    userId
-            );
+        Integer count = jdbcTemplate.queryForObject(
+                sql,
+                Integer.class,
+                event.getEventId(),
+                user.getUserId()
+        );
 
-            return count != null && count > 0;
-        }
+        return count != null && count > 0;
+    }
 
     @Override
-    public void addDeckToRegistration(int registrationId, int deckId) {
+    public void addDeckToRegistration(EventRegistration registration) {
         String sql = """
             UPDATE EventRegistrations
             SET deckId = ?
             WHERE registrationId = ?
             """;
 
-        jdbcTemplate.update(sql, deckId, registrationId);
-
+        jdbcTemplate.update(
+                sql,
+                registration.getDeckId(),
+                registration.getRegistrationId()
+        );
     }
 }

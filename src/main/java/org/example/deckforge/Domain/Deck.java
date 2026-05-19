@@ -87,7 +87,6 @@ public class Deck {
         this.isPublic = isPublic;
     }
 
-
     public List<Card> getCards() {
         return cards;
     }

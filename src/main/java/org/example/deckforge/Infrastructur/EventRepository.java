@@ -26,14 +26,29 @@ public class EventRepository implements IEventRepository {
     }
 
     @Override
-    public void deleteEvent(int eventId) {
+    public void deleteEvent(Event event) {
         String sql = "DELETE FROM Events WHERE eventId = ?";
-        jdbcTemplate.update(sql, eventId);
+        jdbcTemplate.update(sql, event.getEventId());
     }
 
     @Override
-    public void updateEvent(int eventId) {
+    public void updateEvent(Event event) {
 
+        String sql = """
+                UPDATE Events
+                SET title = ?,
+                    eventType = ?,
+                    capacity = ?
+                WHERE eventId = ?
+                """;
+
+        jdbcTemplate.update(
+                sql,
+                event.getTitle(),
+                event.getEventType(),
+                event.getCapacity(),
+                event.getEventId()
+        );
     }
 
     @Override
@@ -55,20 +70,20 @@ public class EventRepository implements IEventRepository {
     }
 
     @Override
-    public Event findById(int eventId) {
+    public Event findByEvent(Event event) {
         String sql = "SELECT * FROM Events WHERE eventId = ?";
 
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> {
-            Event event = new Event();
-            event.setEventId(rs.getInt("eventId"));
+            Event dbevent = new Event();
+            dbevent.setEventId(rs.getInt("eventId"));
             try{
-            event.setTitle(rs.getString("title"));
-            event.setEventType(rs.getString("eventType"));
-            event.setCapacity(rs.getInt("capacity"));
+            dbevent.setTitle(rs.getString("title"));
+            dbevent.setEventType(rs.getString("eventType"));
+            dbevent.setCapacity(rs.getInt("capacity"));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            return event;
-        }, eventId);
+            return dbevent;
+        }, event.getEventId());
     }
 }

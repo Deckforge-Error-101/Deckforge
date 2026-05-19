@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bytte Marked</title>
+    <link rel="stylesheet" th:href="@{/universal.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments :: header}"></div>
+
+<div class="container">
+    <h2>Globalt Bytte Marked</h2>
+    <a href="/collection" class=" btn btn-back">Tilbage til samling</a>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Handler</th>
+            <th>Kort</th>
+            <th>Sjældenhed</th>
+            <th>Handling</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${#lists.isEmpty(trades)}">
+            <td colspan="4" style="text-align: center;">Ingen kort er sat til trade lige nu.</td>
+        </tr>
+
+        <tr th:each="trade : ${trades}">
+            <td th:text="${trade.ownerName}">Bruger</td>
+            <td th:text="${trade.cardName}">Kort Navn</td>
+            <td th:text="${trade.cardRarity}">Rarity</td>
+            <td>
+                <a th:href="@{/trade-redeem.html}" class="btn btn-redeem">Byt kort</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

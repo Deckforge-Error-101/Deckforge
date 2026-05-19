@@ -2,6 +2,7 @@ package org.example.deckforge.Service;
 
 import org.example.deckforge.Domain.Event;
 import org.example.deckforge.Domain.EventRegistration;
+import org.example.deckforge.Domain.User;
 import org.example.deckforge.Infrastructur.IEventRegistrationRepository;
 import org.example.deckforge.Infrastructur.IEventRepository;
 import org.example.deckforge.Service.Validation.EventException;
@@ -14,45 +15,66 @@ import java.util.List;
 
 @Service
 public class EventRegistrationService {
+
     private final IEventRegistrationRepository eventRegistrationRepository;
     private final IEventRepository eventRepository;
     private final Validation validation;
 
-    public EventRegistrationService(IEventRegistrationRepository eventRegistrationRepository, IEventRepository eventRepository, Validation validation) {
+    public EventRegistrationService(IEventRegistrationRepository eventRegistrationRepository,
+                                    IEventRepository eventRepository,
+                                    Validation validation) {
         this.eventRegistrationRepository = eventRegistrationRepository;
         this.eventRepository = eventRepository;
         this.validation = validation;
     }
 
+    public void registerToEvent(Event event, User user) {
+
+        EventRegistration registration = new EventRegistration();
+
+        try {
+            registration.setEventId(event.getEventId());
+            registration.setUserId(user.getUserId());
+        } catch (Exception e) {
+            throw new RuntimeException("Fejl ved oprettelse af tilmelding");
+        }
+
+        registerToEvent(registration);
+    }
 
     public void registerToEvent(EventRegistration registration) {
         try {
-            Event event = eventRepository.findById(registration.getEventId());
+            Event searchEvent = new Event();
+            searchEvent.setEventId(registration.getEventId());
+
+            Event event = eventRepository.findByEvent(searchEvent);
 
             if (event == null) {
                 throw new RuntimeException("Eventet findes ikke");
             }
 
-            if (eventRegistrationRepository.existsByEventIdAndUserId(registration.getEventId(), registration.getUserId())) {
-                throw new RuntimeException(
-                        "Du er allerede tilmeldt dette event");
+            User user = new User();
+            user.setUserId(registration.getUserId());
+
+            if (eventRegistrationRepository.existsByEventAndUser(event, user)) {
+                throw new RuntimeException("Du er allerede tilmeldt dette event");
             }
 
             registration.setRegistrationDate(LocalDateTime.now());
+
+            eventRegistrationRepository.createRegistration(registration);
+
         } catch (DataAccessException dae) {
-            throw new EventException("Fejl ved registreringsdato");
+            throw new EventException("Fejl ved registrering til event");
         } catch (Exception e) {
-            throw new RuntimeException("Kritisk fejl" + e.getMessage());
+            throw new RuntimeException("Kritisk fejl: " + e.getMessage());
         }
-
-        eventRegistrationRepository.createRegistration(registration);
     }
-
 
     public void addDeckToRegistration(EventRegistration registration) {
 
         EventRegistration dbRegistration =
-                eventRegistrationRepository.findById(registration.getRegistrationId());
+                eventRegistrationRepository.findByRegistration(registration);
 
         if (dbRegistration == null) {
             throw new RuntimeException("Tilmeldingen findes ikke");
@@ -61,12 +83,14 @@ public class EventRegistrationService {
         if (dbRegistration.getUserId() != registration.getUserId()) {
             throw new RuntimeException("Du kan kun ændre dine egne tilmeldinger");
         }
-        eventRegistrationRepository.addDeckToRegistration(registration.getRegistrationId(), registration.getDeckId());
+
+        eventRegistrationRepository.addDeckToRegistration(registration);
     }
 
     public void unregisterFromEvent(EventRegistration registration) {
 
-        EventRegistration dbRegistration = eventRegistrationRepository.findById(registration.getRegistrationId());
+        EventRegistration dbRegistration =
+                eventRegistrationRepository.findByRegistration(registration);
 
         if (dbRegistration == null) {
             throw new RuntimeException("Tilmeldingen findes ikke");
@@ -76,11 +100,10 @@ public class EventRegistrationService {
             throw new RuntimeException("Du kan kun framelde dine egne tilmeldinger");
         }
 
-        eventRegistrationRepository.deleteRegistration(registration.getRegistrationId());
+        eventRegistrationRepository.deleteRegistration(registration);
     }
 
-    public List<EventRegistration> findRegistrationsByUserId(int userId) {
-        return eventRegistrationRepository.findAllByUserId(userId);
+    public List<EventRegistration> findRegistrationsByUser(User user) {
+        return eventRegistrationRepository.findAllByUser(user);
     }
 }
-

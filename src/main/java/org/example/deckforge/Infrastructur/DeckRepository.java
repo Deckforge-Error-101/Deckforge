@@ -134,7 +134,7 @@ public class DeckRepository implements IDeckRepository {
 
     @Override
     public List<Deck> findAllPublicDecks() {
-        String sql = "SELECT * FROM decks WHERE is_public = true";
+        String sql = "SELECT * FROM decks WHERE is_public = 1";
 
         return jdbcTemplate.query(sql, (rs, rowNum) ->
                 new Deck(

@@ -3,6 +3,7 @@ package org.example.deckforge.Controller;
 import jakarta.servlet.http.HttpSession;
 import org.example.deckforge.Domain.Event;
 import org.example.deckforge.Domain.EventRegistration;
+import org.example.deckforge.Domain.RoleType;
 import org.example.deckforge.Domain.User;
 import org.example.deckforge.Service.EventRegistrationService;
 import org.example.deckforge.Service.EventService;
@@ -18,27 +19,23 @@ public class EventController {
 
     public EventController(EventService eventService,
                            EventRegistrationService eventRegistrationService) {
-
         this.eventService = eventService;
         this.eventRegistrationService = eventRegistrationService;
     }
 
     @GetMapping("/createEvent")
-    public String showCreateEventPage(HttpSession session,
-                                      Model model) {
-
+    public String showCreateEventPage(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
 
         if (user == null) {
             return "redirect:/login";
         }
 
-        if (!"ADMIN".equals(user.getRoleType())) {
+        if (user.getRoleType() != "ADMIN") {
             return "redirect:/events";
         }
 
         model.addAttribute("event", new Event());
-
         return "createEvent";
     }
 
@@ -46,20 +43,19 @@ public class EventController {
     public String createEvent(@ModelAttribute Event event,
                               HttpSession session,
                               Model model) {
-
         User user = (User) session.getAttribute("user");
 
         if (user == null) {
             return "redirect:/login";
         }
 
-        if (!"ADMIN".equals(user.getRoleType())) {
+        if (user.getRoleType() != "ADMIN") {
             return "redirect:/events";
         }
+
         try {
             eventService.createEvent(event);
             return "redirect:/events";
-
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("event", event);
@@ -68,62 +64,29 @@ public class EventController {
     }
 
     @GetMapping("/events")
-    public String showEvents(HttpSession session,
-                             Model model) {
-
+    public String showEvents(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
 
         if (user == null) {
             return "redirect:/login";
         }
-        model.addAttribute("events", eventService.findAllEvents());
 
+        model.addAttribute("events", eventService.findAllEvents());
         return "events";
     }
 
     @PostMapping("/registerEvent")
-    public String registerEvent(@RequestParam int eventId,
+    public String registerEvent(@ModelAttribute Event event,
                                 HttpSession session,
                                 Model model) {
-
         User user = (User) session.getAttribute("user");
 
         if (user == null) {
             return "redirect:/login";
         }
 
-        EventRegistration registration = new EventRegistration();
-
         try {
-
-            registration.setEventId(eventId);
-            registration.setUserId(user.getUserId());
-            eventRegistrationService.registerToEvent(registration);
-
-            return "redirect:/registrations";
-
-        } catch (Exception e) {
-
-            model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("events", eventService.findAllEvents());
-            return "events";
-        }
-    }
-
-    @PostMapping("/unregisterEvent")
-    public String unregisterEvent(@RequestParam int registrationId,
-                                  HttpSession session,
-                                  Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login";
-        }
-        EventRegistration registration = new EventRegistration();
-
-        try {
-
-            registration.setRegistrationId(registrationId);
-            registration.setUserId(user.getUserId());eventRegistrationService.unregisterFromEvent(registration);
+            eventRegistrationService.registerToEvent(event, user);
             return "redirect:/registrations";
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
@@ -135,15 +98,20 @@ public class EventController {
     @GetMapping("/registrations")
     public String myRegistrations(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
+
         if (user == null) {
             return "redirect:/login";
         }
-        model.addAttribute("registrations", eventRegistrationService.findRegistrationsByUserId(user.getUserId()));
+
+        model.addAttribute("registrations", eventRegistrationService.findRegistrationsByUser(user));
+
         return "registration";
     }
-    @PostMapping("/addDeckToRegistration")
-    public String addDeckToRegistration(@RequestParam int registrationId, @RequestParam int deckId, HttpSession session, Model model) {
 
+    @PostMapping("/addDeckToRegistration")
+    public String addDeckToRegistration(@ModelAttribute EventRegistration registration,
+                                        HttpSession session,
+                                        Model model) {
         User user = (User) session.getAttribute("user");
 
         if (user == null) {
@@ -151,19 +119,41 @@ public class EventController {
         }
 
         try {
-            EventRegistration registration = new EventRegistration();
-
-            registration.setRegistrationId(registrationId);
-            registration.setDeckId(deckId);
             registration.setUserId(user.getUserId());
 
             eventRegistrationService.addDeckToRegistration(registration);
 
             return "redirect:/registrations";
-
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("registrations", eventRegistrationService.findRegistrationsByUserId(user.getUserId()));
+            model.addAttribute("registrations", eventRegistrationService.findRegistrationsByUser(user));
+
+            return "registration";
+        }
+    }
+
+    @PostMapping("/unregisterEvent")
+    public String unregisterEvent(@ModelAttribute EventRegistration registration,
+                                  HttpSession session,
+                                  Model model) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            registration.setUserId(user.getUserId());
+
+            eventRegistrationService.unregisterFromEvent(registration);
+
+            return "redirect:/registrations";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute(
+                    "registrations",
+                    eventRegistrationService.findRegistrationsByUser(user)
+            );
 
             return "registration";
         }

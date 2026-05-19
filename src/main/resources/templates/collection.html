@@ -18,7 +18,7 @@
     <div class="add-form">
         <form th:action="@{/collection/add}" method="post">
             <label for="cardSelect">Tilføj kort til samling:</label>
-            <select name="cardId" id="cardSelect" required>
+            <select name="card.cardId" id="cardSelect" required>
                 <option value="" disabled selected>-- Vælg et kort --</option>
                 <option th:each="card : ${allCards}"
                         th:value="${card.cardId}"
@@ -59,20 +59,20 @@
                 </form>
 
                 <!-- NYT: Knap til at generere byttekode -->
-                <form class="action-form" th:action="@{/generate}" method="post">
+                <form class="action-form" th:action="@{/collection/set-tradeable}" method="post">
                     <input type="hidden" name="cardId" th:value="${card.cardId}">
-                    <button type="submit" class="btn-add">Generer Byttekode</button>
-                </form>
-                <!-- NEW: Set Tradeable Button (Only shows if tradeId is null) -->
-                <form th:if="${card.tradeId == null}" th:action="@{/collection/set-tradeable}" method="post" style="display:inline; margin-left: 5px;">
-                    <input type="hidden" name="cardId" th:value="${card.cardId}">
-                    <button type="submit" style="padding: 4px 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">Gør tradeable</button>
+                    <button type="submit">Sæt på bytte marked</button>
                 </form>
 
-                <!-- NEW: Shows if card is already tradeable -->
-                <span th:if="${card.tradeId != null}" style="margin-left: 10px; font-family: monospace; background: #e9ecef; padding: 4px 8px; border-radius: 4px;" th:title="'Kode: ' + ${card.tradeId}">
-                    Tradeable ✓
-                </span>
+                <form class="action-form" th:if="${card.tradeId == null}" th:action="@{/collection/set-tradeable}" method="post">
+                    <input type="hidden" name="cardId" th:value="${card.cardId}">
+                    <button type="submit">Gør tradeable</button>
+                </form>
+
+                <form class="action-form" th:if="${card.tradeId != null}" th:action="@{/collection/remove-tradeable}" method="post">
+                    <input type="hidden" name="cardId" th:value="${card.cardId}">
+                    <button type="submit">Tradeable</button>
+                </form>
             </td>
             <td>
                 <img th:src="@{'/images/card-' + ${card.cardId} + '.png'}"

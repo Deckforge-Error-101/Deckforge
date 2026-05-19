@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface ICollectionRepository {
     void createCollection(int userId);
-    void deleteCardFromCollection(int userId, int cardId);
-    void addCardToCollection(int userId, int cardId, String tradeId);
+    void deleteCardFromCollection(User user, Card card);
+    void addCardToCollection(User user, Card card, Collection collection);
     List<Card> findUserCollection(User user);
     int getQuantityOwned(User user, Card card);
-    void updateTradeId(int userId, int cardId, String tradeId);
+    void updateTradeId(User user, Card card, String tradeId);
     void addCardToCollection(int userId, int cardId);
     void removeCardFromCollection(int userId, int cardId);
     CardToTrade findCardToTrade(String tradeId);

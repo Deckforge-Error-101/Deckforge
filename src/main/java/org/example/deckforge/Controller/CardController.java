@@ -60,7 +60,7 @@ public class CardController {
     }
 
     @PostMapping("/generate")
-    public String generateCode(@RequestParam int cardId, HttpSession session, Model model){
+    public String generateCode(@ModelAttribute Card card, HttpSession session, Model model){
         User user = (User) session.getAttribute("user");
 
         if (user == null) {
@@ -69,7 +69,7 @@ public class CardController {
 
         int userId = user.getUserId();
 
-        String code = tradeService.generateTradeCode(userId, cardId);
+        String code = tradeService.generateTradeCode(user, card);
         model.addAttribute("successMessage", "Din byttekode er : " + code);
         return "redirect:/collection?code=" + code;
     }
@@ -89,7 +89,7 @@ public class CardController {
         }
         try {
             cardService.createCard(card);
-            return "redirect:/homePage";
+            return "redirect:/";
 
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
@@ -108,7 +108,7 @@ public class CardController {
         }
 
         if (!"ADMIN".equals(user.getRoleType())) {
-            return "redirect:/homePage";
+            return "redirect:/";
         }
 
         model.addAttribute("card", new Card());

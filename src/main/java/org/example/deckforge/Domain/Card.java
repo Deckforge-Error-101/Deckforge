@@ -61,9 +61,7 @@ public class Card {
     }
 
     public void setCardId(int cardId) {
-        if (cardId > 0) {
-            this.cardId = cardId;
-        }
+        this.cardId = cardId;
     }
 
     public void setCardName(String cardName) throws Exception {

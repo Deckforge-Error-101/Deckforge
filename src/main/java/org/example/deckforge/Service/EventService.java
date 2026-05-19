@@ -12,21 +12,31 @@ public class EventService {
     private final IEventRepository eventRepository;
     private final Validation validation;
 
-    public void createEvent(Event event) {
-       //validation.validateCreateEvent(event);
-        eventRepository.createEvent(event);
-    }
     public EventService(IEventRepository eventRepository, Validation validation) {
         this.eventRepository = eventRepository;
         this.validation = validation;
     }
 
+    public void createEvent(Event event) {
+       //validation.validateCreateEvent(event);
+        eventRepository.createEvent(event);
+    }
+    public void deleteEvent(Event event) {
+
+        eventRepository.deleteEvent(event);
+    }
+    public void updateEvent(Event event) {
+
+        eventRepository.updateEvent(event);
+    }
+
+
     public List<Event> findAllEvents() {
         return eventRepository.findAllEvents();
     }
 
-    public Event findEventById(int eventId) {
-        return eventRepository.findById(eventId);
+    public Event findEvent(Event event) {
+        return eventRepository.findByEvent(event);
     }
 }
 

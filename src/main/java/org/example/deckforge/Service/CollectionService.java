@@ -23,15 +23,15 @@ public class CollectionService {
         iCollectionRepository.createCollection(userId);
     }
 
-    public void addCardToCollection(int userId, int cardId, String tradeId) {
-        if (userId <= 0 || cardId <= 0) {
+    public void addCardToCollection(User user, Card card, Collection collection) {
+        if (user.getUserId() <= 0 || card.getCardId() <= 0) {
             throw new RuntimeException("Ugyldigt ID");
         }
-        iCollectionRepository.addCardToCollection(userId, cardId, tradeId);
+        iCollectionRepository.addCardToCollection(user, card, collection);
     }
 
-    public void removeCardFromCollection(int userId, int cardId) {
-        iCollectionRepository.deleteCardFromCollection(userId, cardId);
+    public void removeCardFromCollection(User user, Card card) {
+        iCollectionRepository.deleteCardFromCollection(user, card);
     }
 
     public List<Card> getUserCollection(User user) {
@@ -44,5 +44,16 @@ public class CollectionService {
 
     public List<CardToTrade> getAllAvailableTrades() {
         return iCollectionRepository.findAllAvailableTrades();
+    }
+
+    public void setCardAsTradeable(User user, Card card) {
+        if (user.getUserId() <= 0 || card.getCardId() <= 0) {
+            throw new RuntimeException("Ugyldigt ID");
+        }
+        iCollectionRepository.updateTradeId(user, card, "ACTIVE");
+    }
+
+    public void removeCardFromTrade(User user, Card card) {
+        iCollectionRepository.updateTradeId(user, card, null);
     }
 }

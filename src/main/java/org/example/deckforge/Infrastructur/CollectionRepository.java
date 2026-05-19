@@ -24,24 +24,24 @@ public class CollectionRepository implements ICollectionRepository {
     }
 
     @Override
-    public void addCardToCollection(int userId, int cardId, String tradeId) {
+    public void addCardToCollection(User user, Card card, Collection collection) {
         String sql = "INSERT INTO Collections (userId, cardId, tradeId, quantity) VALUES (?, ?, ?, 1)" +
                 "ON DUPLICATE KEY UPDATE quantity = quantity + 1";
-        jdbcTemplate.update(sql, userId, cardId, tradeId);
+        jdbcTemplate.update(sql, user.getUserId(), card.getCardId(), collection.getTradeId());
     }
 
     @Override
-    public void deleteCardFromCollection(int userId, int cardId) {
+    public void deleteCardFromCollection(User user, Card card) {
         String checkSql = "SELECT quantity FROM Collections WHERE userId = ? AND cardId = ?";
-        Integer currentQuantity = jdbcTemplate.queryForObject(checkSql, Integer.class, userId, cardId);
+        Integer currentQuantity = jdbcTemplate.queryForObject(checkSql, Integer.class, user, card);
 
         if (currentQuantity != null) {
             if (currentQuantity > 1) {
                 String updateSql = "UPDATE Collections SET quantity = quantity - 1 WHERE userId = ? AND cardId = ?";
-                jdbcTemplate.update(updateSql, userId, cardId);
+                jdbcTemplate.update(updateSql, user.getUserId(), card.getCardId());
             } else {
                 String deleteSql = "DELETE FROM Collections WHERE userId = ? AND cardId = ?";
-                jdbcTemplate.update(deleteSql, userId, cardId);
+                jdbcTemplate.update(deleteSql, user.getUserId(), card.getCardId());
             }
         }
     }
@@ -131,11 +131,11 @@ public class CollectionRepository implements ICollectionRepository {
     }
 
     @Override
-    public void updateTradeId(int userId, int cardId, String tradeId){
+    public void updateTradeId(User user, Card card, String tradeId){
         String sql = """
                 UPDATE Collections SET tradeId = ? WHERE userId = ? AND cardId = ?
                 """;
-        jdbcTemplate.update(sql, tradeId, userId, cardId);
+        jdbcTemplate.update(sql, tradeId, user.getUserId(), card.getCardId());
     }
 
     @Override

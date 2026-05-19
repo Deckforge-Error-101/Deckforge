@@ -1,16 +1,14 @@
 package org.example.deckforge.Controller;
 
-import org.example.deckforge.Domain.CardToTrade;
-import org.example.deckforge.Domain.RarityType;
+import org.example.deckforge.Domain.*;
 import org.example.deckforge.Service.TradeService;
 import org.springframework.ui.Model;
 import jakarta.servlet.http.HttpSession;
-import org.example.deckforge.Domain.Card;
-import org.example.deckforge.Domain.User;
 import org.example.deckforge.Service.CardService;
 import org.example.deckforge.Service.CollectionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -32,13 +30,15 @@ public class CollectionController {
     }
 
     @PostMapping("/collection/add")
-    public String addCardToCollection(@RequestParam("cardId") int cardId,
-                                      @RequestParam(value = "tradeId", required = false) String tradeId,
+    public String addCardToCollection(@ModelAttribute("card") Card card,
+                                      @ModelAttribute("trade") Collection collection,
                                       HttpSession session) {
         try {
             User user = (User) session.getAttribute("user");
-            if (user != null) {
-                collectionService.addCardToCollection(user.getUserId(), cardId, tradeId);
+
+            if (user != null && user.isCurrentLogin()) {
+
+                collectionService.addCardToCollection(user, card, collection);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,11 +47,11 @@ public class CollectionController {
     }
 
     @PostMapping("/collection/remove")
-    public String removeCardFromCollection(@RequestParam("cardId") int cardId, HttpSession session) {
+    public String removeCardFromCollection(@ModelAttribute("card") Card card, HttpSession session) {
         try {
             User user = (User) session.getAttribute("user");
             if (user != null) {
-                collectionService.removeCardFromCollection(user.getUserId(), cardId);
+                collectionService.removeCardFromCollection(user, card);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,13 +92,21 @@ public class CollectionController {
     }
 
     @PostMapping("/collection/set-tradeable")
-    public String setTradeable(@RequestParam int cardId, HttpSession session) {
+    public String setTradeable(@ModelAttribute Card card, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user != null) {
-            String code = tradeService.generateTradeCode(user.getUserId(), cardId);
-            return "redirect:/collection?coed=" + code;
+            collectionService.setCardAsTradeable(user, card);
         }
         return "redirect:/";
+    }
+
+    @PostMapping("/collection/remove-tradeable")
+    public String removeTradeable(@ModelAttribute Card card, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            collectionService.removeCardFromTrade(user, card);
+        }
+        return "redirect:/collection";
     }
 
     @GetMapping("/trades/market")
@@ -108,8 +116,6 @@ public class CollectionController {
 
         List<CardToTrade> trades = collectionService.getAllAvailableTrades();
         model.addAttribute("trades", trades);
-        return "trade-market";
+        return "tradeMarket";
     }
-
-
 }

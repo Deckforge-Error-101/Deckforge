@@ -120,6 +120,7 @@ public class DeckController {
 
     @PostMapping("/addCardToDeck")
     public String addCard(Model model, HttpSession session, @ModelAttribute Deck deck, @ModelAttribute Card card) {
+
         User user = (User) session.getAttribute("user");
 
         if (user == null || !user.isCurrentLogin()) {
@@ -130,7 +131,7 @@ public class DeckController {
         } catch (IllegalStateException ex){
             model.addAttribute("error", ex.getMessage());
         }
-        return "redirect:/editDeck?deckId=" + deck.getDeckId();
+        return "forward:/editDeck";
     }
 
     @GetMapping("/removeCardFromDeck")
@@ -147,7 +148,7 @@ public class DeckController {
         }
 
         deckService.removeCardFromDeck(deck, card);
-        return "redirect:/editDeck?deckId=" + deck.getDeckId();
+        return "forward:/editDeck";
     }
 
     @GetMapping("/updateVisibility")
@@ -164,7 +165,7 @@ public class DeckController {
         }
         deckService.updateDeckVisibility(deck);
 
-        return "redirect:/editDeck?deckId=" + deck.getDeckId();
+        return "forward:/editDeck" + deck.getDeckId();
     }
 
     @GetMapping("/explore")
@@ -180,6 +181,10 @@ public class DeckController {
 
     @PostMapping("/updateDeck")
     public String updateDeck(HttpSession session, @ModelAttribute Deck deck) {
+        System.out.println("UPDATE DECK KALDET!");
+        System.out.println("Dæk ID: " + deck.getDeckId());
+        System.out.println("Er dækket markeret som public? " + deck.isPublic());
+
         User user = (User) session.getAttribute("user");
 
         if (user == null || !user.isCurrentLogin()) {
