@@ -14,7 +14,6 @@ public class EventRepository implements IEventRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
     @Override
     public void createEvent(Event event) {
         String sql = "INSERT INTO Events (title, eventType, capacity) VALUES (?, ?, ?)";

@@ -42,7 +42,7 @@ public class EventRegistrationService {
         } catch (DataAccessException dae) {
             throw new EventException("Fejl ved registreringsdato");
         } catch (Exception e) {
-            throw new RuntimeException("Kritisk fejl");
+            throw new RuntimeException("Kritisk fejl" + e.getMessage());
         }
 
         eventRegistrationRepository.createRegistration(registration);

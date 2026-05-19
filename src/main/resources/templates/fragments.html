@@ -34,9 +34,11 @@
             <li><a href="/events">Events</a></li>
             <li><a href="/registrations">Tilmeldinger</a></li>
             <li><a href="/createDeck">Opret dæk</a></li>
+            <li><a href="/redeem">Byt kort</a></li>
 
             <li th:if="${session.user.roleType == 'ADMIN'}">
                 <a href="/createEvent">Opret Event</a>
+                <a href="/createCard">Opret kort</a>
             </li>
         </ul>
     </nav>

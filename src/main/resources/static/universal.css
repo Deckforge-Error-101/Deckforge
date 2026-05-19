@@ -136,7 +136,7 @@ hr {
 }
 
 .container {
-    max-width: 400px;
+
     margin: 50px auto;
     background-color: var(--surface-color);
     padding: 30px;

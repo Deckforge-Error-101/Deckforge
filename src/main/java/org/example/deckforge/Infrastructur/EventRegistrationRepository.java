@@ -99,10 +99,26 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
         }, userId);
     }
 
-    @Override
-    public boolean existsByEventIdAndUserId(int eventId, int userId) {
-        return false;
-    }
+
+
+        @Override
+        public boolean existsByEventIdAndUserId(int eventId, int userId) {
+
+            String sql = """
+            SELECT COUNT(*)
+            FROM EventRegistrations
+            WHERE eventId = ? AND userId = ?
+            """;
+
+            Integer count = jdbcTemplate.queryForObject(
+                    sql,
+                    Integer.class,
+                    eventId,
+                    userId
+            );
+
+            return count != null && count > 0;
+        }
 
     @Override
     public void addDeckToRegistration(int registrationId, int deckId) {

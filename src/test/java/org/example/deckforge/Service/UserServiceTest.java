@@ -3,15 +3,18 @@ package org.example.deckforge.Service;
 
 import org.example.deckforge.Domain.User;
 import org.example.deckforge.Infrastructur.IUserRepository;
+import org.example.deckforge.Service.Validation.UserException;
 import org.example.deckforge.Service.Validation.Validation;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DataAccessResourceFailureException;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
 
     @Test
-    void createUser_shouldCreateUser() throws Exception {
+    void createUser_shouldThrowUserException_whenRepositoryFailsWithDataAccessException() throws Exception {
 
         // Laver fake repository
         IUserRepository userRepository = mock(IUserRepository.class);
@@ -22,41 +25,32 @@ public class UserServiceTest {
         // Laver fake validation
         Validation validation = mock(Validation.class);
 
-        // Opretter UserService med mocks
+        // Opretter service
         UserService userService = new UserService(userRepository, passwordService, validation);
 
-        // Opretter bruger
+        // Opretter user
         User user = new User();
-
-        // Sætter username
         user.setUsername("test");
-
-        // Sætter email
         user.setEmail("test@test.dk");
-
-        // Sætter password
         user.setPassword("123456");
 
-        // Når passwordService.hash kaldes, returnerer den fake hash
+        // Password bliver hashed
         when(passwordService.hash("123456")).thenReturn("hashedPassword");
 
-        // Når repository opretter bruger, returnerer den userId 1
-        when(userRepository.createUser(user)).thenReturn(1);
+        // Repository kaster DataAccessException
+        when(userRepository.createUser(user))
+                .thenThrow(new DataAccessResourceFailureException("DB fejl"));
 
-        // Kalder metoden
-        int result = userService.createUser(user);
+        // Tester at UserException bliver kastet
+        UserException exception = assertThrows(UserException.class, () -> {
+            userService.createUser(user);
+        });
 
-        // Tjekker at validation blev kaldt
-        verify(validation, times(1)).validateCreateUser(user);
+        // Tjekker fejlbeskeden
+        assertEquals("Fejl ved oprettelse af bruger", exception.getMessage());
 
-        // Tjekker at password blev hashed
-        verify(passwordService, times(1)).hash("123456");
-
-        // Tjekker at repository blev kaldt
+        // Tjekker at repository blev forsøgt kaldt
         verify(userRepository, times(1)).createUser(user);
-
-        // Tjekker at metoden returnerer userId 1
-        assertEquals(1, result);
     }
 
     @Test

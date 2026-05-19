@@ -2,19 +2,20 @@ package org.example.deckforge.Infrastructur;
 
 import org.example.deckforge.Domain.Card;
 import org.example.deckforge.Domain.Deck;
+import org.example.deckforge.Domain.User;
 
 import java.util.List;
 
 public interface IDeckRepository {
-     Deck createDeck(Deck deck);
-     List<Deck> findAllDecksByUserId(int userId);
+     void createDeck(Deck deck);
+     List<Deck> findAllDecksByUserId(User user);
      void updateDeck(Deck deck);
-     void deleteDeck(int deckId);
-     Deck findDeckById(int deckId);
-     List<Card> getCardsInDeck(int deckId);
-     void addCardToDeck(int deckId, int cardId);
-     void removeCardFromDeck(int deckId, int cardId);
-     void updateDeckVisibility(int deckId, boolean isPublic);
+     void deleteDeck(Deck deck);
+     Deck findDeckById(Deck deck);
+     List<Card> getCardsInDeck(Deck deck);
+     void addCardToDeck(Deck deck, Card card);
+     void removeCardFromDeck(Deck deck, Card card);
+     void updateDeckVisibility(Deck deck);
      List<Deck> findAllPublicDecks();
-     int getQuantityInDeck(int deckId, int cardId);
+     int getQuantityInDeck(Deck deck, Card card);
 }

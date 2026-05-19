@@ -71,7 +71,13 @@
                 <td th:text="${deck.formatType}">Format</td>
                 <td>
                     <div class="buttons">
-                        <a th:href="@{/editDeck(deckId=${deck.deckId})}">Rediger</a>
+                        <form th:action="@{/editDeck}" method="post" style="margin:0;">
+                            <input type="hidden" name="deckId" th:value="${deck.deckId}">
+
+                            <button type="submit" style="background: none; border: none; color: var(--accent-blue); cursor: pointer; text-decoration: underline; padding: 0;">
+                                Rediger
+                            </button>
+                        </form>
                     </div>
                 </td>
             </tr>

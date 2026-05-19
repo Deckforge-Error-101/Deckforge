@@ -32,7 +32,7 @@ public class UserController {
         User user = (User) session.getAttribute("user");
             if (user != null && user.isCurrentLogin()) {
 
-                List<Deck> userDecks = deckService.findAllDecksByUserId(user.getUserId());
+                List<Deck> userDecks = deckService.findAllDecksByUserId(user);
 
                 model.addAttribute("user", user);
                 model.addAttribute("decks", userDecks);

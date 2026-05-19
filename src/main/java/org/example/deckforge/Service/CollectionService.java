@@ -1,7 +1,9 @@
 package org.example.deckforge.Service;
 
 import org.example.deckforge.Domain.Card;
+import org.example.deckforge.Domain.CardToTrade;
 import org.example.deckforge.Domain.Collection;
+import org.example.deckforge.Domain.User;
 import org.example.deckforge.Infrastructur.CollectionRepository;
 import org.example.deckforge.Infrastructur.ICollectionRepository;
 import org.springframework.stereotype.Service;
@@ -32,11 +34,15 @@ public class CollectionService {
         iCollectionRepository.deleteCardFromCollection(userId, cardId);
     }
 
-    public List<Card> getUserCollection(int userId) {
-        return iCollectionRepository.findUserCollection(userId);
+    public List<Card> getUserCollection(User user) {
+        return iCollectionRepository.findUserCollection(user);
     }
 
-    public List<Card> findUserCollection(int userId) {
-        return iCollectionRepository.findUserCollection(userId);
+    public List<Card> findUserCollection(User user) {
+        return iCollectionRepository.findUserCollection(user);
+    }
+
+    public List<CardToTrade> getAllAvailableTrades() {
+        return iCollectionRepository.findAllAvailableTrades();
     }
 }

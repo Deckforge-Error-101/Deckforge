@@ -5,7 +5,8 @@ public class Card {
     private String cardName;
     private String cardType;
     private String cardRarity;
-    private String quantity;
+    private int quantity;
+    private String tradeId;
 
     public Card(){
 
@@ -18,12 +19,21 @@ public class Card {
         this.cardRarity = cardRarity;
     }
 
-    public Card(int cardId, String cardName, String cardType, String cardRarity, String quantity) {
+    public Card(int cardId, String cardName, String cardType, String cardRarity, int quantity) {
         this.cardId = cardId;
         this.cardName = cardName;
         this.cardType = cardType;
         this.cardRarity = cardRarity;
         this.quantity = quantity;
+    }
+
+    public Card(int cardId, String cardName, String cardType, String cardRarity, int quantity, String tradeId) {
+        this.cardId = cardId;
+        this.cardName = cardName;
+        this.cardType = cardType;
+        this.cardRarity = cardRarity;
+        this.quantity = quantity;
+        this.tradeId = tradeId;
     }
 
     public int getCardId() {
@@ -42,11 +52,11 @@ public class Card {
         return cardRarity;
     }
 
-    public String getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(String quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
@@ -73,4 +83,15 @@ public class Card {
             this.cardRarity = cardRarity;
         } else{ throw new Exception("Kortet skal have en rarity");}
     }
+
+    public String getTradeId() {
+        return tradeId;
+    }
+
+    public void setTradeId(String tradeId) throws Exception {
+        if (tradeId != null) {
+            this.tradeId = tradeId;
+        } else {throw new Exception("Kortet mangler et tradId");}
+    }
+
 }

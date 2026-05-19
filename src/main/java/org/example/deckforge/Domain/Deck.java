@@ -31,9 +31,7 @@ public class Deck {
     }
 
     public void setDeckId(int deckId) {
-        if (deckId < 0) {
-            this.deckId = deckId;
-        }
+        this.deckId = deckId;
     }
 
     public String getDeckName() {
@@ -76,7 +74,12 @@ public class Deck {
         }
     }
 
-    public boolean getIsPublic(){
+    //2 getters til public for undgå forvirreing med html
+    public boolean isPublic(){
+        return isPublic;
+    }
+
+    public boolean getIsPublic() {
         return isPublic;
     }
 

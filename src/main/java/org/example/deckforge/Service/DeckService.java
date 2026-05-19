@@ -2,6 +2,7 @@ package org.example.deckforge.Service;
 
 import org.example.deckforge.Domain.Card;
 import org.example.deckforge.Domain.Deck;
+import org.example.deckforge.Domain.User;
 import org.example.deckforge.Infrastructur.ICollectionRepository;
 import org.example.deckforge.Infrastructur.IDeckRepository;
 import org.springframework.stereotype.Service;
@@ -19,80 +20,68 @@ public class DeckService {
         this.iCollectionRepository = iCollectionRepository;
     }
 
-    public Deck createDeck(Deck deck) {
-        return iDeckRepository.createDeck(deck);
+    public void createDeck(Deck deck) {
+        iDeckRepository.createDeck(deck);
     }
 
-    public List<Deck> findAllDecksByUserId(int userId) {
-        if (userId <= 0) {
+    public List<Deck> findAllDecksByUserId(User user) {
+        if (user.getUserId() <= 0) {
             throw new RuntimeException("Ugyldigt bruger ID");
         }
 
-        return iDeckRepository.findAllDecksByUserId(userId);
+        return iDeckRepository.findAllDecksByUserId(user);
     }
 
-    public void updateDeck(Deck deck) {
-        iDeckRepository.updateDeck(deck);
-    }
-
-    public void deleteDeck(int deckId) {
-        iDeckRepository.deleteDeck(deckId);
-    }
-
-    /* Vi skal validere i en validate klasse. Gemmes så vi kan copy over i den korrekte klasse.
-    private void validateDeckRules(Deck deck) {
-        if (deck.getDeckName() == null || deck.getDeckName().isEmpty()) {
-            throw new RuntimeException("Decket skal have et navn");
+    public void updateDeck(Deck updatedDeck) {
+        if (updatedDeck == null) {
+            throw new RuntimeException("Dækket må ikke være null");
         }
 
-        String format = deck.getFormatType();
-        int slots = deck.getSlots();
+        Deck existingDeck = iDeckRepository.findDeckById(updatedDeck);
 
-        if (format != null && format.equalsIgnoreCase("commander")) {
-            if (slots < 100) {
-                throw new RuntimeException("Et Commander deck skal have mindst 100 kort");
-            }
-        } else {
-            if (slots < 60) {
-                throw new RuntimeException("Et deck skal have mindst 60 kort");
-            }
-        }
+        existingDeck.setDeckName(updatedDeck.getDeckName());
+        existingDeck.setFormatType(updatedDeck.getFormatType());
+        existingDeck.setPublic(updatedDeck.isPublic());
+
+        iDeckRepository.updateDeck(existingDeck);
     }
 
-     */
-
-    public Deck findDeckById(int deckId) {
-        return iDeckRepository.findDeckById(deckId);
+    public void deleteDeck(Deck deck) {
+        iDeckRepository.deleteDeck(deck);
     }
 
-    public List<Card> getCardsInDeck(int deckId) {
-        return iDeckRepository.getCardsInDeck(deckId);
+    public Deck findDeckById(Deck deck) {
+        return iDeckRepository.findDeckById(deck);
     }
 
-    public void addCardToDeck(int userId, int deckId, int cardId){
-        int owned = iCollectionRepository.getQuantityOwned(userId, cardId);
-        int inDeck = iDeckRepository.getQuantityInDeck(deckId, cardId);
+    public List<Card> getCardsInDeck(Deck deck) {
+        return iDeckRepository.getCardsInDeck(deck);
+    }
+
+    public void addCardToDeck(User user, Deck deck, Card card){
+        int owned = iCollectionRepository.getQuantityOwned(user, card);
+        int inDeck = iDeckRepository.getQuantityInDeck(deck, card);
 
         if (inDeck < owned){
-            iDeckRepository.addCardToDeck(deckId, cardId);
+            iDeckRepository.addCardToDeck(deck, card);
         } else {
             throw new IllegalStateException("Du har ikke flere eksemplarer af dette kort i din collection");
         }
     }
 
-    public void removeCardFromDeck(int deckId, int cardId){
-        iDeckRepository.removeCardFromDeck(deckId, cardId);
+    public void removeCardFromDeck(Deck deck, Card card){
+        iDeckRepository.removeCardFromDeck(deck, card);
     }
 
-    public void updateDeckVisibility(int deckId, boolean isPublic){
-        iDeckRepository.updateDeckVisibility(deckId, isPublic);
+    public void updateDeckVisibility(Deck deck){
+        iDeckRepository.updateDeckVisibility(deck);
     }
 
     public List<Deck> findAllPublicDecks(){
         List<Deck> decks = iDeckRepository.findAllPublicDecks();
 
         for (Deck deck: decks){
-            List<Card> cardsInThisDeck = iDeckRepository.getCardsInDeck(deck.getDeckId());
+            List<Card> cardsInThisDeck = iDeckRepository.getCardsInDeck(deck);
 
             deck.setCards(cardsInThisDeck);
         }

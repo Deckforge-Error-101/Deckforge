@@ -1,6 +1,8 @@
 package org.example.deckforge.Controller;
 
+import org.example.deckforge.Domain.CardToTrade;
 import org.example.deckforge.Domain.RarityType;
+import org.example.deckforge.Service.TradeService;
 import org.springframework.ui.Model;
 import jakarta.servlet.http.HttpSession;
 import org.example.deckforge.Domain.Card;
@@ -21,10 +23,12 @@ public class CollectionController {
 
     private final CollectionService collectionService;
     private final CardService cardService;
+    private final TradeService tradeService;
 
-    public CollectionController(CollectionService collectionService, CardService cardService) {
+    public CollectionController(CollectionService collectionService, CardService cardService, TradeService tradeService) {
         this.collectionService = collectionService;
         this.cardService = cardService;
+        this.tradeService = tradeService;
     }
 
     @PostMapping("/collection/add")
@@ -67,7 +71,7 @@ public class CollectionController {
             model.addAttribute("successMessage", "Din byttekode er : " + code);
         }
 
-        List<Card> userCollection = collectionService.getUserCollection(user.getUserId());
+        List<Card> userCollection = collectionService.getUserCollection(user);
         List<Card> allCards = cardService.findAllCards();
         List<String> rarityOrder = Arrays.asList("COMMON", "UNCOMMON", "RARE", "MYTHIC");
 
@@ -86,4 +90,26 @@ public class CollectionController {
 
         return "collection";
     }
+
+    @PostMapping("/collection/set-tradeable")
+    public String setTradeable(@RequestParam int cardId, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user != null) {
+            String code = tradeService.generateTradeCode(user.getUserId(), cardId);
+            return "redirect:/collection?coed=" + code;
+        }
+        return "redirect:/";
+    }
+
+    @GetMapping("/trades/market")
+    public String showTradeMarket(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) { return "redirect:/"; }
+
+        List<CardToTrade> trades = collectionService.getAllAvailableTrades();
+        model.addAttribute("trades", trades);
+        return "trade-market";
+    }
+
+
 }

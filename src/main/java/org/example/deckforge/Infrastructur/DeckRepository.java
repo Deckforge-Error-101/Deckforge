@@ -2,13 +2,10 @@ package org.example.deckforge.Infrastructur;
 
 import org.example.deckforge.Domain.Card;
 import org.example.deckforge.Domain.Deck;
+import org.example.deckforge.Domain.User;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.util.List;
 
 @Repository
@@ -20,31 +17,22 @@ public class DeckRepository implements IDeckRepository {
     }
 
     @Override
-    public Deck createDeck(Deck deck) {
-        String sql = "INSERT INTO decks (deckname, formatType, slots, userId) VALUES (?, ?, ?, ?)";
+    public void createDeck(Deck deck) {
+        String sql = "INSERT INTO decks (deckName, formatType, slots, userId) VALUES (?, ?, ?, ?)";
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, deck.getDeckName());
-            ps.setString(2, deck.getFormatType());
-            ps.setInt(3, deck.getSlots());
-            ps.setInt(4, deck.getUserId());
-            return ps;
-        }, keyHolder);
-
-
-        if (keyHolder.getKey() != null) {
-            deck.setDeckId(keyHolder.getKey().intValue());
-        }
-        return deck;
+        jdbcTemplate.update(sql,
+                deck.getDeckName(),
+                deck.getFormatType(),
+                deck.getSlots(),
+                deck.getUserId()
+        );
     }
 
     @Override
-    public List<Deck> findAllDecksByUserId(int userId) {
+    public List<Deck> findAllDecksByUserId(User user) {
         String sql = "SELECT deckId, deckName, formatType, slots, is_public, userId FROM decks WHERE userId = ?";
 
-        return jdbcTemplate.query(sql, new Object[]{userId}, (rs, rowNum) ->
+        return jdbcTemplate.query(sql, new Object[]{user.getUserId()}, (rs, rowNum) ->
                 new Deck(
                         rs.getInt("deckId"),
                         rs.getString("deckName"),
@@ -64,20 +52,21 @@ public class DeckRepository implements IDeckRepository {
                 deck.getDeckName(),
                 deck.getFormatType(),
                 deck.getSlots(),
-                deck.getDeckId(),
-                deck.getIsPublic()
+                deck.isPublic(),
+                deck.getDeckId()
         );
     }
 
     @Override
-    public void deleteDeck(int deckId) {
+    public void deleteDeck(Deck deck) {
         String sql = "DELETE FROM decks WHERE deckId = ?";
 
-        jdbcTemplate.update(sql, deckId);
+        jdbcTemplate.update(sql, deck.getDeckId());
     }
 
+
     @Override
-    public Deck findDeckById(int deckId) {
+    public Deck findDeckById(Deck deck) {
         String sql = "SELECT deckId, deckName, formatType, slots, is_public, userId FROM decks WHERE deckId = ?";
 
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) ->
@@ -88,58 +77,59 @@ public class DeckRepository implements IDeckRepository {
                         rs.getInt("slots"),
                         rs.getBoolean("is_public"),
                         rs.getInt("userId")
-                ), deckId
+                ), deck.getDeckId()
         );
     }
 
     @Override
-    public List<Card> getCardsInDeck(int deckId) {
+    public List<Card> getCardsInDeck(Deck deck) {
         //Vi joiner 'cards' (c) med 'deck_cards' (dc) for at koble kort-data sammen med dæk-ID og antal
-        String sql = "SELECT c.cardid, c.cardname, c.typeid, c.rarity, dc.quantity " +
+        String sql = "SELECT c.cardId, c.cardName, c.typeId, c.rarity, dc.quantity " +
                 "FROM cards c " +
-                "JOIN deck_cards dc ON c.cardid = dc.cardid " +
-                "WHERE dc.deckid = ?";
+                "JOIN deck_cards dc ON c.cardId = dc.cardId " +
+                "WHERE dc.deckId = ?";
 
         return jdbcTemplate.query(sql, (rs, rowNum) ->
                 new Card(
-                        rs.getInt("cardid"),
-                        rs.getString("cardname"),
-                        rs.getString("typeid"),
+                        rs.getInt("cardId"),
+                        rs.getString("cardName"),
+                        rs.getString("typeId"),
                         rs.getString("rarity"),
-                        rs.getString("quantity")
-                ), deckId);
+                        rs.getInt("quantity")
+                ), deck.getDeckId()
+        );
     }
 
     @Override
-    public void addCardToDeck(int deckId, int cardId) {
+    public void addCardToDeck(Deck deck, Card card) {
         //Duplicate key så vi ikke behøver flere rækker med samme kort.
         String sql = "INSERT INTO Deck_Cards (deckId, cardId, quantity) VALUES (?, ?, 1) " +
                 "ON DUPLICATE KEY UPDATE quantity = quantity + 1";
-        jdbcTemplate.update(sql, deckId, cardId);
+        jdbcTemplate.update(sql, deck.getDeckId(), card.getCardId());
     }
 
-    public void removeCardFromDeck(int deckId, int cardId) {
+    public void removeCardFromDeck(Deck deck, Card card) {
         //Vi starter med at tjekke hvor mange af det specifikke kort der er i quantity.
-        String checkSql = "SELECT quantity FROM deck_cards WHERE deckid = ? AND cardid = ?";
+        String checkSql = "SELECT quantity FROM deck_cards WHERE deckId = ? AND cardId = ?";
 
         try {
             //Her forventer vi at modtage en integer tilbage. 1,2,3,4,5 osv
-            Integer currentQuantity = jdbcTemplate.queryForObject(checkSql, Integer.class, deckId, cardId);
+            Integer currentQuantity = jdbcTemplate.queryForObject(checkSql, Integer.class, deck.getDeckId(), card.getCardId());
             //Hvis resultatet er mindre større end 1 fjerne vi bare 1 fra quantity
             if (currentQuantity != null && currentQuantity > 1) {
-                jdbcTemplate.update("UPDATE deck_cards SET quantity = quantity - 1 WHERE deckid = ? AND cardid = ?", deckId, cardId);
+                jdbcTemplate.update("UPDATE deck_cards SET quantity = quantity - 1 WHERE deckId = ? AND cardId = ?", deck.getDeckId(), card.getCardId());
             } else {
                 //Hvis resultatet er 1 fjerner vi hele rækken fra databasen.
-                jdbcTemplate.update("DELETE FROM deck_cards WHERE deckid = ? AND cardid = ?", deckId, cardId);
+                jdbcTemplate.update("DELETE FROM deck_cards WHERE deckId = ? AND cardId = ?", deck.getDeckId(), card.getCardId());
             }
         } catch (Exception e) {
         }
     }
 
     @Override
-    public void updateDeckVisibility(int deckId, boolean isPublic) {
+    public void updateDeckVisibility(Deck deck) {
         String sql = "UPDATE decks SET is_public = ? WHERE deckId = ?";
-        jdbcTemplate.update(sql, isPublic, deckId);
+        jdbcTemplate.update(sql, deck.isPublic(), deck.getDeckId());
     }
 
     @Override
@@ -158,10 +148,10 @@ public class DeckRepository implements IDeckRepository {
         );
     }
 
-    public int getQuantityInDeck(int deckId, int cardId) {
+    public int getQuantityInDeck(Deck deck, Card card) {
         String sql = "SELECT quantity FROM deck_cards WHERE deckid = ? AND cardid = ?";
 
-        List<Integer> results = jdbcTemplate.query(sql, new Object[]{deckId, cardId}, (rs, rowNum) ->
+        List<Integer> results = jdbcTemplate.query(sql, new Object[]{deck.getDeckId(), card.getCardId()}, (rs, rowNum) ->
                 rs.getInt("quantity")
         );
 

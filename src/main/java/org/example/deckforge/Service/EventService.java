@@ -1,14 +1,10 @@
 package org.example.deckforge.Service;
 
 import org.example.deckforge.Domain.Event;
-import org.example.deckforge.Domain.EventRegistration;
-import org.example.deckforge.Infrastructur.IEventRegistrationRepository;
 import org.example.deckforge.Infrastructur.IEventRepository;
 import org.example.deckforge.Service.Validation.Validation;
 import org.springframework.stereotype.Service;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service

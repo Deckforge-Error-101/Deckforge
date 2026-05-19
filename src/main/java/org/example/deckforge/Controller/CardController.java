@@ -1,20 +1,26 @@
 package org.example.deckforge.Controller;
 
+import org.example.deckforge.Domain.Card;
+import org.example.deckforge.Domain.Event;
 import org.springframework.ui.Model;
 import jakarta.servlet.http.HttpSession;
 import org.example.deckforge.Domain.User;
 import org.example.deckforge.Service.TradeService;
+import org.example.deckforge.Service.CardService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class CardController {
     private TradeService tradeService;
+    private final CardService cardService;
 
-    public CardController(TradeService tradeService) {
+    public CardController(TradeService tradeService, CardService cardService) {
         this.tradeService = tradeService;
+        this.cardService = cardService;
     }
 
     @GetMapping("/redeem")
@@ -67,4 +73,50 @@ public class CardController {
         model.addAttribute("successMessage", "Din byttekode er : " + code);
         return "redirect:/collection?code=" + code;
     }
+    @PostMapping("/createCard")
+    public String createCard(@ModelAttribute Card card,
+                              HttpSession session,
+                              Model model) {
+
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        if (!"ADMIN".equals(user.getRoleType())) {
+            return "redirect:/";
+        }
+        try {
+            cardService.createCard(card);
+            return "redirect:/homePage";
+
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("card", card);
+            return "createCard";
+        }
+    }
+    @GetMapping("/createCard")
+    public String showCreateCardPage(HttpSession session,
+                                     Model model) {
+
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        if (!"ADMIN".equals(user.getRoleType())) {
+            return "redirect:/homePage";
+        }
+
+        model.addAttribute("card", new Card());
+
+        return "createCard";
+    }
+
+
+
+
 }

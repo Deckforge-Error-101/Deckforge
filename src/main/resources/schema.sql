@@ -48,7 +48,7 @@ CREATE TABLE Cards
     rarity   ENUM('RARE', 'UNCOMMON', 'COMMON', 'MYTHIC')
 );
 
-CREATE TABLE collections
+CREATE TABLE Collections
 (
     collectionId INT AUTO_INCREMENT PRIMARY KEY,
 
@@ -87,7 +87,7 @@ CREATE TABLE EventRegistrations
         REFERENCES Decks (deckId)
         ON DELETE CASCADE,
 
-    registrationDate DATE NOT NULL
+    registrationDate DATETIME NOT NULL
 );
 
 CREATE TABLE Deck_Cards

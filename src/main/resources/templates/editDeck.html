@@ -16,21 +16,22 @@
         <h2 th:text="${deck.deckName}" style="color: var(--accent-orange);">Deck Navn</h2>
         <p>Format: <span id="user-role" th:text="${deck.formatType}">Standard</span></p>
         <hr>
-        <form th:action="@{updateDeck}" method="post" style="display: flex; flex-direction: column; gap: 10px;">
-            <input type="hidden" name="deckId" th:value="${deck.deckId}">
+
+        <form th:action="@{/updateDeck}" th:object="${deck}" method="post" style="display: flex; flex-direction: column; gap: 10px;">
+
+            <input type="hidden" th:field="*{deckId}">
 
             <label>Nyt navn</label>
-            <input type="text" name="deckName" th:value="${deck.deckName}" required>
+            <input type="text" th:field="*{deckName}" required>
 
             <label>Ændre Type/Format</label>
-            <select name="formatType">
-                <option value="Standard" th:selected="${deck.formatType == 'Standard'}">Standard</option>
-                <option value="Commander" th:selected="${deck.formatType == 'Commander'}">Commander</option>
+            <select th:field="*{formatType}">
+                <option value="STANDARD" th:selected="*{formatType == 'STANDARD'}">Standard</option>
+                <option value="COMMANDER" th:selected="*{formatType == 'COMMANDER'}">Commander</option>
             </select>
 
             <div style="display: flex; align-items: center; gap: 10px; margin: 10px 0;">
-                <input type="checkbox" name="isPublic" id="isPublic" value="true"
-                       th:checked="${deck.isPublic}">
+                <input type="checkbox" th:field="*{isPublic}" id="isPublic" value="true">
                 <label for="isPublic" style="cursor: pointer; user-select: none;">Gør dækket offentligt synligt</label>
             </div>
 
@@ -39,10 +40,13 @@
             </button>
         </form>
 
-        <form th:action="@{/delete}" method="post" onsubmit="return confirm('Er du helt sikker på, at du vil slette dette deck?');">
-            <input type="hidden" name="deckId" th:value="${deck.deckId}">
-            <button type="submit" style="width: 100%; background-color: transparent; color: #ff4444; border: 1px solid #ff4444; padding: 10px; cursor: pointer; border-radius: 4px; transition: 0.3s;"
-            >Slet Deck
+        <form th:action="@{/delete}" th:object="${deck}" method="post"
+              onsubmit="return confirm('Er du helt sikker på, at du vil slette dette deck?');">
+
+            <input type="hidden" th:field="*{deckId}">
+
+            <button type="submit" style="width: 100%; background-color: transparent; color: #ff4444; border: 1px solid #ff4444; padding: 10px; cursor: pointer; border-radius: 4px;">
+                Slet Deck
             </button>
         </form>
     </aside>

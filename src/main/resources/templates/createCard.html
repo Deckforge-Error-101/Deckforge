@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Opret kort</title>
+    <link rel="stylesheet" th:href="@{/universal.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments :: header}"></div>
+
+<div class="container">
+
+    <h1>Create Card</h1>
+
+    <p th:if="${errorMessage}"
+       th:text="${errorMessage}"
+       class="error"></p>
+
+    <form th:action="@{/createCard}"
+          th:object="${card}"
+          method="post">
+
+        <label>Card Name</label>
+        <input type="text"
+               th:field="*{cardName}"
+               required>
+
+        <label>Card Type</label>
+        <select th:field="*{cardType}" required>
+            <option value="">Choose type</option>
+            <option value="CREATURE">Creature</option>
+            <option value="LAND">Land</option>
+            <option value="ENCHANTMENT">Enchantment</option>
+            <option value="PLANESWALKER">Planeswalker</option>
+            <option value="SORCERY">Sorcery</option>
+            <option value="INSTANT">Instant</option>
+            <option value="ARTIFACT">Artifact</option>
+            <option value="TRIBAL">Tribal</option>
+        </select>
+
+        <label>Rarity</label>
+        <select th:field="*{cardRarity}" required>
+            <option value="">Choose rarity</option>
+            <option value="COMMON">Common</option>
+            <option value="UNCOMMON">Uncommon</option>
+            <option value="RARE">Rare</option>
+            <option value="MYTHIC">Mythic</option>
+        </select>
+
+        <button type="submit">Create Card</button>
+
+    </form>
+
+    <br>
+
+    <a th:href="@{/}">
+        Back to home page
+    </a>
+
+</div>
+
+</body>
+</html>
