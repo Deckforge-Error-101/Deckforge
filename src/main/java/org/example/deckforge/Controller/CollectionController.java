@@ -97,7 +97,7 @@ public class CollectionController {
         if (user != null) {
             collectionService.setCardAsTradeable(user, card);
         }
-        return "redirect:/";
+        return "redirect:/collection";
     }
 
     @PostMapping("/collection/remove-tradeable")
@@ -112,7 +112,7 @@ public class CollectionController {
     @GetMapping("/trades/market")
     public String showTradeMarket(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null) { return "redirect:/"; }
+        if (user == null) { return "redirect:/collection"; }
 
         List<CardToTrade> trades = collectionService.getAllAvailableTrades();
         model.addAttribute("trades", trades);
