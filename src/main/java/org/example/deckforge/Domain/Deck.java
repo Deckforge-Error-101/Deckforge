@@ -58,10 +58,8 @@ public class Deck {
         return slots;
     }
 
-    public void setSlots(int slots) throws Exception {
-        if (slots > 0) {
-            this.slots = slots;
-        } else {throw new Exception("Decket skal have et antal slots");}
+    public void setSlots(int slots) {
+        this.slots = slots;
     }
 
     public int getUserId() {

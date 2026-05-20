@@ -5,15 +5,17 @@ public class Event {
     private String title;
     private String eventType;
     private int capacity;
+    private String statusType;
 
     public Event(){
     }
 
-    public Event(int eventId, String titel, String eventType, int capacity) {
+    public Event(int eventId, String titel, String eventType, int capacity, String statusType) {
         this.eventId = eventId;
         this.title = titel;
         this.eventType = eventType;
         this.capacity = capacity;
+        this.statusType = "OPEN";
     }
 
     public int getEventId() {
@@ -56,5 +58,16 @@ public class Event {
         if (capacity > 0) {
             this.capacity = capacity;
         } else{ throw new Exception("Event skal have en max capacitet");}
+    }
+    public String getStatusType() {
+        return statusType;
+    }
+
+    public void setStatusType(String statusType) throws Exception {
+        if("OPEN".equals(statusType)|| "FULL".equals(statusType)){
+            this.statusType = statusType;
+        }else {
+            throw new Exception("Event status skal være OPEN eller FULL");
+        }
     }
 }

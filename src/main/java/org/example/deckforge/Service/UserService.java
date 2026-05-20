@@ -32,9 +32,9 @@ public class UserService {
         try {
             return iUserRepository.createUser(user);
         } catch (DataAccessException dae){
-            throw new UserException("Fejl ved oprettelse af bruger");
+            throw new UserException("Kunne ikke oprette brugeren, prøv igen senere");
         } catch (Exception ex){
-            throw new RuntimeException("Kritisk fejl");
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
         }
     }
 

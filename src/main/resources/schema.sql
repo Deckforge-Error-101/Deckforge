@@ -13,14 +13,14 @@ CREATE TABLE Events
     title      VARCHAR(50) NOT NULL,
     eventType  ENUM('CASUAL_EVENT', 'COMMANDER_EVENT') NOT NULL,
     capacity   INT         NOT NULL,
-    statusType ENUM('OPEN', 'FULL', 'CLOSED')
+    statusType ENUM('OPEN', 'FULL') DEFAULT 'OPEN'
 );
 
 CREATE TABLE Users
 (
     userId   INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50)  NOT NULL,
-    email    VARCHAR(80)  NOT NULL,
+    email    VARCHAR(80)  UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     roleType ENUM('USER', 'ADMIN', 'MANAGER') DEFAULT 'USER'
 );
@@ -45,7 +45,8 @@ CREATE TABLE Cards
     cardName VARCHAR(50) NOT NULL,
     typeId   ENUM('CREATURE', 'LAND', 'ENCHANTMENT', 'PLANESWALKER', 'SORCERY', 'INSTANT', 'ARTIFACT', 'TRIBAL') NOT NULL,
     image    LONGBLOB,
-    rarity   ENUM('RARE', 'UNCOMMON', 'COMMON', 'MYTHIC')
+    rarity   ENUM('RARE', 'UNCOMMON', 'COMMON', 'MYTHIC'),
+    setType ENUM ('SET_2005', 'SET_2010', 'SET_2015', 'SET_2020')
 );
 
 CREATE TABLE Collections
@@ -98,4 +99,16 @@ CREATE TABLE Deck_Cards
     PRIMARY KEY (deckId, cardId),
     FOREIGN KEY (deckId) REFERENCES Decks (deckId) ON DELETE CASCADE,
     FOREIGN KEY (cardId) REFERENCES Cards (cardId)
+);
+
+CREATE TABLE Trade_Log
+(
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    buyer_id INT NOT NULL,
+    seller_id INT NOT NULL,
+    card_id INT NOT NULL,
+    trade_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (buyer_id) REFERENCES users(userid),
+    FOREIGN KEY (seller_id) REFERENCES users(userid),
+    FOREIGN KEY (card_id) REFERENCES Cards(cardid)
 );

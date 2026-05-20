@@ -17,9 +17,9 @@ public class CardRepository implements ICardRepository {
 
     @Override
     public void createCard(Card card) {
-        String sql = "INSERT INTO cards (cardName, typeId, rarity) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO cards (cardName, typeId, rarity, setType) VALUES (?, ?, ?, ?)";
 
-        jdbcTemplate.update(sql, card.getCardName(), card.getCardType(), card.getCardRarity());
+        jdbcTemplate.update(sql, card.getCardName(), card.getCardType(), card.getCardRarity(), card.getSetType());
     }
 
     @Override
@@ -31,21 +31,23 @@ public class CardRepository implements ICardRepository {
                         rs.getInt("cardId"),
                         rs.getString("cardName"),
                         rs.getString("image"),
-                        rs.getString("rarity")
+                        rs.getString("rarity"),
+                        rs.getString("setType")
                 )
         );
     }
 
     @Override
     public List<Card> findAllCards() {
-        String sql = "SELECT cardId, cardName, typeId, rarity FROM cards";
+        String sql = "SELECT cardId, cardName, typeId, rarity, setType FROM cards";
 
         return jdbcTemplate.query(sql, (rs, rowNum) ->
                 new Card(
                         rs.getInt("cardId"),
                         rs.getString("cardName"),
                         rs.getString("typeid"),
-                        rs.getString("rarity")
+                        rs.getString("rarity"),
+                        rs.getString("setType")
                 )
         );
     }

@@ -37,6 +37,4 @@ public class CardService {
     public List<Card> findAllCards() {
         return iCardRepository.findAllCards();
     }
-
-
 }

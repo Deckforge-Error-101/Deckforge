@@ -4,6 +4,7 @@ import org.example.deckforge.Domain.Card;
 import org.example.deckforge.Domain.CardToTrade;
 import org.example.deckforge.Domain.User;
 import org.example.deckforge.Infrastructur.ICollectionRepository;
+import org.example.deckforge.Infrastructur.ITradeLogRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,9 +13,11 @@ import java.util.UUID;
 @Service
 public class TradeService {
     private ICollectionRepository iCollectionRepository;
+    private ITradeLogRepository iTradeLogRepository;
 
     public TradeService(ICollectionRepository iCollectionRepository) {
         this.iCollectionRepository = iCollectionRepository;
+        this.iTradeLogRepository = iTradeLogRepository;
     }
 
     public String generateTradeCode(User user, Card card){

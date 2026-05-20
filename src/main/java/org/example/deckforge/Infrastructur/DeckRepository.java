@@ -95,7 +95,8 @@ public class DeckRepository implements IDeckRepository {
                         rs.getString("cardName"),
                         rs.getString("typeId"),
                         rs.getString("rarity"),
-                        rs.getInt("quantity")
+                        rs.getInt("quantity"),
+                        rs.getString("setType")
                 ), deck.getDeckId()
         );
     }

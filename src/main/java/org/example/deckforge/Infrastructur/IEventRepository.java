@@ -10,4 +10,5 @@ public interface IEventRepository {
     void updateEvent(Event event);
     List<Event> findAllEvents();
     Event findByEvent(Event event);
+    void updateStatus(Event event);
 }

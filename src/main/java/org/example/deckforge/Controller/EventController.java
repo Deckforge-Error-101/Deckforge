@@ -1,12 +1,10 @@
 package org.example.deckforge.Controller;
 
 import jakarta.servlet.http.HttpSession;
-import org.example.deckforge.Domain.Event;
-import org.example.deckforge.Domain.EventRegistration;
-import org.example.deckforge.Domain.RoleType;
-import org.example.deckforge.Domain.User;
+import org.example.deckforge.Domain.*;
 import org.example.deckforge.Service.EventRegistrationService;
 import org.example.deckforge.Service.EventService;
+import org.example.deckforge.Service.Validation.DeckException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,11 +28,9 @@ public class EventController {
         if (user == null) {
             return "redirect:/login";
         }
-
-        if (user.getRoleType() != "ADMIN") {
+        if (!"ADMIN".equals(user.getRoleType()) && !"MANAGER".equals(user.getRoleType())) {
             return "redirect:/events";
         }
-
         model.addAttribute("event", new Event());
         return "createEvent";
     }
@@ -48,11 +44,9 @@ public class EventController {
         if (user == null) {
             return "redirect:/login";
         }
-
-        if (user.getRoleType() != "ADMIN") {
+        if (!"ADMIN".equals(user.getRoleType()) && !"MANAGER".equals(user.getRoleType())) {
             return "redirect:/events";
         }
-
         try {
             eventService.createEvent(event);
             return "redirect:/events";
@@ -109,7 +103,7 @@ public class EventController {
     }
 
     @PostMapping("/addDeckToRegistration")
-    public String addDeckToRegistration(@ModelAttribute EventRegistration registration,
+    public String addDeckToRegistration(@ModelAttribute EventRegistration registration, @ModelAttribute("deck") Deck deck,
                                         HttpSession session,
                                         Model model) {
         User user = (User) session.getAttribute("user");
@@ -121,9 +115,14 @@ public class EventController {
         try {
             registration.setUserId(user.getUserId());
 
-            eventRegistrationService.addDeckToRegistration(registration);
+            eventRegistrationService.addDeckToRegistration(registration, deck);
 
             return "redirect:/registrations";
+        } catch (DeckException de){
+            model.addAttribute("errorMessage", de.getMessage());
+            model.addAttribute("registrations", eventRegistrationService.findRegistrationsByUser(user));
+            return "registration";
+
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("registrations", eventRegistrationService.findRegistrationsByUser(user));
@@ -150,10 +149,7 @@ public class EventController {
             return "redirect:/registrations";
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute(
-                    "registrations",
-                    eventRegistrationService.findRegistrationsByUser(user)
-            );
+            model.addAttribute("registrations", eventRegistrationService.findRegistrationsByUser(user));
 
             return "registration";
         }

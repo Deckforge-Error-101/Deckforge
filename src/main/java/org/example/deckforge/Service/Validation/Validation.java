@@ -1,5 +1,6 @@
 package org.example.deckforge.Service.Validation;
 
+import org.example.deckforge.Domain.Deck;
 import org.example.deckforge.Domain.Event;
 import org.example.deckforge.Domain.EventRegistration;
 import org.example.deckforge.Domain.User;
@@ -44,8 +45,8 @@ public class Validation {
     }
 
     public void validateDeleteUser(User user){
-        if (user.getUserId() < 0){
-            throw new UserException("Id kan ikke tilgå negative værdier");
+        if (user.getUserId() <= 0){
+            throw new UserException("Id kan ikke tilgå negative værdier, eller være 0");
         }
     }
 
@@ -91,4 +92,24 @@ public class Validation {
             throw new EventRegistrationException("Fejl ved id");
         }
     }
+
+
+    public void validateRegisterDeck(EventRegistration eventRegistration, Deck deck, Event event) {
+        if (!deck.getFormatType().equals(event.getEventType())) {
+            throw new DeckException("Dækkets format (" + deck.getFormatType() + ") matcher ikke eventets format (" + event.getEventType() + ").");
+        }
+
+        if ("COMMANDER".equals(deck.getFormatType())) {
+            if (deck.getSlots() != 100) {
+                throw new DeckException("Et Commander-dæk skal bestå af præcis 100 kort.");
+            }
+
+        } else if ("STANDARD".equals(deck.getFormatType())) {
+            if (deck.getSlots() < 60) {
+                throw new DeckException("Et Standard-dæk skal bestå af mindst 60 kort.");
+            }
+        }
+    }
+
+
 }

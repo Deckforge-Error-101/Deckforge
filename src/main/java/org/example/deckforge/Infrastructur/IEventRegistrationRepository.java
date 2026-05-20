@@ -14,5 +14,6 @@ public interface IEventRegistrationRepository {
     List<EventRegistration> findAllByUser(User user);
     boolean existsByEventAndUser(Event event,User user);
     void addDeckToRegistration(EventRegistration registration);
+    int countRegistrationsByEvent(Event event);
 
 }

@@ -32,24 +32,21 @@ public class CollectionRepository implements ICollectionRepository {
 
     @Override
     public void deleteCardFromCollection(User user, Card card) {
-        String checkSql = "SELECT quantity FROM Collections WHERE userId = ? AND cardId = ?";
-        Integer currentQuantity = jdbcTemplate.queryForObject(checkSql, Integer.class, user, card);
+        int currentQuantity = getQuantityOwned(user, card);
 
-        if (currentQuantity != null) {
-            if (currentQuantity > 1) {
-                String updateSql = "UPDATE Collections SET quantity = quantity - 1 WHERE userId = ? AND cardId = ?";
-                jdbcTemplate.update(updateSql, user.getUserId(), card.getCardId());
-            } else {
-                String deleteSql = "DELETE FROM Collections WHERE userId = ? AND cardId = ?";
-                jdbcTemplate.update(deleteSql, user.getUserId(), card.getCardId());
-            }
+        if (currentQuantity > 1) {
+            String updateSql = "UPDATE Collections SET quantity = quantity - 1 WHERE userId = ? AND cardId = ?";
+            jdbcTemplate.update(updateSql, user.getUserId(), card.getCardId());
+        } else if (currentQuantity == 1) {
+            String deleteSql = "DELETE FROM Collections WHERE userId = ? AND cardId = ?";
+            jdbcTemplate.update(deleteSql, user.getUserId(), card.getCardId());
         }
     }
 
     @Override
     public List<Card> findUserCollection(User user) {
         String sql = """
-                SELECT c.cardId, c.cardName, c.typeId, c.rarity, col.quantity, col.tradeId
+                SELECT c.cardId, c.cardName, c.typeId, c.rarity, c.setType, col.quantity, col.tradeId
                 FROM Collections col
                 JOIN Cards c ON col.cardId = c.cardId
                 WHERE col.userId = ?
@@ -62,7 +59,9 @@ public class CollectionRepository implements ICollectionRepository {
                         rs.getString("typeId"),
                         rs.getString("rarity"),
                         rs.getInt("quantity"),
-                        rs.getString("tradeId")
+                        rs.getString("tradeId"),
+                        rs.getString("setType")
+
                 )
         );
     }

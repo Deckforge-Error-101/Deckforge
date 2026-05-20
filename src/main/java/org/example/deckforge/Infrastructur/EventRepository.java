@@ -16,12 +16,13 @@ public class EventRepository implements IEventRepository {
 
     @Override
     public void createEvent(Event event) {
-        String sql = "INSERT INTO Events (title, eventType, capacity) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Events (title, eventType, capacity, statusType) VALUES (?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
                 event.getTitle(),
                 event.getEventType(),
-                event.getCapacity()
+                event.getCapacity(),
+                "OPEN"
         );
     }
 
@@ -52,6 +53,20 @@ public class EventRepository implements IEventRepository {
     }
 
     @Override
+    public void updateStatus(Event event) {
+        String sql = """
+            UPDATE Events
+            SET statusType = ?
+            WHERE eventId = ?
+            """;
+
+        jdbcTemplate.update(sql,
+                event.getStatusType(),
+                event.getEventId()
+        );
+    }
+
+    @Override
     public List<Event> findAllEvents() {
         String sql = "SELECT * FROM Events";
 
@@ -62,6 +77,7 @@ public class EventRepository implements IEventRepository {
                 event.setTitle(rs.getString("title"));
                 event.setEventType(rs.getString("eventType"));
                 event.setCapacity(rs.getInt("capacity"));
+                event.setStatusType(rs.getString("statusType"));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -80,6 +96,7 @@ public class EventRepository implements IEventRepository {
             dbevent.setTitle(rs.getString("title"));
             dbevent.setEventType(rs.getString("eventType"));
             dbevent.setCapacity(rs.getInt("capacity"));
+            dbevent.setStatusType(rs.getString("statusType"));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

@@ -59,12 +59,8 @@ public class EventRegistration {
         return deckId;
     }
 
-    public void setDeckId(int deckId) throws Exception {
-        if (deckId > 0) {
-            this.deckId = deckId;
-        } else {
-            throw new Exception("Fejl ved event");
-        }
+    public void setDeckId(int deckId) {
+        this.deckId = deckId;
     }
 
     public LocalDateTime getRegistrationDate() {

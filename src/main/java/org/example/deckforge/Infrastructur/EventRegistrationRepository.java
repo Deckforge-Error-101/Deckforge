@@ -150,4 +150,22 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
                 registration.getRegistrationId()
         );
     }
+
+    @Override
+    public int countRegistrationsByEvent(Event event) {
+        String sql = """
+            SELECT COUNT(*)
+            FROM EventRegistrations
+            WHERE eventId = ?
+            """;
+
+        return jdbcTemplate.queryForObject(
+                sql,
+                Integer.class,
+                event.getEventId()
+        );
+        return 0;
+    }
+
+
 }

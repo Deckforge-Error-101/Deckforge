@@ -1,5 +1,6 @@
 package org.example.deckforge.Service;
 
+import org.example.deckforge.Domain.Deck;
 import org.example.deckforge.Domain.Event;
 import org.example.deckforge.Domain.EventRegistration;
 import org.example.deckforge.Domain.User;
@@ -71,10 +72,9 @@ public class EventRegistrationService {
         }
     }
 
-    public void addDeckToRegistration(EventRegistration registration) {
+    public void addDeckToRegistration(EventRegistration registration, Deck deck) {
 
-        EventRegistration dbRegistration =
-                eventRegistrationRepository.findByRegistration(registration);
+        EventRegistration dbRegistration = eventRegistrationRepository.findByRegistration(registration);
 
         if (dbRegistration == null) {
             throw new RuntimeException("Tilmeldingen findes ikke");
@@ -84,7 +84,18 @@ public class EventRegistrationService {
             throw new RuntimeException("Du kan kun ændre dine egne tilmeldinger");
         }
 
-        eventRegistrationRepository.addDeckToRegistration(registration);
+        Event searchEvent = new Event();
+        searchEvent.setEventId(dbRegistration.getEventId());
+        Event event = eventRepository.findByEvent(searchEvent);
+
+        if (event == null) {
+            throw new RuntimeException("Det tilknyttede event blev ikke fundet");
+        }
+
+        validation.validateRegisterDeck(dbRegistration, deck, event);
+
+        dbRegistration.setDeckId(deck.getDeckId());
+        eventRegistrationRepository.addDeckToRegistration(dbRegistration);
     }
 
     public void unregisterFromEvent(EventRegistration registration) {

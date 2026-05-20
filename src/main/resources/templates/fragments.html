@@ -36,10 +36,13 @@
             <li><a href="/createDeck">Opret dæk</a></li>
             <li><a href="/redeem">Byt kort</a></li>
 
-            <li th:if="${session.user.roleType == 'ADMIN'}">
+            <li th:if="${session.user.roleType == 'ADMIN' or session.user.roleType == 'MANAGER'}">
                 <a href="/createEvent">Opret Event</a>
+            </li>
+            <li th:if="${session.user.roleType == 'ADMIN'}">
                 <a href="/createCard">Opret kort</a>
             </li>
+
             <li><a href="/trades/market">Bytte Marked</a></li>
         </ul>
     </nav>

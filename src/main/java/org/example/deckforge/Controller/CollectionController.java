@@ -33,6 +33,7 @@ public class CollectionController {
     public String addCardToCollection(@ModelAttribute("card") Card card,
                                       @ModelAttribute("trade") Collection collection,
                                       HttpSession session) {
+        System.out.println(card.getCardId());
         try {
             User user = (User) session.getAttribute("user");
 

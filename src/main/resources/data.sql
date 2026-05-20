@@ -1,15 +1,15 @@
 INSERT INTO Users (username, email, password, roleType)
 VALUES ('AdminTobias', 'admin@deckforge.dk', '$2a$12$5pyBW/v1LCOuq5bO24Vj7uXnvWUWhwKHYNVDSBkQS3XuQAoel0pba', 'ADMIN'),
        ('SpillerMads', 'mads@mail.dk', '$2a$12$5pyBW/v1LCOuq5bO24Vj7uXnvWUWhwKHYNVDSBkQS3XuQAoel0pba', 'USER'),
-       ('ManagerMette', 'mette@butik.dk', '$2a$12$5pyBW/v1LCOuq5bO24Vj7uXnvWUWhwKHYNVDSBkQS3XuQAoel0pba', 'MANAGER');
+       ('ManagerMette', 'mette@deckforge.dk', '$2a$12$5pyBW/v1LCOuq5bO24Vj7uXnvWUWhwKHYNVDSBkQS3XuQAoel0pba', 'MANAGER');
 
-INSERT INTO Cards (cardName, typeId, rarity)
-VALUES ('Black Lotus', 'ARTIFACT', 'MYTHIC'),
-       ('Pikachu', 'CREATURE', 'UNCOMMON'),
-       ('Island', 'LAND', 'COMMON'),
-       ('Fireball', 'SORCERY', 'UNCOMMON'),
-       ('Counterspell', 'INSTANT', 'RARE'),
-       ('Jace, the Mind Sculptor', 'PLANESWALKER', 'MYTHIC');
+INSERT INTO Cards (cardName, typeId, rarity, setType)
+VALUES ('Black Lotus', 'ARTIFACT', 'MYTHIC', 'SET_2005'),
+       ('Pikachu', 'CREATURE', 'UNCOMMON', 'SET_2010'),
+       ('Island', 'LAND', 'COMMON', 'SET_2005'),
+       ('Fireball', 'SORCERY', 'UNCOMMON', 'SET_2005'),
+       ('Counterspell', 'INSTANT', 'RARE', 'SET_2020'),
+       ('Jace, the Mind Sculptor', 'PLANESWALKER', 'MYTHIC', 'SET_2015');
 
 INSERT INTO Events (title, eventType, capacity, statusType)
 VALUES ('Fredags Magic', 'CASUAL_EVENT', 16, 'OPEN'),
