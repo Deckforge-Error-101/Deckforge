@@ -73,4 +73,24 @@ public class UserRepository implements IUserRepository {
                 )
         );
     }
+
+    @Override
+    public User findUser(User user) {
+        String sql = "SELECT * FROM users WHERE userId = ?";
+
+        return jdbcTemplate.query(sql, new Object[]{user.getUserId()}, (rs, rowNum) ->
+                new User(
+                        rs.getInt("userId"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("roleType"),
+                        false
+                )
+
+        ).stream().findFirst().orElse(null);
+    }
 }
+
+
+

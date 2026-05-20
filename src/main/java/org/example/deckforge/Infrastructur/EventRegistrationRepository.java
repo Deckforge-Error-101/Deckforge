@@ -159,12 +159,8 @@ public class EventRegistrationRepository implements IEventRegistrationRepository
             WHERE eventId = ?
             """;
 
-        return jdbcTemplate.queryForObject(
-                sql,
-                Integer.class,
-                event.getEventId()
-        );
-        return 0;
+        return jdbcTemplate.queryForObject(sql, Integer.class, event.getEventId());
+
     }
 
 

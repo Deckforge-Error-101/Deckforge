@@ -30,15 +30,29 @@
             <span th:text="${event.capacity}">0</span>
         </p>
 
-        <form th:action="@{/registerEvent}" method="post">
+        <p>
+            <strong>Status:</strong>
+            <span th:if="${event.statusType == 'OPEN'}">Åben</span>
+            <span th:if="${event.statusType == 'FULL'}">Fyldt</span>
+        </p>
 
-            <input type="hidden"
+
+        <form th:if="${event.statusType == 'OPEN'}"
+              th:action="@{/registerEvent}"
+              method="post">
+
+
+        <input type="hidden"
                    name="eventId"
                    th:value="${event.eventId}">
 
             <button type="submit">Register to event</button>
 
         </form>
+        <p th:if="${event.statusType == 'FULL'}">
+            Eventet er fyldt. Du kan ikke tilmelde dig.
+        </p>
+
 
     </div>
 

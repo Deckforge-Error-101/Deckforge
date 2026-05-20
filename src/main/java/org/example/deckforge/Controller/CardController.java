@@ -52,7 +52,7 @@ public class CardController {
         int buyerId = buyer.getUserId();
 
         try {
-            String cardName = tradeService.redeemCard(tradeId, buyerId);
+            String cardName = tradeService.redeemCard(tradeId, buyer);
             return "redirect:/redeem?success=" + cardName;
         } catch (IllegalArgumentException e) {
             return "redirect:/redeem?error=" + e.getMessage();

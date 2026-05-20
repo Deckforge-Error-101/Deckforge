@@ -60,10 +60,28 @@ public class EventRegistrationService {
             if (eventRegistrationRepository.existsByEventAndUser(event, user)) {
                 throw new RuntimeException("Du er allerede tilmeldt dette event");
             }
+            int registrations = eventRegistrationRepository.countRegistrationsByEvent(event);
+
+            if (registrations >= event.getCapacity()) {
+                event.setStatusType("FULL");
+                eventRepository.updateStatus(event);
+
+                throw new RuntimeException("Eventet er fyldt");
+            }
 
             registration.setRegistrationDate(LocalDateTime.now());
 
             eventRegistrationRepository.createRegistration(registration);
+
+            registrations = eventRegistrationRepository.countRegistrationsByEvent(event);
+
+            if (registrations >= event.getCapacity()) {
+                event.setStatusType("FULL");
+            } else {
+                event.setStatusType("OPEN");
+            }
+
+            eventRepository.updateStatus(event);
 
         } catch (DataAccessException dae) {
             throw new EventException("Fejl ved registrering til event");
@@ -112,6 +130,28 @@ public class EventRegistrationService {
         }
 
         eventRegistrationRepository.deleteRegistration(registration);
+        // Opretter et midlertidigt Event-objekt med eventId fra den slettede tilmelding.
+        // Det bruges til at hente det fulde event fra databasen.
+        Event searchEvent = new Event();
+        searchEvent.setEventId(dbRegistration.getEventId());
+
+        // Henter eventet fra databasen, så vi kan få capacity og nuværende status
+        Event event = eventRepository.findByEvent(searchEvent);
+        // Tæller hvor mange brugere der stadig er tilmeldt eventet efter frameldinge
+        int registrations = eventRegistrationRepository.countRegistrationsByEvent(event);
+
+        try {
+            if (registrations >= event.getCapacity()) {
+                event.setStatusType("FULL");
+            } else {
+                event.setStatusType("OPEN");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        // Gemmer den opdaterede status i Events-tabellen
+        eventRepository.updateStatus(event);
+
     }
 
     public List<EventRegistration> findRegistrationsByUser(User user) {
