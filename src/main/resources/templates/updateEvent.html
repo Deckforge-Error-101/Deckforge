@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Updater event</title>
+    <link rel="stylesheet" th:href="@{/universal.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments :: header}"></div>
+
+<div class="container">
+    <h1>Opdater event</h1>
+
+    <p th:if="${error}" th:text="${error}" class="error"></p>
+
+    <form th:action="@{/updateEvent}"
+          th:object="${event}"
+          method="post">
+
+        <input type="hidden" th:field="*{eventId}">
+
+        <label>Titel</label>
+        <input type="text"
+               th:field="*{title}"
+               required>
+
+        <label>Event Type</label>
+        <select th:field="*{eventType}" required>
+            <option value="">
+                Choose Event Type
+            </option>
+            <option value="CASUAL_EVENT">
+                Casual Event
+            </option>
+            <option value="COMMANDER_EVENT">
+                Commander Event
+            </option>
+        </select>
+
+        <label>Capacity</label>
+        <input type="number"
+               th:field="*{capacity}"
+               min="1"
+               required>
+
+        <button type="submit">
+            Gem Ændringer
+        </button>
+    </form>
+</div>
+
+<footer>
+    <p>&copy; 2026 Deckforge MTG</p>
+</footer>
+
+</body>
+</html>

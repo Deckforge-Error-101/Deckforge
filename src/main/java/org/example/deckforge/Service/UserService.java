@@ -31,9 +31,9 @@ public class UserService {
 
         try {
             return iUserRepository.createUser(user);
-        } catch (DataAccessException dae){
+        } catch (DataAccessException dae) {
             throw new UserException("Kunne ikke oprette brugeren, prøv igen senere");
-        } catch (Exception ex){
+        } catch (Exception ex) {
             throw new RuntimeException("Kritisk fejl, kontakt en administrator");
         }
     }
@@ -58,9 +58,9 @@ public class UserService {
             dbUser.setLastOnline(LocalDateTime.now());
             return dbUser;
 
-        } catch (DataAccessException dae){
+        } catch (DataAccessException dae) {
             throw new UserException("Fejl ved login");
-        } catch (Exception ex){
+        } catch (Exception ex) {
             throw new RuntimeException("Kritisk fejl");
         }
     }
@@ -76,9 +76,9 @@ public class UserService {
             }
 
             iUserRepository.updateUser(user);
-        } catch (DataAccessException dae){
+        } catch (DataAccessException dae) {
             throw new UserException("Fejl ved opdatering af bruger");
-        } catch (Exception ex){
+        } catch (Exception ex) {
             throw new RuntimeException("Kritisk fejl");
         }
     }
@@ -89,9 +89,9 @@ public class UserService {
 
         try {
             iUserRepository.deleteUser(user.getUserId());
-        } catch (DataAccessException dae){
+        } catch (DataAccessException dae) {
             throw new UserException("Fejl ved sletning af user");
-        } catch (Exception ex){
+        } catch (Exception ex) {
             throw new RuntimeException("Kritisk fejl");
         }
     }

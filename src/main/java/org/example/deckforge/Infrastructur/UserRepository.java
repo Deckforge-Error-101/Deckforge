@@ -1,6 +1,5 @@
 package org.example.deckforge.Infrastructur;
 
-import org.example.deckforge.Domain.Card;
 import org.example.deckforge.Domain.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.List;
 
 @Repository
 public class UserRepository implements IUserRepository {

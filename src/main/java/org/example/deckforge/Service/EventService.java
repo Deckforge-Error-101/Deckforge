@@ -1,10 +1,14 @@
 package org.example.deckforge.Service;
 
 import org.example.deckforge.Domain.Event;
+import org.example.deckforge.Domain.User;
 import org.example.deckforge.Infrastructur.IEventRegistrationRepository;
 import org.example.deckforge.Infrastructur.IEventRepository;
+import org.example.deckforge.Service.Validation.EventException;
 import org.example.deckforge.Service.Validation.Validation;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -19,26 +23,58 @@ public class EventService {
         this.validation = validation;
     }
 
-    public void createEvent(Event event) {
-       //validation.validateCreateEvent(event);
-        eventRepository.createEvent(event);
+    public void createEvent(User user, Event event) {
+        validation.validateCreateEvent(event, user);
+        try {
+            eventRepository.createEvent(event);
+        } catch (DataAccessException | EventException dae) {
+            throw new EventException("Der er sket en fejl ved oprettelse af event, prøv igen senere");
+        } catch (Exception e) {
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
+        }
     }
+
     public void deleteEvent(Event event) {
-
-        eventRepository.deleteEvent(event);
+        validation.validateDeleteEvent(event);
+        try {
+            eventRepository.deleteEvent(event);
+        } catch (DataAccessException | EventException dae) {
+            throw new EventException("Fejl ved sletning af event, prøv igen senere");
+        } catch (Exception e) {
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
+        }
     }
-    public void updateEvent(Event event) {
+
+    public void updateEvent(User user, Event event) {
+        validation.validateCreateEvent(event, user);
         eventRepository.updateEvent(event);
-        updateStatus(event);
+        try {
+            updateStatus(event);
+        } catch (DataAccessException | EventException dae) {
+            throw new EventException("Fejl ved opdatering af event, prøv igen senere");
+        } catch (Exception e) {
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
+        }
     }
-
 
     public List<Event> findAllEvents() {
-        return eventRepository.findAllEvents();
+        try {
+            return eventRepository.findAllEvents();
+        } catch (DataAccessException | EventException dae) {
+            throw new EventException("Fejl ved events, prøv igen senere");
+        } catch (Exception ex) {
+            throw new RuntimeException("Kritisk fejl, kontakt administrator");
+        }
     }
 
     public Event findEvent(Event event) {
-        return eventRepository.findByEvent(event);
+        try {
+            return eventRepository.findByEvent(event);
+        } catch (DataAccessException | EventException dae) {
+            throw new EventException("Fejl ved events, prøv igen senere");
+        } catch (Exception ex) {
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
+        }
     }
 
     public void updateStatus(Event event) {
@@ -50,11 +86,14 @@ public class EventService {
             } else {
                 event.setStatusType("OPEN");
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
-        eventRepository.updateStatus(event);
+            eventRepository.updateStatus(event);
+
+        } catch (DataAccessException | EventException dae) {
+            throw new EventException("Fejl ved events, prøv igen senere");
+        } catch (Exception ex) {
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
+        }
     }
 }
 

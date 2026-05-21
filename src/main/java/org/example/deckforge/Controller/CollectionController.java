@@ -67,29 +67,35 @@ public class CollectionController {
         if (user == null) {
             return "redirect:/";
         }
+        try {
+            if (code != null && !code.isEmpty()) {
+                model.addAttribute("successMessage", "Din byttekode er : " + code);
+            }
 
-        if (code != null && !code.isEmpty()) {
-            model.addAttribute("successMessage", "Din byttekode er : " + code);
+            List<Card> userCollection = collectionService.getUserCollection(user);
+            List<Card> allCards = cardService.findAllCards();
+            List<String> rarityOrder = Arrays.asList("COMMON", "UNCOMMON", "RARE", "MYTHIC");
+
+            //Sortering af kort i Collection.
+            List<Card> sortedCollection = userCollection.stream()
+                    .sorted(Comparator.comparingInt(card -> rarityOrder.indexOf(card.getCardRarity())))
+                    .toList();
+
+            //Sortering af kort i dropdown
+            List<Card> sortedCards = allCards.stream()
+                    .sorted(Comparator.comparingInt(card -> rarityOrder.indexOf(card.getCardRarity())))
+                    .toList();
+
+            model.addAttribute("userCollection", sortedCollection);
+            model.addAttribute("allCards", sortedCards);
+
+            return "collection";
+        }catch (Exception e){
+            model.addAttribute("errorMessage", "Kunne ikke hente samlingen:" + e.getMessage());
+            model.addAttribute("userCollection", List.of());
+            model.addAttribute("allCards", List.of());
+            return "collection";
         }
-
-        List<Card> userCollection = collectionService.getUserCollection(user);
-        List<Card> allCards = cardService.findAllCards();
-        List<String> rarityOrder = Arrays.asList("COMMON", "UNCOMMON", "RARE", "MYTHIC");
-
-        //Sortering af kort i Collection.
-        List<Card> sortedCollection = userCollection.stream()
-                .sorted(Comparator.comparingInt(card -> rarityOrder.indexOf(card.getCardRarity())))
-                .toList();
-
-        //Sortering af kort i dropdown
-        List<Card> sortedCards = allCards.stream()
-                .sorted(Comparator.comparingInt(card -> rarityOrder.indexOf(card.getCardRarity())))
-                .toList();
-
-        model.addAttribute("userCollection", sortedCollection);
-        model.addAttribute("allCards", sortedCards);
-
-        return "collection";
     }
 
     @PostMapping("/collection/set-tradeable")
@@ -114,9 +120,13 @@ public class CollectionController {
     public String showTradeMarket(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) { return "redirect:/collection"; }
-
-        List<CardToTrade> trades = collectionService.getAllAvailableTrades();
-        model.addAttribute("trades", trades);
-        return "tradeMarket";
+        try {
+            List<CardToTrade> trades = collectionService.getAllAvailableTrades();
+            model.addAttribute("trades", trades);
+            return "tradeMarket";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "fejl" + e.getMessage());
+            return "tradeMarket";
+        }
     }
 }

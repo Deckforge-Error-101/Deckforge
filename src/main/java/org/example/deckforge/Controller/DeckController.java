@@ -30,24 +30,9 @@ public class DeckController {
         this.collectionService = collectionService;
     }
 
-    /* Vi bruger ikke denne metode pt.
-    @GetMapping("/decks")
-    public String showMyDecks(HttpSession session, Model model){
-        User user = (User) session.getAttribute("user");
-
-        if (user == null || !user.isCurrentLogin()) {
-            return "redirect:/";
-        }
-
-        List<Deck> myDecks = deckService.findAllDecksByUserId(user.getUserId());
-        model.addAttribute("decks", myDecks);
-
-        return "myDecks";
-    }
-     */
 
     @GetMapping("/createDeck")
-    public String createDeckForm(HttpSession session, Model model){
+    public String createDeckForm(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
 
         if (user == null || !user.isCurrentLogin()) {
@@ -59,7 +44,7 @@ public class DeckController {
     }
 
     @PostMapping("/createDeck")
-    public String createDeck(@ModelAttribute Deck deck, HttpSession session, Model model){
+    public String createDeck(@ModelAttribute Deck deck, HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
 
         if (user == null || !user.isCurrentLogin()) {
@@ -72,7 +57,7 @@ public class DeckController {
 
             return "redirect:/";
 
-        } catch (Exception ex){
+        } catch (Exception ex) {
             model.addAttribute("error", ex.getMessage());
             return "createDeck";
         }
@@ -84,33 +69,50 @@ public class DeckController {
     }
 
     @PostMapping("/delete")
-    public String deleteDeck(@ModelAttribute Deck deck, HttpSession session){
+    public String deleteDeck(@ModelAttribute Deck deck, HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
 
         if (user == null || !user.isCurrentLogin()) {
             return "redirect:/";
         }
-
-        deckService.deleteDeck(deck);
-
-        return "redirect:/";
+        try {
+            deckService.deleteDeck(deck);
+            return "redirect:/";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "homePage";
+        }
+    }
+    @GetMapping("/editDeck")
+    public String editDeckForm(HttpSession session, Model model) {
+        return "/editDeck";
     }
 
+
     @PostMapping("/editDeck")
-    public String showEditPage(@ModelAttribute Deck deck, HttpSession session, Model model){
+    public String showEditPage(@ModelAttribute Deck deck, HttpSession session, Model model) {
         System.out.println("Modtaget dæk-ID i controller: " + deck.getDeckId());
         User user = (User) session.getAttribute("user");
         if (user == null || !user.isCurrentLogin()) {
             return "redirect:/login";
         }
+        try {
+            Deck fullDeck = deckService.findDeckById(deck);
+            if (deck.getDeckId() == 0) {
+                model.addAttribute("errorMessage", "Fejl: Systemet modtog intet dæk-ID.");
+                return "homePage";
+            }
 
-        Deck fullDeck = deckService.findDeckById(deck);
 
-        model.addAttribute("deck", fullDeck);
-        model.addAttribute("deckCards", deckService.getCardsInDeck(fullDeck));
-        model.addAttribute("userCollection", collectionService.findUserCollection(user));
+            model.addAttribute("deck", fullDeck);
+            model.addAttribute("deckCards", deckService.getCardsInDeck(fullDeck));
+            model.addAttribute("userCollection", collectionService.findUserCollection(user));
 
-        return "editDeck";
+            return "editDeck";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Kunne ikke åbne redigeringssiden: ");
+            return "homePage";
+        }
     }
 
     @GetMapping("/addCardToDeck")
@@ -128,7 +130,7 @@ public class DeckController {
         }
         try {
             deckService.addCardToDeck(user, deck, card);
-        } catch (IllegalStateException ex){
+        } catch (IllegalStateException ex) {
             model.addAttribute("error", ex.getMessage());
         }
         return "forward:/editDeck";
@@ -180,19 +182,19 @@ public class DeckController {
     }
 
     @PostMapping("/updateDeck")
-    public String updateDeck(HttpSession session, @ModelAttribute Deck deck) {
-        System.out.println("UPDATE DECK KALDET!");
-        System.out.println("Dæk ID: " + deck.getDeckId());
-        System.out.println("Er dækket markeret som public? " + deck.isPublic());
+    public String updateDeck(HttpSession session, @ModelAttribute Deck deck, Model model) {
+        try {
+            User user = (User) session.getAttribute("user");
 
-        User user = (User) session.getAttribute("user");
+            if (user == null || !user.isCurrentLogin()) {
+                return "redirect:/";
+            }
 
-        if (user == null || !user.isCurrentLogin()) {
-            return "redirect:/";
+            deckService.updateDeck(deck);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "editDeck";
         }
-
-        deckService.updateDeck(deck);
-
         return "forward:/editDeck";
     }
 }

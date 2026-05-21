@@ -6,6 +6,7 @@ import org.example.deckforge.Domain.User;
 import org.example.deckforge.Service.CollectionService;
 import org.example.deckforge.Service.DeckService;
 import org.example.deckforge.Service.UserService;
+import org.example.deckforge.Service.Validation.UserException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,11 +59,19 @@ public class UserController {
             return "login";
         }
     }
+    @GetMapping("/logout")
+    public String logout() {
+        return "redirect:/";
+    }
 
     @PostMapping("/logout")
-    public String logout(HttpSession session, Model model){
-        session.invalidate();
-        return "redirect:/";
+    public String logout(HttpSession session){
+        try {
+            session.invalidate();
+            return "redirect:/";
+        } catch (Exception ex) {
+            return "login";
+        }
     }
 
 
@@ -80,6 +89,7 @@ public class UserController {
             return "redirect:/login";
         } catch (Exception ex){
             model.addAttribute("error", ex.getMessage());
+            model.addAttribute("user", user);
             return "createUser";
         }
     }

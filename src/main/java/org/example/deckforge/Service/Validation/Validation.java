@@ -82,34 +82,56 @@ public class Validation {
         if (event.getTitle() == null || event.getTitle().isEmpty()){
             throw new EventException("Event title må ikke være tom");
         }
+        if (event.getTitle().length() > 50) {
+            throw new EventException("Event må ikke have et navn på mere end 50 tegn");
+        }
         if (user.getUserId() < 0){
             throw new UserException("Id må ikke tilgå negative værdier");
         }
+
+        if ("CASUAL_EVENT".equals(event.getEventType())) {
+            if (event.getCapacity() > 32) {
+                throw new DeckException("Der må ikke være mere end 32 pladser til et casual event");
+            } else if (event.getCapacity() < 4) {
+                throw new DeckException("Der skal være minimum 4 tilmeldinger");
+            }
+        }
+
+        if ("COMMANDER_EVENT".equals(event.getEventType())) {
+            if (event.getCapacity() >= 32) {
+                throw new DeckException("Der må ikke være mere end 16 pladser til et commander event");
+            } else if (event.getCapacity() < 4) {
+                throw new DeckException("Der må ikke være 0 eller negative pladser til et event");
+            }
+        }
     }
 
-    public void validateUnregisterEvent(EventRegistration registration, User user){
-        if (registration.getRegistrationId() < 0){
-            throw new EventRegistrationException("Fejl ved id");
+    public void validateDeleteEvent(Event event){
+        if (event.getEventId() < 0){
+            throw new EventException("Der er sket en fejl ved sletning, prøv igen senere");
         }
     }
 
 
-    public void validateRegisterDeck(EventRegistration eventRegistration, Deck deck, Event event) {
-        if (!deck.getFormatType().equals(event.getEventType())) {
-            throw new DeckException("Dækkets format (" + deck.getFormatType() + ") matcher ikke eventets format (" + event.getEventType() + ").");
+    public void validateRegisterDeck(EventRegistration registration, Deck deck, Event event) {
+        if (deck.getFormatType() == null || event.getEventType() == null) {
+            throw new DeckException("Format eller event-type mangler.");
         }
 
+        //Validering af event type og deck type
+        if ("COMMANDER_EVENT".equals(event.getEventType()) && !"COMMANDER".equals(deck.getFormatType())) {
+            throw new DeckException("Du kan kun tilmelde et Commander-dæk til et Commander event.");
+        }
+
+        //validering af slots
         if ("COMMANDER".equals(deck.getFormatType())) {
             if (deck.getSlots() != 100) {
                 throw new DeckException("Et Commander-dæk skal bestå af præcis 100 kort.");
             }
-
         } else if ("STANDARD".equals(deck.getFormatType())) {
             if (deck.getSlots() < 60) {
                 throw new DeckException("Et Standard-dæk skal bestå af mindst 60 kort.");
             }
         }
     }
-
-
 }

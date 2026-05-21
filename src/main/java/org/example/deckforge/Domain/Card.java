@@ -10,7 +10,6 @@ public class Card {
     private String setType;
 
     public Card(){
-
     }
 
     public Card(int cardId, String cardName, String cardType, String cardRarity, String setType) {
@@ -44,16 +43,48 @@ public class Card {
         return cardId;
     }
 
+    public void setCardId(int cardId) {
+        if (cardId > 0) {
+            this.cardId = cardId;
+        } else {
+            throw new IllegalArgumentException("Id kan ikke være 0 eller negativt");
+        }
+    }
+
     public String getCardName() {
         return cardName;
+    }
+
+    public void setCardName(String cardName) {
+        if (cardName != null && !cardName.isBlank()) {
+            this.cardName = cardName;
+        } else {
+            throw new IllegalArgumentException("Kortet skal have et navn");
+        }
     }
 
     public String getCardType() {
         return cardType;
     }
 
+    public void setCardType(String cardType) {
+        if (cardType != null && !cardType.isBlank()) {
+            this.cardType = cardType;
+        } else {
+            throw new IllegalArgumentException("Kortet skal have en type");
+        }
+    }
+
     public String getCardRarity() {
         return cardRarity;
+    }
+
+    public void setCardRarity(String cardRarity) {
+        if (cardRarity != null && !cardRarity.isBlank()) {
+            this.cardRarity = cardRarity;
+        } else {
+            throw new IllegalArgumentException("Kortet skal have en rarity");
+        }
     }
 
     public int getQuantity() {
@@ -61,47 +92,30 @@ public class Card {
     }
 
     public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public void setCardId(int cardId) {
-        this.cardId = cardId;
-    }
-
-    public void setCardName(String cardName) throws Exception {
-        if (cardName != null) {
-            this.cardName = cardName;
-        } else {throw new Exception("Kortet skal have et navn");}
-    }
-
-    public void setCardType(String cardType) throws Exception {
-        if (cardType != null) {
-            this.cardType = cardType;
-        } else {throw new Exception("Kortet skal have en type");}
-    }
-
-    public void setCardRarity(String cardRarity) throws Exception {
-        if (cardRarity != null) {
-            this.cardRarity = cardRarity;
-        } else{ throw new Exception("Kortet skal have en rarity");}
+        if (quantity >= 0) {
+            this.quantity = quantity;
+        } else {
+            throw new IllegalArgumentException("Antal kan ikke være negativt");
+        }
     }
 
     public String getTradeId() {
         return tradeId;
     }
 
-    public void setTradeId(String tradeId) throws Exception {
-        if (tradeId != null) {
-            this.tradeId = tradeId;
-        } else {throw new Exception("Kortet mangler et tradId");}
+    public void setTradeId(String tradeId) {
+        this.tradeId = tradeId;
     }
 
-    public void setSetType(String setType){
-        this.setType = setType;
-    }
-
-    public String getSetType(){
+    public String getSetType() {
         return setType;
     }
 
+    public void setSetType(String setType) {
+        if (setType != null && !setType.isBlank()) {
+            this.setType = setType;
+        } else {
+            throw new IllegalArgumentException("Kortet skal have et set");
+        }
+    }
 }

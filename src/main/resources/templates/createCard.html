@@ -17,9 +17,7 @@
        th:text="${errorMessage}"
        class="error"></p>
 
-    <form th:action="@{/createCard}"
-          th:object="${card}"
-          method="post">
+    <form th:action="@{/createCard}" th:object="${card}" method="post">
 
         <label>Card Name</label>
         <input type="text"
@@ -48,10 +46,18 @@
             <option value="MYTHIC">Mythic</option>
         </select>
 
+        <label>Set</label>
+        <select th:field="*{setType}" required>
+            <option value="">Choose set</option>
+            <option value="SET_2005">SET 2005</option>
+            <option value="SET_2010">SET 2010</option>
+            <option value="SET_2015">SET 2015</option>
+            <option value="SET_2020">SET 2020</option>
+        </select>
+
         <button type="submit">Create Card</button>
 
     </form>
-
     <br>
 
     <a th:href="@{/}">

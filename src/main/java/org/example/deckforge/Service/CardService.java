@@ -2,6 +2,8 @@ package org.example.deckforge.Service;
 
 import org.example.deckforge.Domain.Card;
 import org.example.deckforge.Infrastructur.ICardRepository;
+import org.example.deckforge.Service.Validation.CardException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,26 +17,25 @@ public class CardService {
     }
 
     public void createCard(Card card) {
-        if (card == null || card.getCardName() == null || card.getCardName().isEmpty()) {
-            throw new RuntimeException("Kortet skal have et navn");
+        try {
+            if (card == null || card.getCardName() == null || card.getCardName().isEmpty()) {
+                throw new RuntimeException("Kortet skal have et navn");
+            }
+            iCardRepository.createCard(card);
+        } catch (DataAccessException dae) {
+            throw new CardException("Der er sket en fejl ved oprettelse af kort, prøv igen senere" + dae.getMessage());
+        } catch (Exception ex) {
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
         }
-        iCardRepository.createCard(card);
-    }
-
-    public Card findById(int cardId) {
-        if (cardId < 0) {
-            throw new RuntimeException("Card id kan ikke være negativ");
-        }
-
-        Card card = iCardRepository.findById(cardId);
-        if (card == null) {
-            throw new RuntimeException("Kortet blev ikke fundet");
-        }
-
-        return card;
     }
 
     public List<Card> findAllCards() {
-        return iCardRepository.findAllCards();
+        try {
+            return iCardRepository.findAllCards();
+        } catch (DataAccessException dae) {
+            throw new CardException("Der er sket en fejl ved at finde kort, prøv igen senere");
+        } catch (Exception ex) {
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
+        }
     }
 }

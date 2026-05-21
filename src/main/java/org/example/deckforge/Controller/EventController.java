@@ -47,9 +47,11 @@ public class EventController {
         if (!"ADMIN".equals(user.getRoleType()) && !"MANAGER".equals(user.getRoleType())) {
             return "redirect:/events";
         }
+
         try {
-            eventService.createEvent(event);
+            eventService.createEvent(user, event);
             return "redirect:/events";
+
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("event", event);
@@ -150,8 +152,80 @@ public class EventController {
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("registrations", eventRegistrationService.findRegistrationsByUser(user));
-
             return "registration";
+        }
+    }
+
+    @GetMapping("/updateEvent")
+    public String updateEventPage(@ModelAttribute Event event, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+        if (!"ADMIN".equals(user.getRoleType()) && !"MANAGER".equals(user.getRoleType())) {
+            return "redirect:/events";
+        }
+        try {
+            Event fullEvent = eventService.findEvent(event);
+
+            if (fullEvent == null) {
+                return "redirect:/events";
+            }
+
+            model.addAttribute("event", fullEvent);
+            return "updateEvent";
+        } catch (Exception x){
+            model.addAttribute("errorMessage", x.getMessage());
+            return "updateEvent";
+        }
+    }
+
+    @PostMapping("/updateEvent")
+    public String updateEvent(@ModelAttribute Event event,
+                              HttpSession session,
+                              Model model) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        if (!"ADMIN".equals(user.getRoleType()) && !"MANAGER".equals(user.getRoleType())) {
+            return "redirect:/events";
+        }
+
+        try {
+            eventService.updateEvent(user, event);
+            return "redirect:/events";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Fejl ved opdatering af event: " + e.getMessage());
+            model.addAttribute("events", eventService.findAllEvents());
+            return "events";
+        }
+    }
+
+    @PostMapping("/deleteEvent")
+    public String deleteEvent(@ModelAttribute Event event,
+                              HttpSession session,
+                              Model model) {
+        User user = (User) session.getAttribute("user");
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        if (!"ADMIN".equals(user.getRoleType()) && !"MANAGER".equals(user.getRoleType())) {
+            return "redirect:/events";
+        }
+
+        try {
+            eventService.deleteEvent(event);
+            return "redirect:/events";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Fejl ved sletning af event: " + e.getMessage());
+            model.addAttribute("events", eventService.findAllEvents());
+            return "events";
         }
     }
 }

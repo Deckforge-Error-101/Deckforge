@@ -20,7 +20,7 @@
             <input type="hidden" th:field="*{deckId}">
 
             <label>Nyt navn</label>
-            <input type="text" th:field="*{deckName}" required>
+            <input type="text" th:field="*{deckName}" required maxlength="50">
 
             <label>Ændre Type/Format</label>
             <select th:field="*{formatType}">

@@ -5,6 +5,8 @@ import org.example.deckforge.Domain.Deck;
 import org.example.deckforge.Domain.User;
 import org.example.deckforge.Infrastructur.ICollectionRepository;
 import org.example.deckforge.Infrastructur.IDeckRepository;
+import org.example.deckforge.Service.Validation.DeckException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,70 +23,130 @@ public class DeckService {
     }
 
     public void createDeck(Deck deck) {
-        iDeckRepository.createDeck(deck);
+        try {
+            iDeckRepository.createDeck(deck);
+        } catch (DataAccessException dae) {
+            throw new DeckException("Fejl ved oprettelse af deck, prøv igen senere");
+        } catch (Exception ex) {
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
+        }
     }
 
     public List<Deck> findAllDecksByUserId(User user) {
-        if (user.getUserId() <= 0) {
-            throw new RuntimeException("Ugyldigt bruger ID");
-        }
+        try {
+            if (user.getUserId() <= 0) {
+                throw new RuntimeException("Ugyldigt bruger ID");
+            }
 
-        return iDeckRepository.findAllDecksByUserId(user);
+            return iDeckRepository.findAllDecksByUserId(user);
+        } catch (DataAccessException dae) {
+            throw new DeckException("Der er sket en fejl ved decks, prøv igen senere");
+        } catch (Exception ex) {
+            throw new RuntimeException("Kritisk fejl, kontakat adminstrator");
+        }
     }
 
     public void updateDeck(Deck updatedDeck) {
-        if (updatedDeck == null) {
-            throw new RuntimeException("Dækket må ikke være null");
+        try {
+            if (updatedDeck == null) {
+                throw new RuntimeException("Dækket må ikke være null");
+            }
+
+            Deck existingDeck = iDeckRepository.findDeckById(updatedDeck);
+
+            existingDeck.setDeckName(updatedDeck.getDeckName());
+            existingDeck.setFormatType(updatedDeck.getFormatType());
+            existingDeck.setPublic(updatedDeck.isPublic());
+
+            iDeckRepository.updateDeck(existingDeck);
+        } catch (DataAccessException dae) {
+            throw new DeckException("Fejl ved opdatering af deck, prøv igen senere");
+        } catch (Exception ex) {
+            throw new RuntimeException("Kritisk fejl, kontakt en adminsitrator");
         }
-
-        Deck existingDeck = iDeckRepository.findDeckById(updatedDeck);
-
-        existingDeck.setDeckName(updatedDeck.getDeckName());
-        existingDeck.setFormatType(updatedDeck.getFormatType());
-        existingDeck.setPublic(updatedDeck.isPublic());
-
-        iDeckRepository.updateDeck(existingDeck);
     }
 
     public void deleteDeck(Deck deck) {
-        iDeckRepository.deleteDeck(deck);
+        try {
+            iDeckRepository.deleteDeck(deck);
+        } catch (DataAccessException dae) {
+            throw new DeckException("Fejl ved sletning af deck, prøv igen senere");
+        } catch (Exception ex) {
+            throw new RuntimeException("Kritsk fejl, kontakt en adminstrator");
+        }
     }
 
     public Deck findDeckById(Deck deck) {
-        return iDeckRepository.findDeckById(deck);
+        try {
+            return iDeckRepository.findDeckById(deck);
+        } catch (DataAccessException dae) {
+            throw new DeckException("Der er sket en fejl ved decks, prøv igen senere");
+        } catch (Exception ex) {
+            throw new RuntimeException("Kritisk fejl, kontakt en adminsitrator");
+        }
     }
 
     public List<Card> getCardsInDeck(Deck deck) {
-        return iDeckRepository.getCardsInDeck(deck);
-    }
-
-    public void addCardToDeck(User user, Deck deck, Card card){
-        int owned = iCollectionRepository.getQuantityOwned(user, card);
-        int inDeck = iDeckRepository.getQuantityInDeck(deck, card);
-
-        if (inDeck < owned){
-            iDeckRepository.addCardToDeck(deck, card);
-        } else {
-            throw new IllegalStateException("Du har ikke flere eksemplarer af dette kort i din collection");
+        try {
+            return iDeckRepository.getCardsInDeck(deck);
+        } catch (DataAccessException dae) {
+            throw new DeckException("Der er sket en fejl ved decks, prøv igen senere");
+        } catch (Exception ex) {
+            throw new RuntimeException("Kritisk fejl, kontakt en adminstrator");
         }
     }
 
-    public void removeCardFromDeck(Deck deck, Card card){
-        iDeckRepository.removeCardFromDeck(deck, card);
-    }
+    public void addCardToDeck(User user, Deck deck, Card card) {
+        try {
+            int owned = iCollectionRepository.getQuantityOwned(user, card);
+            int inDeck = iDeckRepository.getQuantityInDeck(deck, card);
 
-    public void updateDeckVisibility(Deck deck){
-        iDeckRepository.updateDeckVisibility(deck);
-    }
-
-    public List<Deck> findAllPublicDecks(){
-        List<Deck> decks = iDeckRepository.findAllPublicDecks();
-
-        for (Deck deck: decks){
-            List<Card> cardsInThisDeck = iDeckRepository.getCardsInDeck(deck);
-
-            deck.setCards(cardsInThisDeck);
+            if (inDeck < owned) {
+                iDeckRepository.addCardToDeck(deck, card);
+            } else {
+                throw new IllegalStateException("Du har ikke flere eksemplarer af dette kort i din collection");
+            }
+        } catch (DataAccessException dae) {
+            throw new DeckException("Der er sket en fejl ved tilføjelse af kort, prøv igen senere");
+        } catch (Exception ex) {
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
         }
-        return decks;
+    }
+
+    public void removeCardFromDeck(Deck deck, Card card) {
+        try {
+            iDeckRepository.removeCardFromDeck(deck, card);
+        } catch (DataAccessException dae) {
+            throw new DeckException("Der er sket en fejl ved fjernelse af kort, prøv igen senere");
+        } catch (Exception ex) {
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
+        }
+    }
+
+    public void updateDeckVisibility(Deck deck) {
+        try {
+            iDeckRepository.updateDeckVisibility(deck);
+        } catch (DataAccessException dae) {
+            throw new DeckException("Der er sket en fejl ved dit decks synlighed, prøv igen senere");
+        } catch (Exception ex) {
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
+        }
+    }
+
+    public List<Deck> findAllPublicDecks() {
+        try {
+            List<Deck> decks = iDeckRepository.findAllPublicDecks();
+
+            for (Deck deck : decks) {
+                List<Card> cardsInThisDeck = iDeckRepository.getCardsInDeck(deck);
+
+                deck.setCards(cardsInThisDeck);
+            }
+            return decks;
+        } catch (DataAccessException dae) {
+            throw new DeckException("Der er sket en fejl ved fjernelse af kort, prøv igen senere");
+        } catch (Exception ex) {
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
+        }
     }
 }

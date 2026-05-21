@@ -4,6 +4,7 @@ import org.example.deckforge.Domain.Deck;
 import org.example.deckforge.Domain.Event;
 import org.example.deckforge.Domain.EventRegistration;
 import org.example.deckforge.Domain.User;
+import org.example.deckforge.Infrastructur.IDeckRepository;
 import org.example.deckforge.Infrastructur.IEventRegistrationRepository;
 import org.example.deckforge.Infrastructur.IEventRepository;
 import org.example.deckforge.Service.Validation.EventException;
@@ -19,13 +20,15 @@ public class EventRegistrationService {
 
     private final IEventRegistrationRepository eventRegistrationRepository;
     private final IEventRepository eventRepository;
+    private final IDeckRepository deckRepository;
     private final Validation validation;
 
     public EventRegistrationService(IEventRegistrationRepository eventRegistrationRepository,
-                                    IEventRepository eventRepository,
+                                    IEventRepository eventRepository, IDeckRepository deckRepository,
                                     Validation validation) {
         this.eventRegistrationRepository = eventRegistrationRepository;
         this.eventRepository = eventRepository;
+        this.deckRepository = deckRepository;
         this.validation = validation;
     }
 
@@ -110,7 +113,9 @@ public class EventRegistrationService {
             throw new RuntimeException("Det tilknyttede event blev ikke fundet");
         }
 
-        validation.validateRegisterDeck(dbRegistration, deck, event);
+        Deck fullDeck = deckRepository.findDeckById(deck);
+
+        validation.validateRegisterDeck(dbRegistration, fullDeck, event);
 
         dbRegistration.setDeckId(deck.getDeckId());
         eventRegistrationRepository.addDeckToRegistration(dbRegistration);

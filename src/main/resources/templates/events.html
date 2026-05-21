@@ -53,6 +53,19 @@
             Eventet er fyldt. Du kan ikke tilmelde dig.
         </p>
 
+        <form th:if="${session.user != null && (session.user.roleType == 'ADMIN' || session.user.roleType == 'MANAGER')}"
+                th:action="@{/deleteEvent}" method="post">
+            <input type="hidden" name="eventId" th:value="${event.eventId}">
+            <button type="submit">Slet event</button>
+        </form>
+
+        <form th:if="${session.user != null && (session.user.roleType == 'ADMIN' || session.user.roleType == 'MANAGER')}"
+              th:action="@{/updateEvent}"
+              method="get">
+            <input type="hidden" name="eventId" th:value="${event.eventId}">
+            <button type="submit">Opdater</button>
+        </form>
+
 
     </div>
 

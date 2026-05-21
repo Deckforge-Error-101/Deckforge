@@ -30,7 +30,7 @@ public class Deck {
         return deckId;
     }
 
-    public void setDeckId(int deckId) {
+    public void setDeckId(int deckId){
         this.deckId = deckId;
     }
 
@@ -39,7 +39,11 @@ public class Deck {
     }
 
     public void setDeckName(String deckName){
-        this.deckName = deckName;
+        if (deckName != null) {
+            this.deckName = deckName;
+        } else {
+            throw new IllegalArgumentException("Deck skal have et navn");
+        }
     }
 
     public String getFormatType() {
@@ -50,16 +54,12 @@ public class Deck {
         if (formatType != null) {
             this.formatType = formatType;
         } else {
-            throw new RuntimeException("formatType må ikke være null");
+            throw new IllegalArgumentException("formatType må ikke være null");
             }
         }
 
     public int getSlots() {
         return slots;
-    }
-
-    public void setSlots(int slots) {
-        this.slots = slots;
     }
 
     public int getUserId() {
@@ -69,10 +69,12 @@ public class Deck {
     public void setUserId(int userId) {
         if (userId > 0) {
             this.userId = userId;
+        } else {
+            throw new IllegalArgumentException("User id skal være gyldigt");
         }
     }
 
-    //2 getters til public for undgå forvirreing med html
+    //2 getters til public for undgå forvirring med html
     public boolean isPublic(){
         return isPublic;
     }
@@ -81,16 +83,15 @@ public class Deck {
         return isPublic;
     }
 
+    //Vi behøver ikke validere på en boolean da false/true ikke betyder forskel i domænet.
     public void setPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
 
-    public List<Card> getCards() {
-        return cards;
-    }
-
     public void setCards(List<Card> cards) {
+        if (cards == null || cards.isEmpty()) {
+            throw new IllegalArgumentException("Der er sket en fejl ved kort");
+        }
         this.cards = cards;
     }
-
 }

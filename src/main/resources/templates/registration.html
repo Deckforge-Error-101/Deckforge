@@ -13,9 +13,7 @@
 
     <h1>Mine event tilmeldinger</h1>
 
-    <p th:if="${errorMessage}"
-       th:text="${errorMessage}"
-       class="error"></p>
+    <p th:if="${errorMessage}" th:text="${errorMessage}" class="error"></p>
 
     <div th:if="${#lists.isEmpty(registrations)}">
         <p>Du er ikke tilmeldt nogen events.</p>

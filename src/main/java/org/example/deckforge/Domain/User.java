@@ -71,12 +71,17 @@ public class User {
     }
 
     public void setPassword(String password){
-       this.password = password;
+       if (password != null) {
+           this.password = password;
+       } else {
+           throw new IllegalArgumentException("Password må ikke være tomt");
+       }
     }
 
     public String getRoleType() {
        return roleType;
     }
+
     public void setRoleType(String roleType) throws Exception {
       if (roleType != null) {
          this.roleType = roleType;
@@ -90,10 +95,6 @@ public class User {
     }
     public void setCurrentLogin(boolean currentLogin){
         this.currentLogin = currentLogin;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
     }
 
     public byte[] getImage() {
