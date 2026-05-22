@@ -89,9 +89,10 @@ public class Deck {
     }
 
     public void setCards(List<Card> cards) {
-        if (cards == null || cards.isEmpty()) {
-            throw new IllegalArgumentException("Der er sket en fejl ved kort");
-        }
         this.cards = cards;
+    }
+
+    public List<Card> getCards() {
+        return cards;
     }
 }

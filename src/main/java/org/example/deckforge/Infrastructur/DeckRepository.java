@@ -3,6 +3,7 @@ package org.example.deckforge.Infrastructur;
 import org.example.deckforge.Domain.Card;
 import org.example.deckforge.Domain.Deck;
 import org.example.deckforge.Domain.User;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -69,22 +70,26 @@ public class DeckRepository implements IDeckRepository {
     public Deck findDeckById(Deck deck) {
         String sql = "SELECT deckId, deckName, formatType, slots, is_public, userId FROM decks WHERE deckId = ?";
 
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) ->
-                new Deck(
-                        rs.getInt("deckId"),
-                        rs.getString("deckName"),
-                        rs.getString("formatType"),
-                        rs.getInt("slots"),
-                        rs.getBoolean("is_public"),
-                        rs.getInt("userId")
-                ), deck.getDeckId()
-        );
+        try {
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) ->
+                    new Deck(
+                            rs.getInt("deckId"),
+                            rs.getString("deckName"),
+                            rs.getString("formatType"),
+                            rs.getInt("slots"),
+                            rs.getBoolean("is_public"),
+                            rs.getInt("userId")
+                    ), deck.getDeckId()
+            );
+        } catch (DataAccessException e) {
+            return null;
+        }
     }
 
     @Override
     public List<Card> getCardsInDeck(Deck deck) {
         //Vi joiner 'cards' (c) med 'deck_cards' (dc) for at koble kort-data sammen med dæk-ID og antal
-        String sql = "SELECT c.cardId, c.cardName, c.typeId, c.rarity, dc.quantity " +
+        String sql = "SELECT c.cardId, c.cardName, c.typeId, c.rarity, c.setType, dc.quantity " +
                 "FROM cards c " +
                 "JOIN deck_cards dc ON c.cardId = dc.cardId " +
                 "WHERE dc.deckId = ?";

@@ -120,15 +120,9 @@ public class EventController {
             eventRegistrationService.addDeckToRegistration(registration, deck);
 
             return "redirect:/registrations";
-        } catch (DeckException de){
-            model.addAttribute("errorMessage", de.getMessage());
-            model.addAttribute("registrations", eventRegistrationService.findRegistrationsByUser(user));
-            return "registration";
-
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("registrations", eventRegistrationService.findRegistrationsByUser(user));
-
             return "registration";
         }
     }
@@ -182,9 +176,7 @@ public class EventController {
     }
 
     @PostMapping("/updateEvent")
-    public String updateEvent(@ModelAttribute Event event,
-                              HttpSession session,
-                              Model model) {
+    public String updateEvent(@ModelAttribute Event event, HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
 
         if (user == null) {

@@ -24,9 +24,9 @@ public class CardController {
         this.cardService = cardService;
     }
 
+    //redeem bruges til bytning af kort
     @GetMapping("/redeem")
     public String showRedeemPage(HttpSession session, Model model, @RequestParam(required = false) String success, @RequestParam(required = false) String error) {
-
         try {
             User user = (User) session.getAttribute("user");
 
@@ -51,7 +51,7 @@ public class CardController {
     }
 
     @PostMapping("/redeem")
-    public String processRedeem(@RequestParam String tradeId, HttpSession session, Model model){
+    public String processRedeem(@RequestParam String tradeId, HttpSession session, Model model) {
         User buyer = (User) session.getAttribute("user");
 
         if (buyer == null || !buyer.isCurrentLogin()) {
@@ -61,17 +61,15 @@ public class CardController {
         try {
             String cardName = tradeService.redeemCard(tradeId, buyer);
             return "redirect:/redeem?success=" + cardName;
-        } catch (TradeException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "trade-redeem";
-        } catch (Exception ex){
+        } catch (Exception ex) {
             model.addAttribute("errorMessage", ex.getMessage());
             return "trade-redeem";
         }
     }
 
+    //generate bruges til at generaer en bytte kode
     @GetMapping("/generate")
-    public String generateCode(User user){
+    public String generateCode(User user) {
         if (user == null || !user.isCurrentLogin()) {
             return "redirect:/";
         }
@@ -79,20 +77,22 @@ public class CardController {
     }
 
     @PostMapping("/generate")
-    public String generateCode(@ModelAttribute Card card, HttpSession session, Model model){
+    public String generateCode(@ModelAttribute Card card, HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
 
         if (user == null || !user.isCurrentLogin()) {
             return "redirect:/";
         }
-        try{
-        String code = tradeService.generateTradeCode(user, card);
-        model.addAttribute("successMessage", "Din byttekode er : " + code);
-        return "redirect:/collection?code=" + code;}
-        catch (Exception e){
-           return "redirect:/collection";
+        try {
+            String code = tradeService.generateTradeCode(user, card);
+            model.addAttribute("successMessage", "Din byttekode er : " + code);
+            return "redirect:/collection?code=" + code;
+        } catch (Exception e) {
+            return "redirect:/collection";
         }
     }
+
+    //createCard bruges til at oprette et nyt kort til databasen
     @PostMapping("/createCard")
     public String createCard(@ModelAttribute Card card, HttpSession session, Model model) {
 
@@ -106,10 +106,6 @@ public class CardController {
             return "redirect:/";
         }
         try {
-            System.out.println("Card name: " + card.getCardName());
-            System.out.println("Card type: " + card.getCardType());
-            System.out.println("Rarity: " + card.getCardRarity());
-            System.out.println("Set type: " + card.getSetType());
             cardService.createCard(card);
             return "redirect:/";
 
@@ -119,6 +115,7 @@ public class CardController {
             return "createCard";
         }
     }
+
     @GetMapping("/createCard")
     public String showCreateCardPage(HttpSession session, Model model) {
 
@@ -140,8 +137,4 @@ public class CardController {
         }
         return "createCard";
     }
-
-
-
-
 }

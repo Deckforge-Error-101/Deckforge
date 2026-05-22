@@ -41,7 +41,6 @@ public class Event {
         if (title.length() > 50) {
             throw new IllegalArgumentException("Titlen må ikke være længere end 50 tegn");
         }
-
         this.title = title;
     }
 
@@ -62,11 +61,7 @@ public class Event {
     }
 
     public void setCapacity(int capacity) {
-        if (capacity > 0 && capacity <= 32) {
-            this.capacity = capacity;
-        } else {
-            throw new IllegalArgumentException("Event må ikke være mindre end eller ligmed 0 eller større end 32");
-        }
+        this.capacity = capacity;
     }
 
     public String getStatusType() {

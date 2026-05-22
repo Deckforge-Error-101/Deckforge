@@ -7,6 +7,7 @@ import org.example.deckforge.Domain.User;
 import org.example.deckforge.Infrastructur.IDeckRepository;
 import org.example.deckforge.Infrastructur.IEventRegistrationRepository;
 import org.example.deckforge.Infrastructur.IEventRepository;
+import org.example.deckforge.Service.Validation.DeckException;
 import org.example.deckforge.Service.Validation.EventException;
 import org.example.deckforge.Service.Validation.Validation;
 import org.springframework.dao.DataAccessException;
@@ -39,12 +40,14 @@ public class EventRegistrationService {
         try {
             registration.setEventId(event.getEventId());
             registration.setUserId(user.getUserId());
+        } catch (DataAccessException dae){
+            throw new EventException("Fejl ved registrering");
         } catch (Exception e) {
-            throw new RuntimeException("Fejl ved oprettelse af tilmelding");
+            throw new RuntimeException("Kritisk fejl");
         }
-
         registerToEvent(registration);
     }
+
 
     public void registerToEvent(EventRegistration registration) {
         try {
@@ -61,7 +64,7 @@ public class EventRegistrationService {
             user.setUserId(registration.getUserId());
 
             if (eventRegistrationRepository.existsByEventAndUser(event, user)) {
-                throw new RuntimeException("Du er allerede tilmeldt dette event");
+                throw new EventException("Du er allerede tilmeldt dette event");
             }
             int registrations = eventRegistrationRepository.countRegistrationsByEvent(event);
 
@@ -88,6 +91,8 @@ public class EventRegistrationService {
 
         } catch (DataAccessException dae) {
             throw new EventException("Fejl ved registrering til event");
+        } catch (DeckException de){
+            throw new DeckException(de.getMessage());
         } catch (Exception e) {
             throw new RuntimeException("Kritisk fejl: " + e.getMessage());
         }
@@ -95,71 +100,89 @@ public class EventRegistrationService {
 
     public void addDeckToRegistration(EventRegistration registration, Deck deck) {
 
-        EventRegistration dbRegistration = eventRegistrationRepository.findByRegistration(registration);
+        try {
+            EventRegistration dbRegistration = eventRegistrationRepository.findByRegistration(registration);
 
-        if (dbRegistration == null) {
-            throw new RuntimeException("Tilmeldingen findes ikke");
+            if (dbRegistration == null) {
+                throw new RuntimeException("Tilmeldingen findes ikke");
+            }
+
+            if (dbRegistration.getUserId() != registration.getUserId()) {
+                throw new RuntimeException("Du kan kun ændre dine egne tilmeldinger");
+            }
+
+            Event searchEvent = new Event();
+            searchEvent.setEventId(dbRegistration.getEventId());
+            Event event = eventRepository.findByEvent(searchEvent);
+
+            if (event == null) {
+                throw new RuntimeException("Det tilknyttede event blev ikke fundet");
+            }
+
+            Deck fullDeck = deckRepository.findDeckById(deck);
+
+            if (fullDeck == null) {
+                throw new DeckException("Det indtastede dæk-ID eksisterer ikke.");
+            }
+
+            validation.validateRegisterDeck(dbRegistration, fullDeck, event);
+
+            dbRegistration.setDeckId(deck.getDeckId());
+            eventRegistrationRepository.addDeckToRegistration(dbRegistration);
+        } catch (DataAccessException dae) {
+            throw new EventException("Fejl ved registrering til event, prøv igen senere");
+        } catch (DeckException dce) {
+            throw new DeckException(dce.getMessage());
+        } catch (Exception ex) {
+            throw new RuntimeException("Kritisk fejl kontakt en administrator" + ex.getMessage());
         }
-
-        if (dbRegistration.getUserId() != registration.getUserId()) {
-            throw new RuntimeException("Du kan kun ændre dine egne tilmeldinger");
-        }
-
-        Event searchEvent = new Event();
-        searchEvent.setEventId(dbRegistration.getEventId());
-        Event event = eventRepository.findByEvent(searchEvent);
-
-        if (event == null) {
-            throw new RuntimeException("Det tilknyttede event blev ikke fundet");
-        }
-
-        Deck fullDeck = deckRepository.findDeckById(deck);
-
-        validation.validateRegisterDeck(dbRegistration, fullDeck, event);
-
-        dbRegistration.setDeckId(deck.getDeckId());
-        eventRegistrationRepository.addDeckToRegistration(dbRegistration);
     }
 
     public void unregisterFromEvent(EventRegistration registration) {
-
-        EventRegistration dbRegistration =
-                eventRegistrationRepository.findByRegistration(registration);
-
-        if (dbRegistration == null) {
-            throw new RuntimeException("Tilmeldingen findes ikke");
-        }
-
-        if (dbRegistration.getUserId() != registration.getUserId()) {
-            throw new RuntimeException("Du kan kun framelde dine egne tilmeldinger");
-        }
-
-        eventRegistrationRepository.deleteRegistration(registration);
-        // Opretter et midlertidigt Event-objekt med eventId fra den slettede tilmelding.
-        // Det bruges til at hente det fulde event fra databasen.
-        Event searchEvent = new Event();
-        searchEvent.setEventId(dbRegistration.getEventId());
-
-        // Henter eventet fra databasen, så vi kan få capacity og nuværende status
-        Event event = eventRepository.findByEvent(searchEvent);
-        // Tæller hvor mange brugere der stadig er tilmeldt eventet efter frameldinge
-        int registrations = eventRegistrationRepository.countRegistrationsByEvent(event);
-
         try {
+            EventRegistration dbRegistration =
+                    eventRegistrationRepository.findByRegistration(registration);
+
+            if (dbRegistration == null) {
+                throw new RuntimeException("Tilmeldingen findes ikke");
+            }
+
+            if (dbRegistration.getUserId() != registration.getUserId()) {
+                throw new RuntimeException("Du kan kun framelde dine egne tilmeldinger");
+            }
+
+            eventRegistrationRepository.deleteRegistration(registration);
+            // Opretter et midlertidigt Event-objekt med eventId fra den slettede tilmelding.
+            // Det bruges til at hente det fulde event fra databasen.
+            Event searchEvent = new Event();
+            searchEvent.setEventId(dbRegistration.getEventId());
+
+            // Henter eventet fra databasen, så vi kan få capacity og nuværende status
+            Event event = eventRepository.findByEvent(searchEvent);
+            // Tæller hvor mange brugere der stadig er tilmeldt eventet efter frameldinge
+            int registrations = eventRegistrationRepository.countRegistrationsByEvent(event);
             if (registrations >= event.getCapacity()) {
                 event.setStatusType("FULL");
             } else {
                 event.setStatusType("OPEN");
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        // Gemmer den opdaterede status i Events-tabellen
-        eventRepository.updateStatus(event);
 
+            eventRepository.updateStatus(event);
+
+        } catch (DataAccessException dae) {
+            throw new EventException("Fejl ved Event, prøv igen senere");
+        } catch (Exception e) {
+            throw new RuntimeException("Kritisk fejl, kontakt administrator");
+        }
     }
 
     public List<EventRegistration> findRegistrationsByUser(User user) {
-        return eventRegistrationRepository.findAllByUser(user);
+        try {
+            return eventRegistrationRepository.findAllByUser(user);
+        } catch (DataAccessException dae) {
+            throw new EventException("Fejl ved Event, prøv igen senere");
+        } catch (Exception e) {
+            throw new RuntimeException("Kritisk fejl, kontakt administrator");
+        }
     }
 }

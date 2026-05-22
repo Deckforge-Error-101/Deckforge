@@ -76,9 +76,6 @@ public class Validation {
         if (event.getEventId() < 0){
             throw new EventException("Id kan ikke tilgå negative værdier");
         }
-        if (event.getCapacity() < 0){
-            throw new EventException("Kort mængde kan ikke tilgå negative værdier");
-        }
         if (event.getTitle() == null || event.getTitle().isEmpty()){
             throw new EventException("Event title må ikke være tom");
         }
@@ -92,7 +89,7 @@ public class Validation {
         if ("CASUAL_EVENT".equals(event.getEventType())) {
             if (event.getCapacity() > 32) {
                 throw new DeckException("Der må ikke være mere end 32 pladser til et casual event");
-            } else if (event.getCapacity() < 4) {
+            } else if (event.getCapacity() < 1) {
                 throw new DeckException("Der skal være minimum 4 tilmeldinger");
             }
         }

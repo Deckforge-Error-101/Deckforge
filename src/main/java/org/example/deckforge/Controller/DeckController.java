@@ -7,6 +7,7 @@ import org.example.deckforge.Domain.User;
 import org.example.deckforge.Service.CardService;
 import org.example.deckforge.Service.CollectionService;
 import org.example.deckforge.Service.DeckService;
+import org.example.deckforge.Service.Validation.DeckException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.Model;
@@ -91,7 +92,6 @@ public class DeckController {
 
     @PostMapping("/editDeck")
     public String showEditPage(@ModelAttribute Deck deck, HttpSession session, Model model) {
-        System.out.println("Modtaget dæk-ID i controller: " + deck.getDeckId());
         User user = (User) session.getAttribute("user");
         if (user == null || !user.isCurrentLogin()) {
             return "redirect:/login";
@@ -102,7 +102,6 @@ public class DeckController {
                 model.addAttribute("errorMessage", "Fejl: Systemet modtog intet dæk-ID.");
                 return "homePage";
             }
-
 
             model.addAttribute("deck", fullDeck);
             model.addAttribute("deckCards", deckService.getCardsInDeck(fullDeck));
@@ -130,10 +129,22 @@ public class DeckController {
         }
         try {
             deckService.addCardToDeck(user, deck, card);
-        } catch (IllegalStateException ex) {
+            return "forward:/editDeck";
+
+        } catch (Exception ex) {
             model.addAttribute("error", ex.getMessage());
+
+            try {
+                Deck fullDeck = deckService.findDeckById(deck);
+                model.addAttribute("deck", fullDeck);
+                model.addAttribute("deckCards", deckService.getCardsInDeck(fullDeck));
+                model.addAttribute("userCollection", collectionService.findUserCollection(user));
+            } catch (Exception e) {
+                model.addAttribute("errorMessage", "Fejl ved tilføjelse af kort til deck");
+                return "editDeck";
+            }
+            return "editDeck";
         }
-        return "forward:/editDeck";
     }
 
     @GetMapping("/removeCardFromDeck")
@@ -142,15 +153,20 @@ public class DeckController {
     }
 
     @PostMapping("/removeCardFromDeck")
-    public String removeCard(HttpSession session, @ModelAttribute Deck deck, @ModelAttribute Card card) {
-        User user = (User) session.getAttribute("user");
+    public String removeCard(Model model, HttpSession session, @ModelAttribute Deck deck, @ModelAttribute Card card) {
+        try {
+            User user = (User) session.getAttribute("user");
 
-        if (user == null || !user.isCurrentLogin()) {
-            return "redirect:/";
+            if (user == null || !user.isCurrentLogin()) {
+                return "redirect:/";
+            }
+
+            deckService.removeCardFromDeck(deck, card);
+            return "forward:/editDeck";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Fejl ved fjernelse af kort");
+            return "editDeck";
         }
-
-        deckService.removeCardFromDeck(deck, card);
-        return "forward:/editDeck";
     }
 
     @GetMapping("/updateVisibility")
@@ -159,21 +175,31 @@ public class DeckController {
     }
 
     @PostMapping("/updateVisibility")
-    public String updateVisiblity(HttpSession session, @ModelAttribute Deck deck) {
-        User user = (User) session.getAttribute("user");
+    public String updateVisiblity(Model model, HttpSession session, @ModelAttribute Deck deck) {
+        try {
+            User user = (User) session.getAttribute("user");
 
-        if (user == null || !user.isCurrentLogin()) {
-            return "redirect:/login";
+            if (user == null || !user.isCurrentLogin()) {
+                return "redirect:/login";
+            }
+            deckService.updateDeckVisibility(deck);
+
+            return "forward:/editDeck" + deck.getDeckId();
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Fejl ved opdatering af synlighed");
+            return "editDeck";
         }
-        deckService.updateDeckVisibility(deck);
-
-        return "forward:/editDeck" + deck.getDeckId();
     }
 
     @GetMapping("/explore")
     public String exploreDecks(Model model) {
-        model.addAttribute("decks", deckService.findAllPublicDecks());
-        return "explore";
+        try {
+            model.addAttribute("decks", deckService.findAllPublicDecks());
+            return "explore";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Fejl ved community decks");
+            return "explore";
+        }
     }
 
     @GetMapping("/updateDeck")
@@ -192,7 +218,7 @@ public class DeckController {
 
             deckService.updateDeck(deck);
         } catch (Exception e) {
-            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("errorMessage", "Fejl ved opdatering af deck");
             return "editDeck";
         }
         return "forward:/editDeck";
