@@ -25,7 +25,7 @@
 
         <input type="text"
                th:field="*{title}"
-               required>
+               required maxlength="50">
 
         <label>Event Type</label>
 
@@ -50,7 +50,7 @@
         <input type="number"
                th:field="*{capacity}"
                min="1"
-               required>
+               required max="2147483647">
 
         <button type="submit">
             Create Event

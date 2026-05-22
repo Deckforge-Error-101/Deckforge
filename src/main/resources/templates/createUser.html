@@ -14,13 +14,13 @@
     <form th:action="@{/createUser}" th:object="${user}" method="post">
 
         <label>Navn</label>
-        <input type="text" th:field="*{username}" required>
+        <input type="text" th:field="*{username}" required maxlength="50">
 
         <label>Email</label>
-        <input type="email" th:field="*{email}" required>
+        <input type="email" th:field="*{email}" required maxlength="80">
 
         <label>Password</label>
-        <input type="password" th:field="*{password}" required>
+        <input type="password" th:field="*{password}" required maxlength="255">
 
         <button type="submit">Opret konto</button>
 

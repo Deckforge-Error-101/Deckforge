@@ -23,7 +23,7 @@
         <label>Titel</label>
         <input type="text"
                th:field="*{title}"
-               required>
+               required maxlength="50">
 
         <label>Event Type</label>
         <select th:field="*{eventType}" required>
@@ -42,7 +42,7 @@
         <input type="number"
                th:field="*{capacity}"
                min="1"
-               required>
+               required max="2147483647">
 
         <button type="submit">
             Gem Ændringer
