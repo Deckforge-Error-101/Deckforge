@@ -19,13 +19,14 @@ public class DeckRepository implements IDeckRepository {
 
     @Override
     public void createDeck(Deck deck) {
-        String sql = "INSERT INTO decks (deckName, formatType, slots, userId) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO decks (deckName, formatType, slots, userId, is_public) VALUES (?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
                 deck.getDeckName(),
                 deck.getFormatType(),
                 deck.getSlots(),
-                deck.getUserId()
+                deck.getUserId(),
+                deck.isPublic()
         );
     }
 
@@ -140,7 +141,7 @@ public class DeckRepository implements IDeckRepository {
 
     @Override
     public List<Deck> findAllPublicDecks() {
-        String sql = "SELECT * FROM decks WHERE is_public = 1";
+        String sql = "SELECT * FROM decks WHERE is_public = true";
 
         return jdbcTemplate.query(sql, (rs, rowNum) ->
                 new Deck(

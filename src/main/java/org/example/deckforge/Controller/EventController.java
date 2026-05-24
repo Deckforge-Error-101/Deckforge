@@ -104,6 +104,11 @@ public class EventController {
         return "registration";
     }
 
+    @GetMapping("/addDeckToRegistration")
+    public String addDeckToRegistration() {
+        return "redirect:/";
+    }
+
     @PostMapping("/addDeckToRegistration")
     public String addDeckToRegistration(@ModelAttribute EventRegistration registration, @ModelAttribute("deck") Deck deck,
                                         HttpSession session,
@@ -125,6 +130,11 @@ public class EventController {
             model.addAttribute("registrations", eventRegistrationService.findRegistrationsByUser(user));
             return "registration";
         }
+    }
+
+    @GetMapping("/unregisterEvent")
+    public String unregisterEvent() {
+        return "redirect:/";
     }
 
     @PostMapping("/unregisterEvent")
@@ -195,6 +205,11 @@ public class EventController {
             model.addAttribute("events", eventService.findAllEvents());
             return "events";
         }
+    }
+
+    @GetMapping("/deleteEvent")
+    public String deleteEvent() {
+        return "redirect:/";
     }
 
     @PostMapping("/deleteEvent")

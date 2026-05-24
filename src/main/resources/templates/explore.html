@@ -12,12 +12,12 @@
 <main style="padding: 20px; max-width: 1000px; margin: 0 auto;">
 
     <!-- Vi tjekker op på om der overhovedet er nogle synlige decks. -->
-    <div th:if="${#lists.isEmpty(decks)}" style="text-align: center; margin-top: 50px;">
-        <h3 style="color: #888;">Der er pt ingen synlige dæk</h3>
+    <div th:if="${#lists.isEmpty(decks)}">
+        <h3>Der er pt ingen synlige dæk</h3>
     </div>
 
     <div th:unless="${#lists.isEmpty(decks)}">
-        <div th:each="d : ${decks}" style="margin-bottom: 40px; padding: 20px; border: 1px solid var(--accent-orange); background: #222; border-radius: 8px;">
+        <div th:each="d : ${decks}">
 
             <h2 th:text="${d.deckName}" style="color: var(--accent-orange); margin-bottom: 5px;">Deck Navn</h2>
             <p style="font-size: 0.8rem; color: #888;">
@@ -25,7 +25,7 @@
                 Antal unikke kort: <span th:text="${#lists.size(d.cards)}">0</span>
             </p>
 
-            <hr style="border: 0.5px solid #444; margin: 15px 0;">
+            <hr>
 
             <!-- Vi finder alle decks som er synlige -->
             <div class="deck-contents">

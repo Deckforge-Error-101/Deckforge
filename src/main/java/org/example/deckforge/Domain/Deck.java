@@ -79,10 +79,6 @@ public class Deck {
         return isPublic;
     }
 
-    public boolean getIsPublic() {
-        return isPublic;
-    }
-
     //Vi behøver ikke validere på en boolean da false/true ikke betyder forskel i domænet.
     public void setPublic(boolean isPublic) {
         this.isPublic = isPublic;

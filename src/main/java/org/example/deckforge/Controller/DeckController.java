@@ -192,8 +192,13 @@ public class DeckController {
     }
 
     @GetMapping("/explore")
-    public String exploreDecks(Model model) {
+    public String exploreDecks(Model model, HttpSession session) {
         try {
+            User user = (User) session.getAttribute("user");
+            if (user == null || !user.isCurrentLogin()) {
+                return "redirect:/login";
+            }
+
             model.addAttribute("decks", deckService.findAllPublicDecks());
             return "explore";
         } catch (Exception e) {

@@ -11,9 +11,9 @@
 
 <hr>
 
-<main style="display: flex;">
+<main>
 
-    <aside style="flex: 1;">
+    <aside>
         <section class="rights">
             <h3>Rettigheder</h3>
             <span th:text="${session.user.roleType}">xx</span>
@@ -53,7 +53,7 @@
         </section>
     </aside>
 
-    <section class="active-decks" style="flex: 2;">
+    <section class="active-decks">
         <table border="1">
             <thead>
             <tr>
@@ -71,10 +71,10 @@
                 <td th:text="${deck.formatType}">Format</td>
                 <td>
                     <div class="buttons">
-                        <form th:action="@{/editDeck}" method="post" style="margin:0;">
+                        <form th:action="@{/editDeck}" method="post">
                             <input type="hidden" name="deckId" th:value="${deck.deckId}">
 
-                            <button type="submit" style="background: none; border: none; color: var(--accent-blue); cursor: pointer; text-decoration: underline; padding: 0;">
+                            <button type="submit">
                                 Rediger
                             </button>
                         </form>
@@ -83,13 +83,13 @@
             </tr>
 
             <tr th:if="${#lists.isEmpty(decks)}">
-                <td colspan="3" style="text-align: center;">Ingen aktive decks fundet</td>
+                <td colspan="3">Ingen aktive decks fundet</td>
             </tr>
             </tbody>
         </table>
     </section>
 
-    <section class="match-history" style="flex: 1;">
+    <section class="match-history">
         <table border="1">
             <thead>
             <tr>

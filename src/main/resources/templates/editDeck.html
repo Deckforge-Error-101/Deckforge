@@ -30,9 +30,8 @@
             </select>
 
             <div>
-                <input type="checkbox" name="public" id="isPublic" value="true"
-                       th:checked="${deck.isPublic}">
-                <label for="isPublic" style="cursor: pointer; user-select: none;">Gør dækket offentligt synligt</label>
+                <input type="checkbox" th:field="*{public}">
+                <label>Gør dækket synligt for alle</label>
             </div>
 
             <button type="submit" style="background-color: var(--accent-orange); color: white; border: none; padding: 10px; cursor: pointer;">
