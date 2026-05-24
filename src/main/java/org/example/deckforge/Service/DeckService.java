@@ -42,7 +42,7 @@ public class DeckService {
         } catch (DataAccessException dae) {
             throw new DeckException("Der er sket en fejl ved decks, prøv igen senere");
         } catch (Exception ex) {
-            throw new RuntimeException("Kritisk fejl, kontakat adminstrator");
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
         }
     }
 
@@ -62,7 +62,7 @@ public class DeckService {
         } catch (DataAccessException dae) {
             throw new DeckException("Fejl ved opdatering af deck, prøv igen senere");
         } catch (Exception ex) {
-            throw new RuntimeException("Kritisk fejl, kontakt en adminsitrator");
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
         }
     }
 
@@ -72,7 +72,7 @@ public class DeckService {
         } catch (DataAccessException dae) {
             throw new DeckException("Fejl ved sletning af deck, prøv igen senere");
         } catch (Exception ex) {
-            throw new RuntimeException("Kritsk fejl, kontakt en adminstrator");
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
         }
     }
 
@@ -82,7 +82,7 @@ public class DeckService {
         } catch (DataAccessException dae) {
             throw new DeckException("Der er sket en fejl ved decks, prøv igen senere");
         } catch (Exception ex) {
-            throw new RuntimeException("Kritisk fejl, kontakt en adminsitrator");
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
         }
     }
 
@@ -92,7 +92,7 @@ public class DeckService {
         } catch (DataAccessException dae) {
             throw new DeckException("Der er sket en fejl ved decks, prøv igen senere");
         } catch (Exception ex) {
-            throw new RuntimeException("Kritisk fejl, kontakt en adminstrator");
+            throw new RuntimeException("Kritisk fejl, kontakt en administrator");
         }
     }
 

@@ -1,73 +1,103 @@
-/*
 package org.example.deckforge.Service;
 
 import org.junit.jupiter.api.Test;
+
+import java.io.UnsupportedEncodingException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PasswordServiceTest {
 
     // Test af hash()
     @Test
-    void hash_shouldReturnEncodedPassword() {
+    void hash_shouldReturnHashedPassword() {
 
-        // Opretter PasswordService
+        // Opretter service
         PasswordService passwordService = new PasswordService();
 
-        // Gemmer original password
-        String rawPassword = "123456";
+        // Laver rå password
+        String rawPassword = "test123";
 
-        // Hasher passwordet
+        // Kalder metoden
         String hashedPassword = passwordService.hash(rawPassword);
 
         // Tjekker at hashed password ikke er null
         assertNotNull(hashedPassword);
 
-        // Tjekker at hashed password IKKE er det samme som original password
+        // Tjekker at hashed password ikke er det samme som rå password
         assertNotEquals(rawPassword, hashedPassword);
+
+        // Tjekker at password er BCrypt-format
+        assertTrue(hashedPassword.startsWith("$2a$") || hashedPassword.startsWith("$2b$") || hashedPassword.startsWith("$2y$"));
     }
 
-    // Test af matches() når password passer
+    // Test af matches() med korrekt password
     @Test
     void matches_shouldReturnTrue_whenPasswordMatches() {
 
-        // Opretter PasswordService
+        // Opretter service
         PasswordService passwordService = new PasswordService();
 
-        // Original password
-        String rawPassword = "mypassword";
+        // Laver rå password
+        String rawPassword = "test123";
 
-        // Hasher passwordet
+        // Hasher password
         String hashedPassword = passwordService.hash(rawPassword);
 
-        // Tjekker om password matcher hash
+        // Kalder metoden
         boolean result = passwordService.matches(rawPassword, hashedPassword);
 
-        // Tjekker at resultatet er true
+        // Tjekker at password matcher
         assertTrue(result);
     }
 
-    // Test af matches() når password IKKE passer
+    // Test af matches() med forkert password
     @Test
     void matches_shouldReturnFalse_whenPasswordDoesNotMatch() {
 
-        // Opretter PasswordService
+        // Opretter service
         PasswordService passwordService = new PasswordService();
 
-        // Rigtigt password
-        String rawPassword = "mypassword";
+        // Laver rå password
+        String rawPassword = "test123";
 
-        // Forkert password
-        String wrongPassword = "wrongpassword";
-
-        // Hasher det rigtige password
+        // Hasher password
         String hashedPassword = passwordService.hash(rawPassword);
 
-        // Tjekker om forkert password matcher hash
-        boolean result = passwordService.matches(wrongPassword, hashedPassword);
+        // Kalder metoden med forkert password
+        boolean result = passwordService.matches("forkertPassword", hashedPassword);
 
-        // Tjekker at resultatet er false
+        // Tjekker at password ikke matcher
+        assertFalse(result);
+    }
+
+    // Test af hash() med null password
+    @Test
+    void hash_shouldThrowRuntimeException_whenPasswordIsNull() {
+
+        // Opretter service
+        PasswordService passwordService = new PasswordService();
+
+        // Tjekker at exception bliver kastet
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            passwordService.hash(null);
+        });
+
+        // Tjekker fejlbeskeden
+        assertEquals("Kritisk fejl, kontakt administrator", exception.getMessage());
+    }
+
+    // Test af matches() med ugyldigt encoded password
+    @Test
+    void matches_shouldReturnFalse_whenEncodedPasswordIsInvalid() {
+
+        // Opretter service
+        PasswordService passwordService = new PasswordService();
+
+        // Kalder metoden med ugyldigt hash
+        boolean result = passwordService.matches("test123", "ikkeEtRigtigtHash");
+
+        // Tjekker at password ikke matcher
         assertFalse(result);
     }
 }
-
- */

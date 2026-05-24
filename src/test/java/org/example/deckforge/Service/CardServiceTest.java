@@ -1,11 +1,13 @@
-/*
 package org.example.deckforge.Service;
-
 
 import org.example.deckforge.Domain.Card;
 import org.example.deckforge.Infrastructur.ICardRepository;
+import org.example.deckforge.Service.Validation.CardException;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DataAccessResourceFailureException;
+
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -13,19 +15,17 @@ public class CardServiceTest {
 
     // Test af createCard()
     @Test
-    void createCard_shouldCreateCard() throws Exception {
+    void createCard_shouldCallRepository_whenCardIsValid() {
 
-        // Laver fake/mock repository
+        // Laver fake/mock card repository
         ICardRepository cardRepository = mock(ICardRepository.class);
 
         // Opretter CardService med mock repository
         CardService cardService = new CardService(cardRepository);
 
-        // Opretter nyt Card objekt
+        // Opretter nyt card objekt
         Card card = new Card();
-
-        // Sætter navn på kortet
-        card.setCardName("Blue Eyes White Dragon");
+        card.setCardName("Charizard");
 
         // Kalder metoden vi vil teste
         cardService.createCard(card);
@@ -35,117 +35,197 @@ public class CardServiceTest {
         verify(cardRepository, times(1)).createCard(card);
     }
 
-    // Test af createCard() med ugyldigt kort
+    // Test af createCard() med null card
     @Test
-    void createCard_shouldThrowException_whenCardNameIsNull() {
+    void createCard_shouldThrowException_whenCardIsNull() {
 
-        // Laver fake repository
-        ICardRepository cardRepository = mock(ICardRepository.class);
-
-        // Opretter service
-        CardService cardService = new CardService(cardRepository);
-
-        // Opretter kort uden navn
-        Card card = new Card();
-
-        // Tjekker at metoden kaster exception
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {cardService.createCard(card);});
-
-        // Tjekker fejlbeskeden
-        assertEquals("Kortet skal have et navn", exception.getMessage());
-
-        // Tjekker at repository IKKE blev kaldt
-        verify(cardRepository, never()).createCard(any(Card.class));
-    }
-
-    // Test af findById()
-    @Test
-    void findById_shouldReturnCard() throws Exception {
-
-        // Laver fake repository
-        ICardRepository cardRepository = mock(ICardRepository.class);
-
-        // Opretter service
-        CardService cardService = new CardService(cardRepository);
-
-        // Opretter test kort
-        Card card = new Card();
-
-        card.setCardId(1);
-        card.setCardName("Dark Magician");
-
-        // Bestemmer hvad repository skal returnere
-        when(cardRepository.findById(1)).thenReturn(card);
-
-        // Kalder metoden
-        Card result = cardService.findById(1);
-
-        // Tjekker at resultatet ikke er null
-        assertNotNull(result);
-
-        // Tjekker at navnet passer
-        assertEquals("Dark Magician", result.getCardName());
-    }
-
-    // Test af negativt cardId
-    @Test
-    void findById_shouldThrowException_whenIdIsNegative() {
-
-        // Laver fake repository
+        // Laver fake/mock card repository
         ICardRepository cardRepository = mock(ICardRepository.class);
 
         // Opretter service
         CardService cardService = new CardService(cardRepository);
 
         // Tjekker at exception bliver kastet
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {cardService.findById(-1);});
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            cardService.createCard(null);
+        });
 
-        // Tjekker fejlbesked
-        assertEquals("Card id kan ikke være negativ", exception.getMessage());
+        // Tjekker fejlbeskeden
+        assertEquals("Kritisk fejl, kontakt en administrator", exception.getMessage());
+
+        // Tjekker at repository IKKE blev kaldt
+        verify(cardRepository, never()).createCard(any());
     }
 
-    // Test hvis kort ikke findes
+    // Test af createCard() uden cardName
     @Test
-    void findById_shouldThrowException_whenCardDoesNotExist() {
+    void createCard_shouldThrowException_whenCardNameIsNull() {
 
-        // Laver fake repository
+        // Laver fake/mock card repository
         ICardRepository cardRepository = mock(ICardRepository.class);
 
         // Opretter service
         CardService cardService = new CardService(cardRepository);
 
-        // Repository returnerer null
-        when(cardRepository.findById(1)).thenReturn(null);
+        // Laver fake/mock card objekt
+        Card card = mock(Card.class);
 
-        // Tjekker exception
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {cardService.findById(1);});
+        // Simulerer at cardName er null
+        when(card.getCardName()).thenReturn(null);
 
-        // Tjekker fejlbesked
-        assertEquals("Kortet blev ikke fundet", exception.getMessage());
+        // Tjekker at exception bliver kastet
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            cardService.createCard(card);
+        });
+
+        // Tjekker fejlbeskeden
+        assertEquals("Kritisk fejl, kontakt en administrator", exception.getMessage());
+
+        // Tjekker at repository IKKE blev kaldt
+        verify(cardRepository, never()).createCard(any());
+    }
+
+    // Test af createCard() med tomt cardName
+    @Test
+    void createCard_shouldThrowException_whenCardNameIsEmpty() {
+
+        // Laver fake/mock card repository
+        ICardRepository cardRepository = mock(ICardRepository.class);
+
+        // Opretter service
+        CardService cardService = new CardService(cardRepository);
+
+        // Laver fake/mock card objekt
+        Card card = mock(Card.class);
+
+        // Simulerer at cardName er tomt
+        when(card.getCardName()).thenReturn("");
+
+        // Tjekker at exception bliver kastet
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            cardService.createCard(card);
+        });
+
+        // Tjekker fejlbeskeden
+        assertEquals("Kritisk fejl, kontakt en administrator", exception.getMessage());
+
+        // Tjekker at repository IKKE blev kaldt
+        verify(cardRepository, never()).createCard(any());
+    }
+
+    // Test af createCard() ved databasefejl
+    @Test
+    void createCard_shouldThrowCardException_whenRepositoryFails() {
+
+        // Laver fake/mock card repository
+        ICardRepository cardRepository = mock(ICardRepository.class);
+
+        // Opretter service
+        CardService cardService = new CardService(cardRepository);
+
+        // Opretter gyldigt card objekt
+        Card card = new Card();
+        card.setCardName("Pikachu");
+
+        // Simulerer databasefejl
+        doThrow(new DataAccessResourceFailureException("Database error")).when(cardRepository).createCard(card);
+
+        // Tjekker at CardException bliver kastet
+        CardException exception = assertThrows(CardException.class, () -> {
+            cardService.createCard(card);
+        });
+
+        // Tjekker fejlbeskeden
+        assertTrue(exception.getMessage().contains("Der er sket en fejl ved oprettelse af kort"));
+
+        // Tjekker at repository blev kaldt
+        verify(cardRepository, times(1)).createCard(card);
     }
 
     // Test af findAllCards()
     @Test
-    void findAllCards_shouldReturnList() {
+    void findAllCards_shouldReturnCards() {
 
-        // Laver fake repository
+        // Laver fake/mock card repository
         ICardRepository cardRepository = mock(ICardRepository.class);
 
         // Opretter service
         CardService cardService = new CardService(cardRepository);
 
-        // Laver testliste med kort
-        List<Card> cards = List.of(new Card(), new Card());
+        // Opretter fake kort
+        Card card1 = new Card();
+        card1.setCardName("Charizard");
 
-        // Bestemmer hvad repository returnerer
+        Card card2 = new Card();
+        card2.setCardName("Pikachu");
+
+        // Laver fake liste med 2 kort
+        List<Card> cards = List.of(card1, card2);
+
+        // Bestemmer hvad repository skal returnere
         when(cardRepository.findAllCards()).thenReturn(cards);
 
         // Kalder metoden
         List<Card> result = cardService.findAllCards();
 
-        // Tjekker at listen har 2 elementer
+        // Tjekker at listen indeholder 2 kort
         assertEquals(2, result.size());
+
+        // Tjekker navnene på kortene
+        assertEquals("Charizard", result.get(0).getCardName());
+        assertEquals("Pikachu", result.get(1).getCardName());
+
+        // Tjekker at repository blev kaldt
+        verify(cardRepository, times(1)).findAllCards();
+    }
+
+    // Test af findAllCards() ved databasefejl
+    @Test
+    void findAllCards_shouldThrowCardException_whenRepositoryFails() {
+
+        // Laver fake/mock card repository
+        ICardRepository cardRepository = mock(ICardRepository.class);
+
+        // Opretter service
+        CardService cardService = new CardService(cardRepository);
+
+        // Simulerer databasefejl
+        when(cardRepository.findAllCards()).thenThrow(new DataAccessResourceFailureException("Database error"));
+
+        // Tjekker at CardException bliver kastet
+        CardException exception = assertThrows(CardException.class, () -> {
+            cardService.findAllCards();
+        });
+
+        // Tjekker fejlbeskeden
+        assertEquals("Der er sket en fejl ved at finde kort, prøv igen senere", exception.getMessage());
+
+        // Tjekker at repository blev kaldt
+        verify(cardRepository, times(1)).findAllCards();
+    }
+
+    // Test af findAllCards() ved ukendt fejl
+    @Test
+    void findAllCards_shouldThrowRuntimeException_whenUnknownErrorHappens() {
+
+        // Laver fake/mock card repository
+        ICardRepository cardRepository = mock(ICardRepository.class);
+
+        // Opretter service
+        CardService cardService = new CardService(cardRepository);
+
+        // Simulerer ukendt fejl
+        when(cardRepository.findAllCards()).thenThrow(new RuntimeException("Unexpected error"));
+
+        // Tjekker at RuntimeException bliver kastet
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            cardService.findAllCards();
+        });
+
+        // Tjekker fejlbeskeden
+        assertEquals("Kritisk fejl, kontakt en administrator", exception.getMessage());
+
+        // Tjekker at repository blev kaldt
+        verify(cardRepository, times(1)).findAllCards();
     }
 }
-
- */

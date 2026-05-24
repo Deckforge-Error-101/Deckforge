@@ -1,6 +1,5 @@
 package org.example.deckforge.Service;
 
-
 import org.example.deckforge.Domain.User;
 import org.example.deckforge.Infrastructur.IUserRepository;
 import org.example.deckforge.Service.Validation.UserException;
@@ -13,200 +12,374 @@ import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
 
+    // Test af createUser()
     @Test
-    void createUser_shouldThrowUserException_whenRepositoryFailsWithDataAccessException() throws Exception {
+    void createUser_shouldHashPasswordAndCallRepository() throws Exception {
 
-        // Laver fake repository
+        // Laver fake/mock repository, passwordService og validation
         IUserRepository userRepository = mock(IUserRepository.class);
-
-        // Laver fake password service
         PasswordService passwordService = mock(PasswordService.class);
-
-        // Laver fake validation
         Validation validation = mock(Validation.class);
 
         // Opretter service
         UserService userService = new UserService(userRepository, passwordService, validation);
 
-        // Opretter user
-        User user = new User();
-        user.setUsername("test");
-        user.setEmail("test@test.dk");
-        user.setPassword("123456");
+        // Laver fake/mock user
+        User user = mock(User.class);
 
-        // Password bliver hashed
-        when(passwordService.hash("123456")).thenReturn("hashedPassword");
+        // Simulerer password
+        when(user.getPassword()).thenReturn("test123");
+        when(passwordService.hash("test123")).thenReturn("hashedPassword");
 
-        // Repository kaster DataAccessException
-        when(userRepository.createUser(user))
-                .thenThrow(new DataAccessResourceFailureException("DB fejl"));
+        // Bestemmer hvad repository skal returnere
+        when(userRepository.createUser(user)).thenReturn(1);
 
-        // Tester at UserException bliver kastet
+        // Kalder metoden
+        int result = userService.createUser(user);
+
+        // Tjekker at validation blev kaldt
+        verify(validation, times(1)).validateCreateUser(user);
+
+        // Tjekker at password blev hashed
+        verify(passwordService, times(1)).hash("test123");
+
+        // Tjekker at det hashed password blev sat på user
+        verify(user, times(1)).setPassword("hashedPassword");
+
+        // Tjekker at repository blev kaldt
+        verify(userRepository, times(1)).createUser(user);
+
+        // Tjekker at userId bliver returneret
+        assertEquals(1, result);
+    }
+
+    // Test af createUser() ved databasefejl
+    @Test
+    void createUser_shouldThrowUserException_whenRepositoryFails() throws Exception {
+
+        // Laver fake/mock repository, passwordService og validation
+        IUserRepository userRepository = mock(IUserRepository.class);
+        PasswordService passwordService = mock(PasswordService.class);
+        Validation validation = mock(Validation.class);
+
+        // Opretter service
+        UserService userService = new UserService(userRepository, passwordService, validation);
+
+        // Laver fake/mock user
+        User user = mock(User.class);
+
+        // Simulerer password
+        when(user.getPassword()).thenReturn("test123");
+        when(passwordService.hash("test123")).thenReturn("hashedPassword");
+
+        // Simulerer databasefejl
+        when(userRepository.createUser(user)).thenThrow(new DataAccessResourceFailureException("Database error"));
+
+        // Tjekker at UserException bliver kastet
         UserException exception = assertThrows(UserException.class, () -> {
             userService.createUser(user);
         });
 
         // Tjekker fejlbeskeden
-        assertEquals("Fejl ved oprettelse af bruger", exception.getMessage());
-
-        // Tjekker at repository blev forsøgt kaldt
-        verify(userRepository, times(1)).createUser(user);
+        assertEquals("Kunne ikke oprette brugeren, prøv igen senere", exception.getMessage());
     }
 
+    // Test af login()
     @Test
     void login_shouldReturnUser_whenLoginIsCorrect() throws Exception {
 
-        // Laver fake repository
+        // Laver fake/mock repository, passwordService og validation
         IUserRepository userRepository = mock(IUserRepository.class);
-
-        // Laver fake password service
         PasswordService passwordService = mock(PasswordService.class);
-
-        // Laver fake validation
         Validation validation = mock(Validation.class);
 
         // Opretter service
         UserService userService = new UserService(userRepository, passwordService, validation);
 
-        // Opretter loginUser, altså det brugeren indtaster
-        User loginUser = new User();
-        loginUser.setEmail("test@test.dk");
-        loginUser.setPassword("123456");
+        // Laver fake/mock users
+        User loginUser = mock(User.class);
+        User dbUser = mock(User.class);
 
-        // Opretter dbUser, altså brugeren fra databasen
-        User dbUser = new User();
-        dbUser.setUserId(1);
-        dbUser.setEmail("test@test.dk");
-        dbUser.setPassword("hashedPassword");
+        // Simulerer login-data
+        when(loginUser.getEmail()).thenReturn("test@mail.com");
+        when(loginUser.getPassword()).thenReturn("test123");
+        when(dbUser.getPassword()).thenReturn("hashedPassword");
 
-        // Siger at repository skal returnere dbUser
-        when(userRepository.loginUserByEmail("test@test.dk")).thenReturn(dbUser);
+        // Bestemmer hvad repository skal returnere
+        when(userRepository.loginUserByEmail("test@mail.com")).thenReturn(dbUser);
 
-        // Siger at password matcher
-        when(passwordService.matches("123456", "hashedPassword")).thenReturn(true);
+        // Simulerer at password matcher
+        when(passwordService.matches("test123", "hashedPassword")).thenReturn(true);
 
-        // Kalder login
+        // Kalder metoden
         User result = userService.login(loginUser);
 
         // Tjekker at validation blev kaldt
         verify(validation, times(1)).validateLoginUser(loginUser);
 
-        // Tjekker at repository søgte på email
-        verify(userRepository, times(1)).loginUserByEmail("test@test.dk");
+        // Tjekker at bruger bliver fundet via email
+        verify(userRepository, times(1)).loginUserByEmail("test@mail.com");
 
-        // Tjekker at resultatet ikke er null
-        assertNotNull(result);
+        // Tjekker at password bliver sammenlignet
+        verify(passwordService, times(1)).matches("test123", "hashedPassword");
 
-        // Tjekker at brugeren er logget ind
-        assertTrue(result.isCurrentLogin());
+        // Tjekker at currentLogin bliver sat til true
+        verify(dbUser, times(1)).setCurrentLogin(true);
 
-        // Tjekker at lastOnline er sat
-        assertNotNull(result.getLastOnline());
+        // Tjekker at lastOnline bliver sat
+        verify(dbUser, times(1)).setLastOnline(any());
+
+        // Tjekker at dbUser bliver returneret
+        assertEquals(dbUser, result);
     }
 
+    // Test af login() når bruger ikke findes
     @Test
-    void login_shouldThrowException_whenPasswordIsWrong() throws Exception {
+    void login_shouldThrowRuntimeException_whenUserDoesNotExist() throws Exception {
 
-        // Laver fake repository
+        // Laver fake/mock repository, passwordService og validation
         IUserRepository userRepository = mock(IUserRepository.class);
-
-        // Laver fake password service
         PasswordService passwordService = mock(PasswordService.class);
-
-        // Laver fake validation
         Validation validation = mock(Validation.class);
 
         // Opretter service
         UserService userService = new UserService(userRepository, passwordService, validation);
 
-        // Opretter loginUser
-        User loginUser = new User();
-        loginUser.setEmail("test@test.dk");
-        loginUser.setPassword("wrongPassword");
+        // Laver fake/mock login user
+        User loginUser = mock(User.class);
 
-        // Opretter dbUser
-        User dbUser = new User();
-        dbUser.setEmail("test@test.dk");
-        dbUser.setPassword("hashedPassword");
+        // Simulerer email
+        when(loginUser.getEmail()).thenReturn("test@mail.com");
 
-        // Repository finder brugeren
-        when(userRepository.loginUserByEmail("test@test.dk")).thenReturn(dbUser);
+        // Simulerer at bruger ikke findes
+        when(userRepository.loginUserByEmail("test@mail.com")).thenReturn(null);
 
-        // Password matcher ikke
-        when(passwordService.matches("wrongPassword", "hashedPassword")).thenReturn(false);
+        // Tjekker at exception bliver kastet
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            userService.login(loginUser);
+        });
 
-        // Tjekker at login kaster RuntimeException
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {userService.login(loginUser);});
+        // Tjekker fejlbeskeden
+        assertEquals("Kritisk fejl", exception.getMessage());
 
-        // Din service omskriver fejlen til "Kritisk fejl"
+        // Tjekker at password IKKE bliver tjekket
+        verify(passwordService, never()).matches(anyString(), anyString());
+    }
+
+    // Test af login() med forkert password
+    @Test
+    void login_shouldThrowRuntimeException_whenPasswordIsWrong() throws Exception {
+
+        // Laver fake/mock repository, passwordService og validation
+        IUserRepository userRepository = mock(IUserRepository.class);
+        PasswordService passwordService = mock(PasswordService.class);
+        Validation validation = mock(Validation.class);
+
+        // Opretter service
+        UserService userService = new UserService(userRepository, passwordService, validation);
+
+        // Laver fake/mock users
+        User loginUser = mock(User.class);
+        User dbUser = mock(User.class);
+
+        // Simulerer login-data
+        when(loginUser.getEmail()).thenReturn("test@mail.com");
+        when(loginUser.getPassword()).thenReturn("forkert");
+        when(dbUser.getPassword()).thenReturn("hashedPassword");
+
+        // Bestemmer hvad repository skal returnere
+        when(userRepository.loginUserByEmail("test@mail.com")).thenReturn(dbUser);
+
+        // Simulerer at password ikke matcher
+        when(passwordService.matches("forkert", "hashedPassword")).thenReturn(false);
+
+        // Tjekker at exception bliver kastet
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            userService.login(loginUser);
+        });
+
+        // Tjekker fejlbeskeden
         assertEquals("Kritisk fejl", exception.getMessage());
     }
 
+    // Test af login() ved databasefejl
     @Test
-    void updateUser_shouldUpdateUser() throws Exception {
+    void login_shouldThrowUserException_whenRepositoryFails() throws Exception {
 
-        // Laver fake repository
+        // Laver fake/mock repository, passwordService og validation
         IUserRepository userRepository = mock(IUserRepository.class);
-
-        // Laver fake password service
         PasswordService passwordService = mock(PasswordService.class);
-
-        // Laver fake validation
         Validation validation = mock(Validation.class);
 
         // Opretter service
         UserService userService = new UserService(userRepository, passwordService, validation);
-        // Opretter user
-        User user = new User();
-        user.setUserId(1);
-        user.setUsername("test");
-        user.setEmail("test@test.dk");
-        user.setPassword("newPassword");
 
-        // Når password hashes, returneres fake hash
-        when(passwordService.hash("newPassword")).thenReturn("hashedNewPassword");
+        // Laver fake/mock login user
+        User loginUser = mock(User.class);
 
-        // Kalder update
+        // Simulerer email
+        when(loginUser.getEmail()).thenReturn("test@mail.com");
+
+        // Simulerer databasefejl
+        when(userRepository.loginUserByEmail("test@mail.com")).thenThrow(new DataAccessResourceFailureException("Database error"));
+
+        // Tjekker at UserException bliver kastet
+        UserException exception = assertThrows(UserException.class, () -> {
+            userService.login(loginUser);
+        });
+
+        // Tjekker fejlbeskeden
+        assertEquals("Fejl ved login", exception.getMessage());
+    }
+
+    // Test af updateUser() med rå password
+    @Test
+    void updateUser_shouldHashPasswordAndCallRepository() throws Exception {
+
+        // Laver fake/mock repository, passwordService og validation
+        IUserRepository userRepository = mock(IUserRepository.class);
+        PasswordService passwordService = mock(PasswordService.class);
+        Validation validation = mock(Validation.class);
+
+        // Opretter service
+        UserService userService = new UserService(userRepository, passwordService, validation);
+
+        // Laver fake/mock user
+        User user = mock(User.class);
+
+        // Simulerer rå password
+        when(user.getPassword()).thenReturn("test123");
+        when(passwordService.hash("test123")).thenReturn("hashedPassword");
+
+        // Kalder metoden
         userService.updateUser(user);
 
         // Tjekker at validation blev kaldt
         verify(validation, times(1)).updateUser(user);
 
         // Tjekker at password blev hashed
-        verify(passwordService, times(1)).hash("newPassword");
+        verify(passwordService, times(1)).hash("test123");
+
+        // Tjekker at hashed password blev sat
+        verify(user, times(1)).setPassword("hashedPassword");
 
         // Tjekker at repository blev kaldt
         verify(userRepository, times(1)).updateUser(user);
     }
 
+    // Test af updateUser() med allerede hashed password
     @Test
-    void deleteUser_shouldDeleteUser() throws Exception {
+    void updateUser_shouldNotHashPassword_whenPasswordIsAlreadyHashed() throws Exception {
 
-        // Laver fake repository
+        // Laver fake/mock repository, passwordService og validation
         IUserRepository userRepository = mock(IUserRepository.class);
-
-        // Laver fake password service
         PasswordService passwordService = mock(PasswordService.class);
-
-        // Laver fake validation
         Validation validation = mock(Validation.class);
 
         // Opretter service
         UserService userService = new UserService(userRepository, passwordService, validation);
 
-        // Opretter user
-        User user = new User();
+        // Laver fake/mock user
+        User user = mock(User.class);
 
-        // Sætter userId
-        user.setUserId(1);
+        // Simulerer allerede hashed password
+        when(user.getPassword()).thenReturn("$2a$hashedPassword");
 
-        // Kalder deleteUser
+        // Kalder metoden
+        userService.updateUser(user);
+
+        // Tjekker at password IKKE bliver hashed igen
+        verify(passwordService, never()).hash(anyString());
+
+        // Tjekker at repository blev kaldt
+        verify(userRepository, times(1)).updateUser(user);
+    }
+
+    // Test af updateUser() ved databasefejl
+    @Test
+    void updateUser_shouldThrowUserException_whenRepositoryFails() throws Exception {
+
+        // Laver fake/mock repository, passwordService og validation
+        IUserRepository userRepository = mock(IUserRepository.class);
+        PasswordService passwordService = mock(PasswordService.class);
+        Validation validation = mock(Validation.class);
+
+        // Opretter service
+        UserService userService = new UserService(userRepository, passwordService, validation);
+
+        // Laver fake/mock user
+        User user = mock(User.class);
+
+        // Simulerer allerede hashed password
+        when(user.getPassword()).thenReturn("$2a$hashedPassword");
+
+        // Simulerer databasefejl
+        doThrow(new DataAccessResourceFailureException("Database error")).when(userRepository).updateUser(user);
+
+        // Tjekker at UserException bliver kastet
+        UserException exception = assertThrows(UserException.class, () -> {
+            userService.updateUser(user);
+        });
+
+        // Tjekker fejlbeskeden
+        assertEquals("Fejl ved opdatering af bruger", exception.getMessage());
+    }
+
+    // Test af deleteUser()
+    @Test
+    void deleteUser_shouldCallRepository() throws Exception {
+
+        // Laver fake/mock repository, passwordService og validation
+        IUserRepository userRepository = mock(IUserRepository.class);
+        PasswordService passwordService = mock(PasswordService.class);
+        Validation validation = mock(Validation.class);
+
+        // Opretter service
+        UserService userService = new UserService(userRepository, passwordService, validation);
+
+        // Laver fake/mock user
+        User user = mock(User.class);
+
+        // Simulerer userId
+        when(user.getUserId()).thenReturn(1);
+
+        // Kalder metoden
         userService.deleteUser(user);
 
         // Tjekker at validation blev kaldt
         verify(validation, times(1)).validateDeleteUser(user);
 
-        // Tjekker at repository sletter userId 1
+        // Tjekker at repository blev kaldt
         verify(userRepository, times(1)).deleteUser(1);
+    }
+
+    // Test af deleteUser() ved databasefejl
+    @Test
+    void deleteUser_shouldThrowUserException_whenRepositoryFails() throws Exception {
+
+        // Laver fake/mock repository, passwordService og validation
+        IUserRepository userRepository = mock(IUserRepository.class);
+        PasswordService passwordService = mock(PasswordService.class);
+        Validation validation = mock(Validation.class);
+
+        // Opretter service
+        UserService userService = new UserService(userRepository, passwordService, validation);
+
+        // Laver fake/mock user
+        User user = mock(User.class);
+
+        // Simulerer userId
+        when(user.getUserId()).thenReturn(1);
+
+        // Simulerer databasefejl
+        doThrow(new DataAccessResourceFailureException("Database error")).when(userRepository).deleteUser(1);
+
+        // Tjekker at UserException bliver kastet
+        UserException exception = assertThrows(UserException.class, () -> {
+            userService.deleteUser(user);
+        });
+
+        // Tjekker fejlbeskeden
+        assertEquals("Fejl ved sletning af user", exception.getMessage());
     }
 }
