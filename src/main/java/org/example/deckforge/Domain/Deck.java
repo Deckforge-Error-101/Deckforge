@@ -62,6 +62,10 @@ public class Deck {
         return slots;
     }
 
+    public void setSlots(int slots){
+        this.slots = slots;
+    }
+
     public int getUserId() {
         return userId;
     }

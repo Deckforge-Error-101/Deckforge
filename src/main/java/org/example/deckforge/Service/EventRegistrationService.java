@@ -1,9 +1,6 @@
 package org.example.deckforge.Service;
 
-import org.example.deckforge.Domain.Deck;
-import org.example.deckforge.Domain.Event;
-import org.example.deckforge.Domain.EventRegistration;
-import org.example.deckforge.Domain.User;
+import org.example.deckforge.Domain.*;
 import org.example.deckforge.Infrastructur.IDeckRepository;
 import org.example.deckforge.Infrastructur.IEventRegistrationRepository;
 import org.example.deckforge.Infrastructur.IEventRepository;
@@ -124,6 +121,14 @@ public class EventRegistrationService {
             if (fullDeck == null) {
                 throw new DeckException("Det indtastede dæk-ID eksisterer ikke.");
             }
+            List<Card> realCards = deckRepository.getCardsInDeck(fullDeck);
+
+            int allCards = 0;
+            for (Card kort : realCards) {
+                allCards += kort.getQuantity();
+            }
+
+            fullDeck.setSlots(allCards);
 
             validation.validateRegisterDeck(dbRegistration, fullDeck, event);
 

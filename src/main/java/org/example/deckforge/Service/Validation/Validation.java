@@ -121,11 +121,11 @@ public class Validation {
         }
 
         //validering af slots
-        if ("COMMANDER".equals(deck.getFormatType())) {
+        if ("COMMANDER".equalsIgnoreCase(deck.getFormatType())) {
             if (deck.getSlots() != 100) {
                 throw new DeckException("Et Commander-dæk skal bestå af præcis 100 kort.");
             }
-        } else if ("STANDARD".equals(deck.getFormatType())) {
+        } else if ("STANDARD".equalsIgnoreCase(deck.getFormatType())) {
             if (deck.getSlots() < 60) {
                 throw new DeckException("Et Standard-dæk skal bestå af mindst 60 kort.");
             }
