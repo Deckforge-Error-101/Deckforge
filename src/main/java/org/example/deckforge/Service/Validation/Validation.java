@@ -88,9 +88,9 @@ public class Validation {
 
         if ("CASUAL_EVENT".equals(event.getEventType())) {
             if (event.getCapacity() > 32) {
-                throw new DeckException("Der må ikke være mere end 32 pladser til et casual event");
-            } else if (event.getCapacity() < 1) {
-                throw new DeckException("Der skal være minimum 4 tilmeldinger");
+                throw new EventException("Der må ikke være mere end 32 pladser til et casual event");
+            } else if (event.getCapacity() < 4) {
+                throw new EventException("Der skal være minimum 4 pladser");
             }
         }
 
@@ -98,7 +98,7 @@ public class Validation {
             if (event.getCapacity() >= 32) {
                 throw new DeckException("Der må ikke være mere end 16 pladser til et commander event");
             } else if (event.getCapacity() < 4) {
-                throw new DeckException("Der må ikke være 0 eller negative pladser til et event");
+                throw new DeckException("Der skal være minimum 4 pladser");
             }
         }
     }

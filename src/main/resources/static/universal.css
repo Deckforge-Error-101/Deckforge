@@ -160,6 +160,7 @@ label {
     font-weight: bold;
     font-size: 0.8rem;
     text-transform: uppercase;
+    margin: 0 auto;
 }
 
 input, select, textarea {
@@ -169,6 +170,8 @@ input, select, textarea {
     background-color: #252525;
     color: var(--text-primary);
     font-size: 0.9rem;
+    width: 50%;
+    margin: 0 auto;
 }
 
 input:focus, select:focus, textarea:focus {
@@ -189,6 +192,7 @@ button {
     text-transform: uppercase;
     transition: transform 0.1s, background-color 0.3s;
     width: 150px;
+    margin: 0 auto;
 }
 
 button:hover {
@@ -333,4 +337,8 @@ section {
 
 .match-history {
     flex: 1;
+}
+
+h2 {
+    text-align: center;
 }
