@@ -192,7 +192,28 @@ button {
     margin: 0 auto;
 }
 
+.buttons {
+    background-color: var(--accent-orange);
+    color: #000;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: transform 0.1s, background-color 0.3s;
+    width: 150px;
+    margin: 0 auto;
+    text-decoration: none;
+}
+
 button:hover {
+    background-color: #e67e00;
+    transform: scale(1.02);
+}
+
+.button:hover {
     background-color: #e67e00;
     transform: scale(1.02);
 }
