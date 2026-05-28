@@ -295,6 +295,23 @@ table form {
 aside {
     flex: 1;
     min-width: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.rights {
+    text-align: center;
+    width: 100%;
+}
+
+.stats {
+    width: 100%;
+}
+
+.stats table {
+    width: 80%;
+    margin: 0 auto;
 }
 
 section {
@@ -338,4 +355,85 @@ section {
 
 h2 {
     text-align: center;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    main {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    aside, section {
+        width: 75%;
+        min-width: auto;
+        margin-bottom: 20px;
+        text-align: center;
+        align-items: center;
+    }
+
+    .container {
+        padding: 20px;
+        margin: 20px auto;
+    }
+
+    input, select, textarea {
+        width: 75%;
+    }
+
+    button {
+        width: 50%;
+    }
+
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    thead tr {
+        position: absolute;
+        left: -9999px;
+        visibility: hidden;
+    }
+
+    td {
+        border: none;
+        border-bottom: 1px solid var(--border-color);
+        padding: 10px 0;
+    }
+
+    td:nth-child(1) {
+        font-weight: bold;
+        color: var(--accent-orange);
+    }
+
+    @media (hover: none) {
+        .card-thumbnail:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .card-thumbnail:active {
+            opacity: 0.7;
+        }
+    }
+
+    .btn-add, .btn-remove {
+        width: auto;
+        display: block;
+        margin: 5px 0;
+    }
 }
