@@ -49,6 +49,7 @@ public class EventController {
         }
 
         try {
+
             eventService.createEvent(user, event);
             return "redirect:/events";
 
