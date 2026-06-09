@@ -41,6 +41,7 @@ public class EventController {
                               Model model) {
         User user = (User) session.getAttribute("user");
 
+        // Vi tjekker op på brugerens rettigheder her
         if (user == null) {
             return "redirect:/login";
         }
@@ -49,7 +50,7 @@ public class EventController {
         }
 
         try {
-
+            // Her kalder vi createEvent i vores eventService
             eventService.createEvent(user, event);
             return "redirect:/events";
 

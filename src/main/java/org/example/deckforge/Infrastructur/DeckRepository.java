@@ -89,7 +89,7 @@ public class DeckRepository implements IDeckRepository {
 
     @Override
     public List<Card> getCardsInDeck(Deck deck) {
-        //Vi joiner 'cards' (c) med 'deck_cards' (dc) for at koble kort-data sammen med dæk-ID og antal
+        //Vi joiner 'cards' (c) med 'deck_cards' (dc), vi koble kun sammen hvis c.cardId og dc.Cardid er præsis den samme.
         String sql = "SELECT c.cardId, c.cardName, c.typeId, c.rarity, c.setType, dc.quantity " +
                 "FROM cards c " +
                 "JOIN deck_cards dc ON c.cardId = dc.cardId " +
